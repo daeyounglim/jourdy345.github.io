@@ -1,0 +1,19 @@
+{
+  "name": "youtube",
+  "version": "0.0.0",
+  "authors": [
+    "Daeyoung Lim <jourdy345@me.com>"
+  ],
+  "description": "youtube playlist",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "materialize": "~0.96.1"
+  }
+}
