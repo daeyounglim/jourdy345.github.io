@@ -1,16 +1,51 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  margin-bottom: 120px;
 }
 
 a {
   color: #00B7FF;
 }
 
+h1 {
+  letter-spacing: -20;
+  font-weight: 700;
+}
 
-.search_field {
-  margin: 50px auto;
-  width: 800px;
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.img-circle {
+  border-radius: 50%;
+}
+
+.hide {
+  display: none !important;
+}
+
+#player {
+  float: left;
+  padding: 20px;
+}
+
+#buttons {
+  clear:both;
+  width: 400px;
+  padding: 20px;
+}
+
+#search-container {
+  clear: right;
+  padding: 20px;
+}
+
+#search-container ul li:hover {
+  cursor: pointer;
+  background-color: #fafafa;
 }
 
 .center-block {
@@ -19,4 +54,13 @@ a {
 
 .text-center {
   text-align: center;
+}
+
+.pull-right {
+  float: right !important;
+}
+
+
+.pull-left {
+  float: left !important;
 }

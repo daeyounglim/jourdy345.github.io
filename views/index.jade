@@ -1,70 +1,79 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  block content
-    nav.white(role='navigation')
-      .nav-wrapper.container
-        a#logo-container.brand-logo(href='/') Logo
-        ul.right.hide-on-med-and-down
-          li
-            a(href='#') Navbar Link
-        ul#nav-mobile.side-nav
-          li
-            a(href='/iframe') Navbar Link
-        a.button-collapse(href='#', data-activates='nav-mobile')
-          i.mdi-navigation-menu
-    #index-banner.parallax-container
-      .section.no-pad-bot
-        .container
-          br
-          br
-          h1.header.center.teal-text.text-lighten-2 YouTube Player
-        .container
-          nav.center-block.blue-grey
-            .nav-wrapper
-              form
-                .input-field
-                  input#search(type='search', required='')
-                  label(for='search')
-                    i.mdi-action-search
-                  i.mdi-navigation-close
-        .container.text-center
-          #player
-          script(src="https://www.youtube.com/iframe_api" async)
-          script(src='/javascripts/iframe_player.js')
+  h1.header.center YouTube Player
+  .container
+    #player
 
-    footer.page-footer.teal
-      .container
-        .row
-          .col.l6.s12
-            h5.white-text Company Bio
-            p.grey-text.text-lighten-4
-              | We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.
-          .col.l3.s12
-            h5.white-text Settings
-            ul
-              li
-                a.white-text(href='#!') Link 1
-              li
-                a.white-text(href='#!') Link 2
-              li
-                a.white-text(href='#!') Link 3
-              li
-                a.white-text(href='#!') Link 4
-          .col.l3.s12
-            h5.white-text Connect
-            ul
-              li
-                a.white-text(href='#!') Link 1
-              li
-                a.white-text(href='#!') Link 2
-              li
-                a.white-text(href='#!') Link 3
-              li
-                a.white-text(href='#!') Link 4
-      .footer-copyright
-        .container
-          | Made by 
-          a.brown-text.text-lighten-3(href='http://materializecss.com') Materialize
+    form(data-toggle='youtube-search')
+      #buttons
+        label
+          input#query(value='cats', type='text')
+          button(type='submit'): i.mdi-action-search#search-button
+    .container#search-container.pull-left
+      ul.collection
+        li.for-search.item-template.hide
+          img.img-thumbnail
+          span.title Title
+          p
+    .container#playlist.pull-right
+      ul.playlist
+        li.play-template.hide
+          span.title
+          //- li.collection-item.avatar
+          //-   img(src="#")
+          //-   span.title Title
+          //-   p
+          //- li.collection-item.avatar
+          //-   img(src="#")
+          //-   span.title Title
+          //-   p
+          //- li.collection-item.avatar
+          //-   img(src="#")
+          //-   span.title Title
+          //-   p
+          //- li.collection-item.avatar
+          //-   img(src=#)
+          //-   span.title Title
+          //-   p
+
+
+
+
+
+      //- ul.collection
+      //-   li.collection-item.avatar
+      //-     i.mdi-av-play-arrow.circle.red
+      //-     span.title Title
+      //-     p
+      //-     a.secondary-content(href='#!')
+      //-       i.mdi-action-grade
+      //-   li.collection-item.avatar
+      //-     i.mdi-av-play-arrow.circle.red
+      //-     span.title Title
+      //-     p
+      //-     a.secondary-content(href='#!')
+      //-       i.mdi-action-grade
+      //-   li.collection-item.avatar
+      //-     i.mdi-av-play-arrow.circle.red
+      //-     span.title Title
+      //-     p
+      //-     a.secondary-content(href='#!')
+      //-       i.mdi-action-grade
+      //-   li.collection-item.avatar
+      //-     i.mdi-av-play-arrow.circle.red
+      //-     span.title Title
+      //-     p
+      //-     a.secondary-content(href='#!')
+      //-       i.mdi-av-play-arrow.circle.red
+      
+    
+      //- nav.blue-grey.search-field
+      //-   .nav-wrapper
+      //-     form
+      //-       .input-field
+      //-         input#search-button(type='search', required='')
+      //-         label(for='search')
+      //-           i.mdi-action-search
+      //-         i.mdi-navigation-close
+
