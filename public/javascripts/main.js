@@ -1,29 +1,34 @@
 jQuery(function() {
-  var Playlist, done, onPlayerReady, onPlayerStateChange, player, stopVideo;
-  player = void 0;
+  var Playlist, done, onPlayerReady, onPlayerStateChange, stopVideo;
+  window.Player = void 0;
   done = false;
   onPlayerReady = function(event) {
     event.target.playVideo();
   };
   onPlayerStateChange = function(event) {
+    var currentVideoIndex;
     if (event.data === YT.PlayerState.PLAYING && !done) {
       setTimeout(stopVideo, 1000);
       return done = true;
     } else if (event.data === YT.PlayerState.ENDED) {
       console.log('the video ended');
-      player.loadVideoById({
-        videoId: 'AnotherVideosID',
+      currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
+        return chr.id === window.Player.getVideoData().video_id;
+      });
+      console.log('>>', currentVideoIndex);
+      window.Player.loadVideoById({
+        videoId: window.Playlist.get()[currentVideoIndex + 1].id,
         suggestedQuality: 'large'
       });
-      return player.playVideo();
+      return window.Player.playVideo();
     }
   };
   stopVideo = function() {
-    player.stopVideo();
+    window.Player.stopVideo();
   };
   window.onYouTubeIframeAPIReady = function() {
     console.log('CALL');
-    player = new YT.Player('player', {
+    window.Player = new YT.Player('player', {
       height: '631.8',
       width: '1036.8',
       videoId: 'M7lc1UVf-VE',
@@ -73,6 +78,7 @@ jQuery(function() {
       var $playtemplate, i, item, len, ref, results;
       $playtemplate = $('.play-template');
       $playtemplate.find('.title').html('');
+      $('#playlist ul.playlist .item').remove();
       ref = this.list;
       results = [];
       for (i = 0, len = ref.length; i < len; i++) {
@@ -82,6 +88,7 @@ jQuery(function() {
         $playtemplate.data('video-id', item.id);
         $playtemplate.removeClass('play-template');
         $playtemplate.removeClass('hide');
+        $playtemplate.addClass('item');
         $('#playlist ul.playlist').append($playtemplate);
         console.log('from render ' + this.list);
         results.push(true);
@@ -89,8 +96,22 @@ jQuery(function() {
       return results;
     };
 
-    Playlist.prototype.play = function() {
+    Playlist.prototype.play = function(item) {
+      window.Player.loadVideoById({
+        id: item.id,
+        suggestedQuality: 'large'
+      });
+      window.Player.playVideo();
       return true;
+    };
+
+    Playlist.prototype.removeById = function(id) {
+      var index;
+      index = _.findIndex(this.list, function(chr) {
+        return chr.id = id;
+      });
+      delete this.list[index];
+      return _.compact(this.list);
     };
 
     return Playlist;
@@ -112,6 +133,7 @@ jQuery(function() {
       success: function(d, s, x) {
         var $template, $ul, i, item, len, ref;
         $ul = $('#search-container ul.collection');
+        $('#search-container ul.collection .complete').remove();
         ref = d.items;
         for (i = 0, len = ref.length; i < len; i++) {
           item = ref[i];
@@ -131,7 +153,6 @@ jQuery(function() {
             };
             console.log('Clicked ! ' + video_list);
             if (!window.Playlist.check(video_list)) {
-              console.log('>>>>>');
               window.Playlist.add({
                 id: $this.data('video-id'),
                 title: $this.data('video-title')
@@ -141,6 +162,7 @@ jQuery(function() {
           });
           $template.removeClass('hide');
           $template.removeClass('item-template');
+          $template.addClass('complete');
           $ul.append($template);
         }
         return true;

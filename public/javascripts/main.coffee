@@ -1,6 +1,6 @@
 jQuery ->
 
-  player = undefined  ## Embed a player
+  window.Player = undefined
   done = false
 
   onPlayerReady = (event) ->
@@ -13,19 +13,23 @@ jQuery ->
       done = true
     else if event.data is YT.PlayerState.ENDED
       console.log 'the video ended'
-      player.loadVideoById 
-        videoId: 'AnotherVideosID'
+
+      currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
+        return chr.id is window.Player.getVideoData().video_id
+      console.log '>>', currentVideoIndex
+      window.Player.loadVideoById 
+        videoId: window.Playlist.get()[currentVideoIndex + 1].id
         suggestedQuality: 'large'
-      player.playVideo()
+      window.Player.playVideo()
 
 
   stopVideo = ->
-    player.stopVideo()
+    window.Player.stopVideo()
     return
 
   window.onYouTubeIframeAPIReady = ->
     console.log 'CALL'
-    player = new YT.Player 'player',
+    window.Player = new YT.Player 'player',
       height: '631.8'
       width: '1036.8'
       videoId: 'M7lc1UVf-VE'
@@ -33,12 +37,6 @@ jQuery ->
         'onReady': onPlayerReady
         'onStateChange': onPlayerStateChange
     return
-
-
-
-
-
-
 
   ## Create a class to wrap all the functions needed when controlling the playlist
   class Playlist
@@ -75,6 +73,9 @@ jQuery ->
         .find '.title'
         .html ''
 
+      $ '#playlist ul.playlist .item'
+        .remove()
+
       for item in @list
         $playtemplate = $('.play-template').clone()
         $playtemplate
@@ -84,13 +85,24 @@ jQuery ->
           .data 'video-id', item.id
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
+        $playtemplate.addClass 'item'
         $ '#playlist ul.playlist'
           .append $playtemplate
         console.log 'from render ' + @list
         true
 
-    play: ->
+    play: (item) ->
+      window.Player.loadVideoById 
+        id: item.id
+        suggestedQuality: 'large'
+      window.Player.playVideo()
       true
+
+    removeById: (id) ->
+      index = _.findIndex @list, (chr) ->
+        return chr.id = id
+      delete @list[index]
+      _.compact @list
 
   window.Playlist = new Playlist()
 
@@ -149,6 +161,8 @@ jQuery ->
           #   ]
           # }
           $ul = $ '#search-container ul.collection'
+          $ '#search-container ul.collection .complete'
+            .remove()
           for item in d.items
             $template = $('.item-template').clone()
             console.log item.id.videoId, item.snippet.title, item.snippet.thumbnails.default.url
@@ -179,7 +193,6 @@ jQuery ->
               # Check if the clicked video is already in the Playlist
               unless window.Playlist.check video_list
               # Add to the Playlist if theres no match found
-                console.log '>>>>>'
                 window.Playlist.add
                   id: $this.data 'video-id'
                   title: $this.data 'video-title'
@@ -188,6 +201,7 @@ jQuery ->
             # remove class .hide
             $template.removeClass 'hide'
             $template.removeClass 'item-template'
+            $template.addClass 'complete'
             
             # append to UL
             $ul.append $template

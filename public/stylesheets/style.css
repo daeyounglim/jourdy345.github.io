@@ -43,7 +43,6 @@ h1 {
 
 #search-container {
   clear: both;
-  position: absolute;
   margin-top: 50px;
   margin-left: -20px;
 }
@@ -82,3 +81,9 @@ ul.playlist li:hover {
 #search-button {
   margin-left: 5px;
 }
+
+.multiline {
+  white-space: pre; 
+  word-wrap: break-word;
+}
+
