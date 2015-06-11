@@ -1,79 +1,24 @@
 extends layout
 
 block content
-  h1.header.center YouTube Player
-  .container
-    #player
-
-    form(data-toggle='youtube-search')
-      #buttons
-        label
-          input#query(value='cats', type='text')
-          button(type='submit'): i.mdi-action-search#search-button
-    .container#search-container.pull-left
-      ul.collection
-        li.for-search.item-template.hide
-          img.img-thumbnail
-          span.title Title
-          p
-    .container#playlist.pull-right
+  h1 YouTube Player
+  div
+    div#player.pull-left
+    div#playlist
+      h2 Playlist
       ul.playlist
-        li.play-template.hide
+        li.playlist-li.play-template.hide
+          span.glyphicon.glyphicon-play
           span.title
-          //- li.collection-item.avatar
-          //-   img(src="#")
-          //-   span.title Title
-          //-   p
-          //- li.collection-item.avatar
-          //-   img(src="#")
-          //-   span.title Title
-          //-   p
-          //- li.collection-item.avatar
-          //-   img(src="#")
-          //-   span.title Title
-          //-   p
-          //- li.collection-item.avatar
-          //-   img(src=#)
-          //-   span.title Title
-          //-   p
-
-
-
-
-
-      //- ul.collection
-      //-   li.collection-item.avatar
-      //-     i.mdi-av-play-arrow.circle.red
-      //-     span.title Title
-      //-     p
-      //-     a.secondary-content(href='#!')
-      //-       i.mdi-action-grade
-      //-   li.collection-item.avatar
-      //-     i.mdi-av-play-arrow.circle.red
-      //-     span.title Title
-      //-     p
-      //-     a.secondary-content(href='#!')
-      //-       i.mdi-action-grade
-      //-   li.collection-item.avatar
-      //-     i.mdi-av-play-arrow.circle.red
-      //-     span.title Title
-      //-     p
-      //-     a.secondary-content(href='#!')
-      //-       i.mdi-action-grade
-      //-   li.collection-item.avatar
-      //-     i.mdi-av-play-arrow.circle.red
-      //-     span.title Title
-      //-     p
-      //-     a.secondary-content(href='#!')
-      //-       i.mdi-av-play-arrow.circle.red
-      
-    
-      //- nav.blue-grey.search-field
-      //-   .nav-wrapper
-      //-     form
-      //-       .input-field
-      //-         input#search-button(type='search', required='')
-      //-         label(for='search')
-      //-           i.mdi-action-search
-      //-         i.mdi-navigation-close
-
+  form(data-toggle='youtube-search')
+    #buttons
+      label
+        input#query(value='cats', type='text')
+        button.btn.btn-mini#search-button(type='submit') Search
+  #search-container
+    ul.collection
+      li.for-search.item-template.hide
+        img.img-thumbnail
+        span.title Title
+        p
+        

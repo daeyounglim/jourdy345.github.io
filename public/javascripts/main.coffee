@@ -1,27 +1,46 @@
 jQuery ->
-  # window.Playlist = {}
-  # Playlist._list = []
-  # Playlist.getList =  ->
-  #   return Playlist._list
-  # Playlist.add = (item) ->
-  #   Playlist._list.push item
-  #   Playlist.render()
-  #   true
-  # Playlist.add_to_next = () ->
-  #   Playlist._list.unshift item
-  #   true
-  # # Playlist.remove = (item) ->
-  # #   true
-  # Playlist.render = () ->
-  #   # render
-    
-  #   true
-  # Playlist.play = () ->
-  #   true
-  # Playlist.play_next = () ->
-  #   true
+
+  player = undefined  ## Embed a player
+  done = false
+
+  onPlayerReady = (event) ->
+    event.target.playVideo()
+    return
+
+  onPlayerStateChange = (event) ->
+    if event.data is YT.PlayerState.PLAYING and !done
+      setTimeout stopVideo, 1000
+      done = true
+    else if event.data is YT.PlayerState.ENDED
+      console.log 'the video ended'
+      player.loadVideoById 
+        videoId: 'AnotherVideosID'
+        suggestedQuality: 'large'
+      player.playVideo()
 
 
+  stopVideo = ->
+    player.stopVideo()
+    return
+
+  window.onYouTubeIframeAPIReady = ->
+    console.log 'CALL'
+    player = new YT.Player 'player',
+      height: '631.8'
+      width: '1036.8'
+      videoId: 'M7lc1UVf-VE'
+      events:
+        'onReady': onPlayerReady
+        'onStateChange': onPlayerStateChange
+    return
+
+
+
+
+
+
+
+  ## Create a class to wrap all the functions needed when controlling the playlist
   class Playlist
     constructor: (@list) ->
       unless @list
@@ -35,24 +54,40 @@ jQuery ->
       #   title: '...'
       # }
       @list.push item
-      @render()
 
     add_to_next: (item) ->
       @list.unshift item
 
+    check: (item) ->
+      for each in @list
+        templist = JSON.stringify @list, null, '  '
+        if templist.match item.id
+          console.log 'from check !!' + item.id
+          return true
+        return false
+
+
+    remove: (item) ->
+      
     render: ->
+      $playtemplate = $ '.play-template'
+      $playtemplate
+        .find '.title'
+        .html ''
 
       for item in @list
         $playtemplate = $('.play-template').clone()
         $playtemplate
           .find '.title'
           .html item.title
+        $playtemplate
+          .data 'video-id', item.id
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $ '#playlist ul.playlist'
           .append $playtemplate
-      console.log @list
-      true
+        console.log 'from render ' + @list
+        true
 
     play: ->
       true
@@ -60,6 +95,7 @@ jQuery ->
   window.Playlist = new Playlist()
 
 
+  ## Use AJAX to send request to youtube search field and get the results / append to the jade file
   $('[data-toggle~=youtube-search]')
     .on 'submit', ->
       $query = $ '#query'
@@ -69,6 +105,7 @@ jQuery ->
         data: 
           q: $query.val()
           part: 'snippet'
+          maxResults: 50
           key: 'AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM'
         success: (d, s, x) -> 
           # JSON.stringify d, null, '  '
@@ -130,12 +167,23 @@ jQuery ->
             $template
               .data 'video-title', (item.snippet.title or 'Untitled')
             
+            
             $template.on 'click', (e) ->
               $this = $ this
-              console.log 'Clicked ! ' + $this.data 'video-id'
-              window.Playlist.add
+              
+              video_list = {
                 id: $this.data 'video-id'
                 title: $this.data 'video-title'
+              }
+              console.log 'Clicked ! ' + video_list
+              # Check if the clicked video is already in the Playlist
+              unless window.Playlist.check video_list
+              # Add to the Playlist if theres no match found
+                console.log '>>>>>'
+                window.Playlist.add
+                  id: $this.data 'video-id'
+                  title: $this.data 'video-title'
+                window.Playlist.render()
 
             # remove class .hide
             $template.removeClass 'hide'
@@ -143,13 +191,14 @@ jQuery ->
             
             # append to UL
             $ul.append $template
-            
 
 
-            
-            # .find('li.for-search').is(':not(.done)').append('<img src=#{item.snippet.thumbnails.default.url} />').addClass 'done'
           true
 
         error: (x, s, d) ->
           alert 'Error:' + s
       return false
+
+
+
+
