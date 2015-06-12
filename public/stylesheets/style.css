@@ -24,6 +24,21 @@ h1 {
           box-sizing: border-box;
 }
 
+#player {
+  display: inline-block;
+}
+
+.releaseContainer {
+  padding: 16px;
+}
+
+.releaseh2 {
+  font-weight: 800;
+}
+
+.releaseh4 {
+  font-weight: 500;
+}
 
 #player {
   float: left;
@@ -31,25 +46,13 @@ h1 {
   margin-left: 20px;
 }
 
-#buttons {
-  clear: both;
-  margin-left: 20px;
-  margin-top: 670px;
+#bloodhound {
+  padding: 20px;
 }
 
-#query {
-  width: 400px;
-}
-
-#search-container {
-  clear: both;
-  margin-top: 50px;
-  margin-left: -20px;
-}
-
-#search-container ul li:hover {
-  cursor: pointer;
-  background-color: #fafafa;
+#bloodhound input.typeahead {
+  width: 500px;
+  margin-top: 15px;
 }
 
 ul.playlist li {
@@ -64,7 +67,7 @@ ul.playlist li:hover {
 #playlist {
   border-left: 1px solid #dfdfdf;
   margin-left: 20px;
-  text-align: center;
+  text-align: right;
 }
 
 .playlist-li {
@@ -74,12 +77,8 @@ ul.playlist li:hover {
   font-size: 15px;
 }
 
-.for-search {
-  list-style: none;
-}
-
-#search-button {
-  margin-left: 5px;
+.glyphicon-remove {
+  text-align: right;
 }
 
 .multiline {
@@ -87,3 +86,14 @@ ul.playlist li:hover {
   word-wrap: break-word;
 }
 
+#scrollable-dropdown-menu {
+  clear: both;
+  margin-left: 5px;
+  padding: 14px;
+}
+
+.tt-menu {
+  max-height: 150px;
+  background-color: #fff;
+  overflow-y: auto;
+}

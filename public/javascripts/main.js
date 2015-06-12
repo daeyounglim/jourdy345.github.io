@@ -1,5 +1,5 @@
 jQuery(function() {
-  var Playlist, done, onPlayerReady, onPlayerStateChange, stopVideo;
+  var Playlist, Results, done, onPlayerReady, onPlayerStateChange, stopVideo;
   window.Player = void 0;
   done = false;
   onPlayerReady = function(event) {
@@ -7,20 +7,16 @@ jQuery(function() {
   };
   onPlayerStateChange = function(event) {
     var currentVideoIndex;
-    if (event.data === YT.PlayerState.PLAYING && !done) {
-      setTimeout(stopVideo, 1000);
-      return done = true;
-    } else if (event.data === YT.PlayerState.ENDED) {
+    if (event.data === YT.PlayerState.ENDED) {
       console.log('the video ended');
       currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
         return chr.id === window.Player.getVideoData().video_id;
       });
       console.log('>>', currentVideoIndex);
-      window.Player.loadVideoById({
+      return window.Player.loadVideoById({
         videoId: window.Playlist.get()[currentVideoIndex + 1].id,
         suggestedQuality: 'large'
       });
-      return window.Player.playVideo();
     }
   };
   stopVideo = function() {
@@ -32,8 +28,10 @@ jQuery(function() {
       height: '631.8',
       width: '1036.8',
       videoId: 'M7lc1UVf-VE',
+      playerVars: {
+        'autoplay': 1
+      },
       events: {
-        'onReady': onPlayerReady,
         'onStateChange': onPlayerStateChange
       }
     });
@@ -86,11 +84,18 @@ jQuery(function() {
         $playtemplate = $('.play-template').clone();
         $playtemplate.find('.title').html(item.title);
         $playtemplate.data('video-id', item.id);
+        $playtemplate.on('click', function(e) {
+          var $this, $video_id;
+          $this = $(this);
+          $video_id = item.id;
+          return window.Player.loadVideoById($video_id, 'large');
+        });
         $playtemplate.removeClass('play-template');
         $playtemplate.removeClass('hide');
         $playtemplate.addClass('item');
         $('#playlist ul.playlist').append($playtemplate);
         console.log('from render ' + this.list);
+        console.log($playtemplate.data('video-id'));
         results.push(true);
       }
       return results;
@@ -101,7 +106,6 @@ jQuery(function() {
         id: item.id,
         suggestedQuality: 'large'
       });
-      window.Player.playVideo();
       return true;
     };
 
@@ -118,59 +122,42 @@ jQuery(function() {
 
   })();
   window.Playlist = new Playlist();
-  return $('[data-toggle~=youtube-search]').on('submit', function() {
-    var $query;
-    $query = $('#query');
-    $.ajax({
-      url: "https://www.googleapis.com/youtube/v3/search",
-      type: "get",
-      data: {
-        q: $query.val(),
-        part: 'snippet',
-        maxResults: 50,
-        key: 'AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM'
-      },
-      success: function(d, s, x) {
-        var $template, $ul, i, item, len, ref;
-        $ul = $('#search-container ul.collection');
-        $('#search-container ul.collection .complete').remove();
-        ref = d.items;
+  Results = new Bloodhound({
+    datumTokenizer: function(d) {
+      return Bloodhound.tokenizers.whitespace(d.title);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+      url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM",
+      wildcard: '__QUERY__',
+      filter: function(response) {
+        var data, i, item, len, ref;
+        data = [];
+        ref = response.items;
         for (i = 0, len = ref.length; i < len; i++) {
           item = ref[i];
-          $template = $('.item-template').clone();
-          console.log(item.id.videoId, item.snippet.title, item.snippet.thumbnails["default"].url);
-          $template.find('img').attr('src', item.snippet.thumbnails["default"].url);
-          $template.find('span.title').html(item.snippet.title || 'Untitled');
-          $template.find('p').html(item.snippet.description.slice(0, 11) + '...');
-          $template.data('video-id', item.id.videoId);
-          $template.data('video-title', item.snippet.title || 'Untitled');
-          $template.on('click', function(e) {
-            var $this, video_list;
-            $this = $(this);
-            video_list = {
-              id: $this.data('video-id'),
-              title: $this.data('video-title')
-            };
-            console.log('Clicked ! ' + video_list);
-            if (!window.Playlist.check(video_list)) {
-              window.Playlist.add({
-                id: $this.data('video-id'),
-                title: $this.data('video-title')
-              });
-              return window.Playlist.render();
-            }
+          data.push({
+            title: item.snippet.title,
+            id: item.id.videoId
           });
-          $template.removeClass('hide');
-          $template.removeClass('item-template');
-          $template.addClass('complete');
-          $ul.append($template);
         }
-        return true;
-      },
-      error: function(x, s, d) {
-        return alert('Error:' + s);
+        return data;
       }
-    });
-    return false;
+    }
+  });
+  Results.initialize();
+  return $('#bloodhound .typeahead').typeahead(null, {
+    name: 'searchYoutube',
+    valueKey: 'name',
+    limit: 50,
+    minLength: 1,
+    highlight: true,
+    source: Results.ttAdapter(),
+    templates: {
+      suggestion: Handlebars.compile('<p><strong>{{title}} - {{id}}<strong></p>')
+    }
+  }).on('typeahead:selected', function(e, suggestion, name) {
+    window.Playlist.add(suggestion);
+    return window.Playlist.render();
   });
 });

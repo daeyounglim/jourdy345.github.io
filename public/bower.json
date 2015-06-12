@@ -13,6 +13,13 @@
     "loader.js": "ember-cli/loader.js#3.2.0",
     "qunit": "~1.17.1",
     "bootstrap": "~3.3.4",
-    "lodash": "~3.9.3"
+    "lodash": "~3.9.3",
+    "typeahead.js-bootstrap3.less": "~0.2.3",
+    "handlebars": "~3.0.3",
+    "typeahead.js": "0.10.5"
+  },
+  "resolutions": {
+    "bootstrap": "~3.3.4",
+    "typeahead.js": "~0.11.1"
   }
 }
