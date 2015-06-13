@@ -29,7 +29,8 @@ jQuery(function() {
       width: '1036.8',
       videoId: 'M7lc1UVf-VE',
       playerVars: {
-        'autoplay': 1
+        'autoplay': 1,
+        'controls': 2
       },
       events: {
         'onStateChange': onPlayerStateChange

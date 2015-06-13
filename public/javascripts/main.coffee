@@ -35,6 +35,7 @@ jQuery ->
       videoId: 'M7lc1UVf-VE'
       playerVars:
         'autoplay': 1
+        'controls': 2
       events:
         # 'onReady': onPlayerReady
         'onStateChange': onPlayerStateChange
