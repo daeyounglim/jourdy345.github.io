@@ -2,6 +2,21 @@ jQuery(function() {
   var Playlist, Results, done, onPlayerReady, onPlayerStateChange, stopVideo;
   window.Player = void 0;
   done = false;
+  $(document).on('keydown', function(e) {
+    var $active, $this;
+    $active = $('#playlist .item.active');
+    if ($active.length) {
+      if (e.keyCode === 8) {
+        $('.forBackspace').focus();
+        $this = $active.first();
+        window.Playlist.removeById($this.data('video-id'));
+        window.Playlist.render();
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }
+  });
   onPlayerReady = function(event) {
     event.target.playVideo();
   };
@@ -74,16 +89,15 @@ jQuery(function() {
     Playlist.prototype.remove = function(item) {};
 
     Playlist.prototype.render = function() {
-      var $playtemplate, i, item, len, ref, results;
+      var $playtemplate, i, item, len, ref;
       $playtemplate = $('.play-template');
-      $playtemplate.find('.title').html('');
-      $('#playlist .playlist .item').remove();
+      $('#playlist .item').remove();
       ref = this.list;
-      results = [];
       for (i = 0, len = ref.length; i < len; i++) {
         item = ref[i];
-        $playtemplate = $('.play-template').clone();
-        $playtemplate.find('.title').html(item.title);
+        $playtemplate = $('#playlist .play-template').clone();
+        $playtemplate.find('.playlist-title').html(item.title);
+        $playtemplate.find('.playlist-videoId').html(item.id);
         $playtemplate.data('video-id', item.id);
         $playtemplate.on('dblclick', function(e) {
           var $this, $video_id;
@@ -94,12 +108,17 @@ jQuery(function() {
         $playtemplate.removeClass('play-template');
         $playtemplate.removeClass('hide');
         $playtemplate.addClass('item');
-        $('#playlist .playlist').append($playtemplate);
+        $('#playlist tbody').append($playtemplate);
         console.log('from render ' + this.list);
         console.log($playtemplate.data('video-id'));
-        results.push(true);
+        true;
       }
-      return results;
+      return $('#playlist .item').on('click', function(e) {
+        var $this;
+        $this = $(this);
+        $this.addClass('active');
+        return $this.siblings().removeClass('active');
+      });
     };
 
     Playlist.prototype.play = function(item) {
@@ -116,7 +135,8 @@ jQuery(function() {
         return chr.id = id;
       });
       delete this.list[index];
-      return _.compact(this.list);
+      _.compact(this.list);
+      return window.Playlist.render();
     };
 
     return Playlist;
@@ -128,6 +148,7 @@ jQuery(function() {
       return Bloodhound.tokenizers.whitespace(d.title);
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
+    limit: 50,
     remote: {
       url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM",
       wildcard: '__QUERY__',
@@ -149,12 +170,11 @@ jQuery(function() {
   });
   Results.initialize();
   return $('#bloodhound .typeahead').typeahead({
-    limit: 50,
+    limit: 5,
     minLength: 1,
     highlight: true
   }, {
     name: 'searchYoutube',
-    limit: 50,
     minLength: 1,
     highlight: true,
     valueKey: 'name',

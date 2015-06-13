@@ -2,6 +2,19 @@ jQuery ->
 
   window.Player = undefined
   done = false
+  $(document)
+    .on 'keydown', (e) ->
+      $active = $ '#playlist .item.active'
+      if $active.length
+        if e.keyCode is 8
+          $ '.forBackspace'
+            .focus()
+          $this = $active.first()
+          window.Playlist.removeById($this.data 'video-id')
+          window.Playlist.render()
+          e.preventDefault()
+          e.stopPropagation()
+          return false
 
   onPlayerReady = (event) ->
     event.target.playVideo()
@@ -72,18 +85,18 @@ jQuery ->
       
     render: ->
       $playtemplate = $ '.play-template'
-      $playtemplate
-        .find '.title'
-        .html ''
 
-      $ '#playlist .playlist .item'
+      $ '#playlist .item'
         .remove()
 
       for item in @list
-        $playtemplate = $('.play-template').clone()
+        $playtemplate = $('#playlist .play-template').clone()
         $playtemplate
-          .find '.title'
+          .find '.playlist-title'
           .html item.title
+        $playtemplate
+          .find '.playlist-videoId'
+          .html item.id
         $playtemplate
           .data 'video-id', item.id
         $playtemplate.on 'dblclick', (e) ->
@@ -93,11 +106,34 @@ jQuery ->
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $playtemplate.addClass 'item'
-        $ '#playlist .playlist'
+        $ '#playlist tbody'
           .append $playtemplate
         console.log 'from render ' + @list
         console.log $playtemplate.data 'video-id'
         true
+
+      $ '#playlist .item'
+        .on 'click', (e) ->
+          $this = $ this
+          $this.addClass 'active'
+          $this.siblings().removeClass 'active'
+          # $this = $ this
+          # return true unless $this.is '.active'
+          # if e.keyCode is 8
+          #   window.Playlist.removeById($this.data 'video-id')
+          #   window.Playlist.render()
+          # e.preventDefault()
+          # e.stopPropagation()
+          # return false
+
+      # $ '#playlist .active'
+      #   .on 'keydown', (e) ->
+      #     $this = $ this
+      #     console.log '>>>', e, e.which
+      #     if e.keyCode is 8
+      #       e.preventDefault()
+      #       window.Playlist.removeById($this.data 'video-id')
+      #       window.Playlist.render()
 
     play: (item) ->
       window.Player.loadVideoById 
@@ -110,13 +146,14 @@ jQuery ->
         return chr.id = id
       delete @list[index]
       _.compact @list
-
+      window.Playlist.render()
   window.Playlist = new Playlist()
   
   Results = new Bloodhound 
     datumTokenizer: (d) ->
       Bloodhound.tokenizers.whitespace(d.title)
     queryTokenizer: Bloodhound.tokenizers.whitespace
+    limit: 50
     remote: 
       url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM"
       wildcard: '__QUERY__'
@@ -133,13 +170,12 @@ jQuery ->
   Results.initialize()
   $ '#bloodhound .typeahead'
     .typeahead 
-      limit: 50
+      limit: 5
       minLength: 1
       highlight: true
     , 
       name: 'searchYoutube'
       # displayKey: 'subtitle'
-      limit: 50
       minLength: 1
       highlight: true
       valueKey: 'name'
@@ -155,7 +191,7 @@ jQuery ->
       window.Playlist.render()
 
 
-
+  
 
 
 

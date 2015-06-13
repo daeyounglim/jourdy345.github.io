@@ -1,38 +1,52 @@
 extends layout
 
 block content
-  nav.navbar.navbar-default.navbar-fixed-top
+  input.forBackspace(type='text')
+  nav.navbar.navbar-default.navbar-static-top
     .inside-navbar.pull-left
-      .upper
-        .container.pull-left
-          .row
-            .col-lg-8
-              p.mainTitle 
-                span.icon-youtube-play
-                //- | YouTube Customizer
+      .pull-left
+        .row
+          .col-lg-8
+            p
+              span.icon-youtube-play
+              //- | YouTube Customizer
       .row.searchField
         .col-lg-6
-          .input-group#bloodhound
-            input.form-control.typeahead(type='search' placeholder='YouTube Customizer') 
+          .input-group.input-group-lg#bloodhound
+            //- #scrollable-dropdown-menu
+            input.form-control.input-lg.typeahead(type='search' placeholder='Search here and add videos to Playlist just by pressing enter' aria-describedby='sizing-addon1') 
             span.input-group-btn
-              button.btn.btn-primary.text-right
+              button.btn.btn-default.text-right
                 span.glyphicon.glyphicon-search 
           
   //- #bloodhound
   //-   input.typeahead(type="text" placeholder="Search here")
   //-   span.glyphicon.glyphicon-search
-  .body
-    #player.pull-left
-    #playlist
-      h2 Playlist
-      ul.playlist
-        div.playlist-li.play-template.hide
-          li
-            span.glyphicon.glyphicon-play
-            span.title
-            span.glyphicon.glyphicon-remove
+  .body.container-youtube
+    .row
+      .col-sm-8
+        #player
+      .col-sm-4
+        #playlist
+          table.table.table-striped
+            thead
+              tr
+                th.col-sm-9 Title
+                th.col-sm-3 Video ID
+            tbody
+              tr.playlist.play-template.hide
+                td.playlist-title Sing
+                td.playlist-videoId dX36S2Hd1
 
 
+
+          //- h2 Playlist
+          //- ul.playlist
+          //-   .playlist-li.play-template.hide
+          //-     li
+          //-       span.glyphicon.glyphicon-play
+          //-       span.title
+          //-       span.glyphicon.glyphicon-remove
     
     div.releasenote
       h1.releaseh1 2015/06/11

@@ -1,16 +1,8 @@
 body {
-  padding: 50px;
+  /*padding: 50px;*/
   font: 14px Helvetica, Arial, sans-serif;
   margin-bottom: 120px;
-  background-color: #EDEDED !important;
-}
-
-a {
-  color: #00B7FF;
-}
-
-.upper {
-  border-bottom: 1px solid #dfdfdf;
+  background-color: #FAFAFA !important;
 }
 
 .icon-youtube-play {
@@ -19,15 +11,20 @@ a {
   vertical-align: middle;
   line-height: 0px;
   position: relative;
-  bottom: -10px;
+  bottom: -5px;
+  margin-left: 15px;
   margin-right: 20px;
 }
 
-.mainTitle {
-  letter-spacing: -30;
-  font-weight: 900 !important;
-  font-family: Helvetica !important;
-  font-size: 50px !important;
+.searchField .col-lg-6 {
+  margin-top: 33px;
+}
+
+.form-control:focus {
+  border-color: #C10010 !important;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(193, 0, 16, .6) !important;
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(193, 0, 16, .6) !important;
 }
 
 * {
@@ -37,13 +34,8 @@ a {
 }
 nav {
   margin: auto;
-  background-color: #C10010 !important;
-  color: #FFFFFF;
-}
-
-#player {
-  display: inline-block;
-  margin-left: -22px;
+  background-color: #FFFFFF !important;
+  color: #C10010;
 }
 
 .releasenote {
@@ -58,41 +50,24 @@ nav {
   font-weight: 500;
 }
 
-.body {
-  margin-top: 100px;
+
+.container-youtube {
+  padding: 0 30px;
+  /*max-width: 1500px;*/
+  /*margin: 0 auto;*/
 }
 
-.searchField {
-  clear: both;
-  padding: 10px;
-  margin-top: -10px;
+#playlist table {
+  text-align: justify;
 }
 
-
-.input-group input span button {
-  width: 100px;
+#playlist .item {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.playlist li {
-  color: #3f3f3f;
-}
-
-.playlist li:hover {
-  background-color: #f0f0f0;
-}
-
-#playlist {
-  border-left: 1px solid #dfdfdf;
-  margin-left: 20px;
-  text-align: right;
-}
-
-.playlist-li {
-  margin-bottom: 15px;
-  /*border-left: 1px solid #eaeaea;*/
-  list-style: none;
-  font-size: 15px;
-}
 
 .glyphicon-remove {
   text-align: right;
@@ -109,8 +84,13 @@ nav {
   padding: 14px;
 }
 
-.tt-menu {
-  max-height: 150px;
+.tt-dropdown-menu {
+  max-height: 490px;
   background-color: #fff;
   overflow-y: auto;
+}
+
+.forBackspace {
+  position: absolute;
+  top: -9999px;
 }
