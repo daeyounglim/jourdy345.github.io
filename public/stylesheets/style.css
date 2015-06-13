@@ -28,8 +28,8 @@ h1 {
   display: inline-block;
 }
 
-.releaseContainer {
-  padding: 16px;
+.releasenote {
+  clear: both;
 }
 
 .releaseh2 {
@@ -55,13 +55,12 @@ h1 {
   margin-top: 15px;
 }
 
-ul.playlist li {
+.playlist li {
   color: #3f3f3f;
 }
 
-ul.playlist li:hover {
-  cursor: pointer;
-  color: #7e7e7e;
+.playlist li:hover {
+  background-color: #f0f0f0;
 }
 
 #playlist {

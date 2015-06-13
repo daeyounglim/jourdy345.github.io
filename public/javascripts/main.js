@@ -76,7 +76,7 @@ jQuery(function() {
       var $playtemplate, i, item, len, ref, results;
       $playtemplate = $('.play-template');
       $playtemplate.find('.title').html('');
-      $('#playlist ul.playlist .item').remove();
+      $('#playlist .playlist .item').remove();
       ref = this.list;
       results = [];
       for (i = 0, len = ref.length; i < len; i++) {
@@ -84,7 +84,7 @@ jQuery(function() {
         $playtemplate = $('.play-template').clone();
         $playtemplate.find('.title').html(item.title);
         $playtemplate.data('video-id', item.id);
-        $playtemplate.on('click', function(e) {
+        $playtemplate.on('dblclick', function(e) {
           var $this, $video_id;
           $this = $(this);
           $video_id = item.id;
@@ -93,7 +93,7 @@ jQuery(function() {
         $playtemplate.removeClass('play-template');
         $playtemplate.removeClass('hide');
         $playtemplate.addClass('item');
-        $('#playlist ul.playlist').append($playtemplate);
+        $('#playlist .playlist').append($playtemplate);
         console.log('from render ' + this.list);
         console.log($playtemplate.data('video-id'));
         results.push(true);
@@ -128,7 +128,7 @@ jQuery(function() {
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM",
+      url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM",
       wildcard: '__QUERY__',
       filter: function(response) {
         var data, i, item, len, ref;
@@ -138,7 +138,8 @@ jQuery(function() {
           item = ref[i];
           data.push({
             title: item.snippet.title,
-            id: item.id.videoId
+            id: item.id.videoId,
+            imgUrl: item.snippet.thumbnails["default"].url
           });
         }
         return data;
@@ -146,15 +147,19 @@ jQuery(function() {
     }
   });
   Results.initialize();
-  return $('#bloodhound .typeahead').typeahead(null, {
+  return $('#bloodhound .typeahead').typeahead({
+    limit: 50,
+    minLength: 1,
+    highlight: true
+  }, {
     name: 'searchYoutube',
-    valueKey: 'name',
     limit: 50,
     minLength: 1,
     highlight: true,
+    valueKey: 'name',
     source: Results.ttAdapter(),
     templates: {
-      suggestion: Handlebars.compile('<p><strong>{{title}} - {{id}}<strong></p>')
+      suggestion: Handlebars.compile('<img src="{{imgUrl}}" /><p><strong>{{title}} | {{id}}<strong></p>')
     }
   }).on('typeahead:selected', function(e, suggestion, name) {
     window.Playlist.add(suggestion);

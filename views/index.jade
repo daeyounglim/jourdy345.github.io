@@ -2,17 +2,18 @@ extends layout
 
 block content
   h1 YouTube Player
+  #bloodhound
+    input.typeahead(type="text" placeholder="Search here")
   div
     div#player.pull-left
     div#playlist
       h2 Playlist
       ul.playlist
-        li.playlist-li.play-template.hide
-          span.glyphicon.glyphicon-play
-          span.title
-          span.glyphicon.glyphicon-remove
-  #bloodhound
-    input.typeahead(type="text" placeholder="Search here")
+        div.playlist-li.play-template.hide
+          li
+            span.glyphicon.glyphicon-play
+            span.title
+            span.glyphicon.glyphicon-remove
 
 
   //- #search-container
@@ -21,7 +22,7 @@ block content
   //-       img.img-thumbnail
   //-       span.title Title
   //-       p
-  div
+  div.releasenote
     h1.releaseh1 2015/06/11
     div.releaseContainer
       h2.releaseh2 업데이트 알림
@@ -44,7 +45,7 @@ block content
         li 서비스 소개 작성
 
 
-  div
+  div.releasenote
     h1.releaseh1 2015/06/12
     div.releaseContainer
       h2.releaseh2 업데이트 알림

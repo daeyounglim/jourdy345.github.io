@@ -75,7 +75,7 @@ jQuery ->
         .find '.title'
         .html ''
 
-      $ '#playlist ul.playlist .item'
+      $ '#playlist .playlist .item'
         .remove()
 
       for item in @list
@@ -85,14 +85,14 @@ jQuery ->
           .html item.title
         $playtemplate
           .data 'video-id', item.id
-        $playtemplate.on 'click', (e) ->
+        $playtemplate.on 'dblclick', (e) ->
           $this = $ this
           $video_id = item.id
           window.Player.loadVideoById $video_id, 'large'
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $playtemplate.addClass 'item'
-        $ '#playlist ul.playlist'
+        $ '#playlist .playlist'
           .append $playtemplate
         console.log 'from render ' + @list
         console.log $playtemplate.data 'video-id'
@@ -117,7 +117,7 @@ jQuery ->
       Bloodhound.tokenizers.whitespace(d.title)
     queryTokenizer: Bloodhound.tokenizers.whitespace
     remote: 
-      url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM"
+      url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM"
       wildcard: '__QUERY__'
       filter: (response) ->
         data = []
@@ -125,21 +125,26 @@ jQuery ->
           data.push {
             title: item.snippet.title
             id: item.id.videoId
+            imgUrl: item.snippet.thumbnails.default.url
           }
         return data
   
   Results.initialize()
   $ '#bloodhound .typeahead'
-    .typeahead null, 
-      name: 'searchYoutube'
-      # displayKey: 'subtitle'
-      valueKey: 'name'
+    .typeahead 
       limit: 50
       minLength: 1
       highlight: true
+    , 
+      name: 'searchYoutube'
+      # displayKey: 'subtitle'
+      limit: 50
+      minLength: 1
+      highlight: true
+      valueKey: 'name'
       source: Results.ttAdapter()
       templates: 
-        suggestion: Handlebars.compile '<p><strong>{{title}} - {{id}}<strong></p>'
+        suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{title}} | {{id}}<strong></p>'
         # suggestion: (data) ->
         #   console.log '>>', data
         #   return Handlebars.compile '<p><strong>{{title}} - {{id}}<strong></p>', data
