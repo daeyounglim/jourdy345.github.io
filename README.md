@@ -32,3 +32,18 @@ I am currently working on a personalized youtube player after finding the origin
 * In the end, add 'Videos you might like' feature
 * Korean / English tab
 * Service intro page
+
+##June/13/2015
+###Done
+* Playlist video delete function added
+* Webpage design improved
+* Playlist in table format
+* 50 search results
+* Now returns only videos
+
+###Working on...
+* Playlist shuffle function
+* Playlist 'Repeat all / Repeat one' feature
+* In the end, add 'Videos you might like' feature
+* Korean / English tab
+* Service intro page
