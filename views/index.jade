@@ -2,26 +2,25 @@ extends layout
 
 block content
   input.forBackspace(type='text')
-  nav.navbar.navbar-default.navbar-static-top
+  nav.navbar.navbar-default.navbar-static-top.content-nav
     .inside-navbar.pull-left
       .pull-left
         .row
-          .col-lg-8
-            p
-              span.icon-youtube-play
-              //- | YouTube Customizer
-      .row.searchField
-        .col-lg-6
-          .input-group.input-group-lg#bloodhound
-            //- #scrollable-dropdown-menu
-            input.form-control.input-lg.typeahead(type='search' placeholder='Search here and add videos to Playlist just by pressing enter' aria-describedby='sizing-addon1') 
-            span.input-group-btn
-              button.btn.btn-default.text-right
-                span.glyphicon.glyphicon-search 
-          
-  //- #bloodhound
-  //-   input.typeahead(type="text" placeholder="Search here")
-  //-   span.glyphicon.glyphicon-search
+          .col-md-1
+            a.mainlogo(href='/'): span.icon-youtube-play
+          .col-md-6
+            .searchField.input-group.input-group-lg#bloodhound
+              input.form-control.input-lg.typeahead(type='search' placeholder='Search here and add videos to Playlist just by pressing enter' aria-describedby='sizing-addon1') 
+              span.input-group-btn
+                button.btn.btn-default.text-right
+                  span.glyphicon.glyphicon-search
+
+          .col-md-5.text-right
+            .playlist-button
+              button.btn.btn-default.btn-xs.repeat-all Repeat all
+              button.btn.btn-default.btn-xs.repeat-one Repeat one
+              button.btn.btn-default.btn-xs.shuffle Shuffle
+
   .body.container-youtube
     .row
       .col-sm-8
@@ -31,9 +30,15 @@ block content
           table.table.table-striped
             thead
               tr
-                th.col-sm-9 Title
-                th.col-sm-3 Video ID
+                th.col-sm-1 
+                th.col-sm-8 Title
+                th.col-sm-3 Published on
             tbody
-              tr.playlist.play-template.hide
+              tr.playlist.play-template.hide(data-video-id=0)
+                td
+                  .bar-container.hide
+                    .bar1
+                    .bar2
+                    .bar3
                 td.playlist-title Sing
-                td.playlist-videoId dX36S2Hd1
+                td.playlist-date dX36S2Hd1

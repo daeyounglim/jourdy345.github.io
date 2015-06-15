@@ -14,7 +14,22 @@ html
     block content
     hr
     block subcontent
+      nav.navbar.navbar-default.navbar-static-bottom.subcontent-nav
+        .subcontent
+          .row
+            .col-sm-4
+              .subcontent-left
+                h1.subcontent-h2 How to use
+                p.subcontent-p.multiline
+                  :markdown
+                    * **Type** in the search bar and go to the item you want to add and **press enter.**
+                    * The selected video will be **added to the Playlist and be queued.**
+                    * **Click the item** you wish to delete from the Playlist and **press delete.**
+                    * **Double-click** the item in the Playlist you wish to play instantly.
 
+            .col-sm-4
+              .container.subcontent-center
+                h2.subcontent-h2 
     //- Scripts
     script(src='https://code.jquery.com/jquery-2.1.1.min.js')
     script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')

@@ -10,28 +10,82 @@ jQuery(function() {
         $('.forBackspace').focus();
         $this = $active.first();
         window.Playlist.removeById($this.data('video-id'));
-        window.Playlist.render();
         e.preventDefault();
         e.stopPropagation();
         return false;
       }
     }
   });
+  $('.playlist-button button').on('click', function(e) {
+    var $this;
+    $this = $(this);
+    if ($this.hasClass('button-active')) {
+      return $this.removeClass('button-active');
+    } else {
+      $this.addClass('button-active');
+      return $this.siblings().removeClass('button-active');
+    }
+  });
   onPlayerReady = function(event) {
     event.target.playVideo();
   };
   onPlayerStateChange = function(event) {
-    var currentVideoIndex;
+    var currentVideoIndex, i;
     if (event.data === YT.PlayerState.ENDED) {
-      console.log('the video ended');
-      currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
-        return chr.id === window.Player.getVideoData().video_id;
-      });
-      console.log('>>', currentVideoIndex);
-      return window.Player.loadVideoById({
-        videoId: window.Playlist.get()[currentVideoIndex + 1].id,
-        suggestedQuality: 'large'
-      });
+      if ($('.playlist-button .repeat-all').hasClass('button-active')) {
+        if (window.Player.getVideoData().video_id === window.Playlist.get()[window.Playlist.get().length - 1].id) {
+          console.log('from repeat-all');
+          return window.Playlist.play({
+            videoId: window.Playlist.get()[0].id,
+            suggestedQuality: 'large'
+          });
+        } else {
+          currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
+            return chr.id === window.Player.getVideoData().video_id;
+          });
+          console.log('>>', currentVideoIndex);
+          return window.Playlist.play({
+            videoId: window.Playlist.get()[currentVideoIndex + 1].id,
+            suggestedQuality: 'large'
+          });
+        }
+      } else if ($('.playlist-button .repeat-one').hasClass('button-active')) {
+        console.log('from repeat-one');
+        return window.Playlist.play({
+          videoId: window.Player.getVideoData().video_id,
+          suggestedQuality: 'large'
+        });
+      } else if ($('.playlist-button .shuffle').hasClass('button-active')) {
+        console.log('from shuffle');
+        currentVideoIndex = _.findIndex(window.ShuffledPlaylist, function(chr) {
+          return chr.id === window.Player.getVideoData().video_id;
+        });
+        delete window.ShuffledPlaylist[currentVideoIndex];
+        window.ShuffledPlaylist = _.compact(window.ShuffledPlaylist);
+        if (window.ShuffledPlaylist.length) {
+          return window.Playlist.play({
+            videoId: window.ShuffledPlaylist[0].id,
+            suggestedQuality: 'large'
+          });
+        } else {
+          window.ShuffledPlaylist = _.shuffle(window.Playlist.get());
+          i = Math.floor(Math.random() * window.Playlist.get().length);
+          return window.Playlist.play({
+            videoId: window.Playlist.get()[i].id,
+            suggestedQuality: 'large'
+          });
+        }
+      } else {
+        console.log('from no nothing');
+        currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
+          return chr.id === window.Player.getVideoData().video_id;
+        });
+        console.log('>>', currentVideoIndex);
+        return window.Playlist.play({
+          videoId: window.Playlist.get()[currentVideoIndex + 1].id,
+          suggestedQuality: 'large'
+        });
+      }
     }
   };
   stopVideo = function() {
@@ -42,7 +96,7 @@ jQuery(function() {
     window.Player = new YT.Player('player', {
       height: '631.8',
       width: '1036.8',
-      videoId: 'M7lc1UVf-VE',
+      videoId: '',
       playerVars: {
         'autoplay': 1,
         'controls': 2
@@ -73,10 +127,10 @@ jQuery(function() {
     };
 
     Playlist.prototype.check = function(item) {
-      var each, i, len, ref, templist;
+      var each, j, len, ref, templist;
       ref = this.list;
-      for (i = 0, len = ref.length; i < len; i++) {
-        each = ref[i];
+      for (j = 0, len = ref.length; j < len; j++) {
+        each = ref[j];
         templist = JSON.stringify(this.list, null, '  ');
         if (templist.match(item.id)) {
           console.log('from check !!' + item.id);
@@ -86,24 +140,27 @@ jQuery(function() {
       }
     };
 
-    Playlist.prototype.remove = function(item) {};
-
     Playlist.prototype.render = function() {
-      var $playtemplate, i, item, len, ref;
+      var $playtemplate, item, j, len, ref;
       $playtemplate = $('.play-template');
       $('#playlist .item').remove();
       ref = this.list;
-      for (i = 0, len = ref.length; i < len; i++) {
-        item = ref[i];
+      for (j = 0, len = ref.length; j < len; j++) {
+        item = ref[j];
         $playtemplate = $('#playlist .play-template').clone();
         $playtemplate.find('.playlist-title').html(item.title);
-        $playtemplate.find('.playlist-videoId').html(item.id);
+        $playtemplate.find('.playlist-date').html(item.date.slice(0, 10));
         $playtemplate.data('video-id', item.id);
+        $playtemplate.attr('data-video-id', item.id);
         $playtemplate.on('dblclick', function(e) {
           var $this, $video_id;
           $this = $(this);
-          $video_id = item.id;
-          return window.Player.loadVideoById($video_id, 'large');
+          $video_id = $this.data('video-id');
+          console.log('from double click ' + $video_id);
+          return window.Playlist.play({
+            videoId: $video_id,
+            suggestedQuality: 'large'
+          });
         });
         $playtemplate.removeClass('play-template');
         $playtemplate.removeClass('hide');
@@ -113,19 +170,20 @@ jQuery(function() {
         console.log($playtemplate.data('video-id'));
         true;
       }
-      return $('#playlist .item').on('click', function(e) {
+      $('#playlist .item').on('click', function(e) {
         var $this;
         $this = $(this);
         $this.addClass('active');
         return $this.siblings().removeClass('active');
       });
+      return window.ShuffledPlaylist = _.shuffle(window.Playlist.get());
     };
 
     Playlist.prototype.play = function(item) {
-      window.Player.loadVideoById({
-        id: item.id,
-        suggestedQuality: 'large'
-      });
+      console.log('>1 ', item);
+      $('#playlist .bar-container').addClass('hide');
+      $("#playlist tr[data-video-id=" + item.videoId + "]").find('.bar-container').removeClass('hide');
+      window.Player.loadVideoById(item);
       return true;
     };
 
@@ -135,8 +193,12 @@ jQuery(function() {
         return chr.id = id;
       });
       delete this.list[index];
-      _.compact(this.list);
+      this.list = _.compact(this.list);
       return window.Playlist.render();
+    };
+
+    Playlist.prototype.shuffle = function() {
+      return true;
     };
 
     return Playlist;
@@ -153,15 +215,16 @@ jQuery(function() {
       url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM",
       wildcard: '__QUERY__',
       filter: function(response) {
-        var data, i, item, len, ref;
+        var data, item, j, len, ref;
         data = [];
         ref = response.items;
-        for (i = 0, len = ref.length; i < len; i++) {
-          item = ref[i];
+        for (j = 0, len = ref.length; j < len; j++) {
+          item = ref[j];
           data.push({
             title: item.snippet.title,
             id: item.id.videoId,
-            imgUrl: item.snippet.thumbnails["default"].url
+            imgUrl: item.snippet.thumbnails["default"].url,
+            date: item.snippet.publishedAt
           });
         }
         return data;
@@ -183,6 +246,7 @@ jQuery(function() {
       suggestion: Handlebars.compile('<img src="{{imgUrl}}" /><p><strong>{{title}} | {{id}}<strong></p>')
     }
   }).on('typeahead:selected', function(e, suggestion, name) {
+    console.log(suggestion);
     window.Playlist.add(suggestion);
     return window.Playlist.render();
   });

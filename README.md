@@ -47,3 +47,14 @@ I am currently working on a personalized youtube player after finding the origin
 * In the end, add 'Videos you might like' feature
 * Korean / English tab
 * Service intro page
+
+##June/15/2015
+###Done
+* Playlist 'Repeat all / Repeat one / Shuffle' functionality added
+* Display a sign in the Playlist for the video being played at the moment
+
+###Working on...
+* In the end, add 'Videos you might like' feature
+* Korean / English tab
+* Create an audio version with a smaller YouTube video frame
+* Service intro page
