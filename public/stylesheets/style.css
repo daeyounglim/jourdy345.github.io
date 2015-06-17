@@ -9,6 +9,10 @@ body {
   color: #C10010 !important;
 }
 
+.mainlogo:hover, .mainlogo:focus {
+  text-decoration: none;
+}
+
 .icon-youtube-play {
   font-size: 100px;
   /*float: left;*/
@@ -31,17 +35,22 @@ body {
 
 .playlist-button button {
   border-radius: 0 !important;
+  color: #C1C1C1;
+  background-color: #FFFFFF;
+  border-color: #C1C1C1;
 }
 
 .playlist-button button:active {
+  color: #C1C1C1;
   background-color: #FFFFFF;
-  border-color: #C1C1C1 !important;
+  border-color: #C1C1C1;
   outline: 0;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
+  -webkit-box-shadow: none;
+          box-shadow: none;
 }
 
 .playlist-button button:focus {
+  color: #C1C1C1;
   background-color: #FFFFFF;
   border-color: #C1C1C1;
   outline: 0;
@@ -50,6 +59,7 @@ body {
 }
 
 .playlist-button button:hover {
+  color: #C10010;
   background-color: #FFFFFF !important;
   outline: 0 !important;
   border-color: #C10010 !important;
@@ -59,17 +69,22 @@ body {
 
 
 .button-active {
+  color: #C10010 !important;
   border-color: #C10010 !important;
   outline: 0;
  -webkit-box-shadow: none;
         box-shadow: none;
 }
 
+.form-control {
+  border-radius: 0 !important;
+}
+
 .form-control:focus {
   border-color: #C10010 !important;
   outline: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(193, 0, 16, .6) !important;
-          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(193, 0, 16, .6) !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
 }
 
 * {
@@ -127,17 +142,82 @@ body {
   top: -9999px;
 }
 
+.subcontent {
+  margin-top: 70px;
+  margin-bottom: 100px;
+}
+
 .subcontent-nav {
   margin: auto;
   background-color: #F0F0F0 !important;
 }
 
-.subcontent-h2 {
+.subcontent-left {
+  width: 600px;
+  display: block;
+  margin-left: 200px;
+}
+.subcontent-left-h1 {
+  margin-left: 40px;
+  margin-bottom: 30px;
+}
+
+.subcontent-left ul li {
+  font-size: 17px;
+  margin-top: 10px;
+  list-style: none;
+}
+
+.subcontent-left ul li:first-child {
+  margin-top: 0px;
+}
+
+.subcontent-left-h3 {
+  margin-left: 40px;
+  margin-top: 30px;
+  
+}
+
+.subcontent-right {
+  display: block;
+  margin-right: 200px;
+}
+
+.subcontent-right-h1 {
   text-align: center;
 }
 
-.subcontent-p {
-  text-align: justify;
+button.fixed-button {
+  color: #C10010;
+  margin-top: 50px;
+  border-radius: 0 !important;
+  border-color: #C10010 !important;
+  background-color: rgba(0, 0, 0, 0) !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+}
+
+button.fixed-button:hover {
+  color: #FFFFFF !important;
+  background-color: #C10010 !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+}
+
+button.fixed-button:focus, button.fixed-button:active {
+  color: #C10010;
+  margin-top: 50px;
+  border-radius: 0 !important;
+  border-color: #C10010 !important;
+  background-color: rgba(0, 0, 0, 0) !important;
+  outline: none !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+}
+
+button.square {
+  border-radius: 0 !important;
+  outline: none !important;
 }
 
 @keyframes equalizer1 {
@@ -146,7 +226,7 @@ body {
   }
 
   50% {
-    height: 15px;
+    height: 12px;
   }
 
   100% {
@@ -156,15 +236,15 @@ body {
 
 @keyframes equalizer2 {
   0% {
-    height: 7.5px;
+    height: 6px;
   }
 
   25% {
-    height: 15px;
+    height: 12px;
   }
 
   50% {
-    height: 7.5px;
+    height: 6px;
   }
 
   75% {
@@ -172,13 +252,13 @@ body {
   }
 
   100% {
-    height: 7.5px;
+    height: 6px;
   }
 }
 
 @keyframes equalizer3 {
   0% {
-    height: 15px;
+    height: 12px;
   }
 
   50% {
@@ -186,79 +266,46 @@ body {
   }
 
   100% {
-    height: 15px;
+    height: 12px;
   }
 }
 
 .bar-container {
   /*margin: -40px -20px 0 0;*/
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  z-index: 1000;
 }
-.bar1 {
+.bar-container div:nth-child(1) {
   position: absolute;
   width: 4px;
   background-color: #C10010;
   animation-duration: 0.97s;
   animation-name: equalizer1;
   animation-iteration-count: infinite;
-  left: 0;
+  left: 26px;
   bottom: 32px;
 }
 
-.bar2 {
+.bar-container div:nth-child(2) {
   position: absolute;
   width: 4px;
   background-color: #C10010;
   animation-duration: 1.2s;
   animation-name: equalizer2;
   animation-iteration-count: infinite;
-  left: 6px;
+  left: 32px;
   bottom: 32px;
 }
 
-.bar3 {
+.bar-container div:nth-child(3) {
   position: absolute;
   width: 4px;
   background-color: #C10010;
   animation-duration: 0.7s;
   animation-name: equalizer3;
   animation-iteration-count: infinite;
-  left: 12px;
+  left: 38px;
   bottom: 32px;
 }
-
-
-
-
-/*#bar1{
-  border-style:solid;
-  border-color: #C10010;
-  height:15px;
-  width:4.5px;
-  position:absolute;
-  background: #C10010;
-  bottom:20%;
-  left:450px;
-}
-
-#bar2{
-  border-style:solid;
-  border-color:#FFF;
-  height:15px;
-  width:4.5px;
-  position:absolute;
-  background: #C10010;
-  bottom:20%;
-  left:500px;
-}
-
-#bar3{
-  border-style:solid;
-  border-color: #C10010;
-  height:15px;
-  width:4.5px;
-  position:absolute;
-  background: #C10010;
-  bottom:20%;
-  left:550px;
-}
-*/

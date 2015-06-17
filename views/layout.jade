@@ -15,21 +15,54 @@ html
     hr
     block subcontent
       nav.navbar.navbar-default.navbar-static-bottom.subcontent-nav
+        .modal.fade#myModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+            .modal-content
+              form.form-horizontal(action='/feedback', method='post')
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                  h4.modal-title(id='myModalLabel') Let us hear what you have to say!
+                .modal-body
+                  .form-group
+                    label.col-sm-2.control-label(for='inputEmail3') Email
+                    .col-sm-10
+                      input#inputEmail3.form-control(name='email', type='email', placeholder='your-email@address.com')
+                  .form-group
+                    label.col-sm-2.control-label(for='inputTitle') Title
+                    .col-sm-10
+                      input#inputTitle.form-control(name='title',type='text', placeholder='Title')
+                  .form-group
+                    label.col-sm-2.control-label(for='inputBody') Content
+                    .col-sm-10
+                      textarea#inputBody.form-control(name='content', type='text', rows= '10', placeholder='Please write your opinion here')
+                  //- .form-group
+                  //-   .col-sm-offset-2.col-sm-10
+                  //-     button.btn.btn-default(type='submit') Send
+                  .modal-footer
+                    button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
+                    button.btn.btn-success.square(type='submit') Send
+
         .subcontent
           .row
-            .col-sm-4
+            .col-sm-6
               .subcontent-left
-                h1.subcontent-h2 How to use
-                p.subcontent-p.multiline
-                  :markdown
-                    * **Type** in the search bar and go to the item you want to add and **press enter.**
-                    * The selected video will be **added to the Playlist and be queued.**
-                    * **Click the item** you wish to delete from the Playlist and **press delete.**
-                    * **Double-click** the item in the Playlist you wish to play instantly.
+                h1.subcontent-left-h1 How to use this
+                ul
+                  li <strong>Search: </strong> Type in the search bar.
+                  li <strong>Add: </strong> Once the drop-down appears, click the video you want.
+                  li <strong>Play: </strong> Double-click the video in the Playlist and it will start immediately.
+                  li <strong>Delete: </strong> Click the video in the Playlist and press delete (or backspace).
+                h3.subcontent-left-h3 It's as simple as this.
 
-            .col-sm-4
-              .container.subcontent-center
-                h2.subcontent-h2 
+            .col-sm-6
+              .subcontent-right
+                h1.subcontent-right-h1.multiline.
+                  Your feedback is
+                  what makes us better
+                button.center-block.fixed-button.btn.btn-success(type='button', data-toggle='modal', data-target="#myModal") Feedback
+
+
     //- Scripts
     script(src='https://code.jquery.com/jquery-2.1.1.min.js')
     script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')

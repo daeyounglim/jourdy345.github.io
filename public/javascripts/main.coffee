@@ -5,15 +5,23 @@ jQuery ->
   $(document)
     .on 'keydown', (e) ->
       $active = $ '#playlist .item.active'
-      if $active.length
-        if e.keyCode is 8
-          $ '.forBackspace'
-            .focus()
-          $this = $active.first()
-          window.Playlist.removeById($this.data 'video-id')
-          e.preventDefault()
-          e.stopPropagation()
-          return false
+      unless $('.form-control').is(':focus')
+        if $active.length
+          if e.keyCode is 8 or 46
+            $ '.forBackspace'
+              .focus()
+            $this = $active.first()
+            console.error '???'
+            window.Playlist.removeById($this.data 'video-id')
+            console.log $this.data 'video-id'
+            e.preventDefault()
+            e.stopPropagation()
+            if $this.data 'video-id' is window.Player.getVideoData().video_id
+              $ '.bar-container'
+                .css
+                  'top': -9999
+                  'left': -9999
+            return false
  
   $ '.playlist-button button'
       .on 'click', (e) ->
@@ -34,9 +42,7 @@ jQuery ->
       if $('.playlist-button .repeat-all').hasClass 'button-active'
         if window.Player.getVideoData().video_id is window.Playlist.get()[window.Playlist.get().length - 1].id
           console.log 'from repeat-all'
-          window.Playlist.play 
-            videoId: window.Playlist.get()[0].id
-            suggestedQuality: 'large'
+          window.Playlist.play 0
         else
           currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
             return chr.id is window.Player.getVideoData().video_id
@@ -87,7 +93,7 @@ jQuery ->
       videoId: ''
       playerVars:
         'autoplay': 1
-        'controls': 2
+        'controls': 1
       events:
         # 'onReady': onPlayerReady
         'onStateChange': onPlayerStateChange
@@ -121,65 +127,63 @@ jQuery ->
       
     render: ->
       $playtemplate = $ '.play-template'
-
       $ '#playlist .item'
         .remove()
 
       for item in @list
+        index = _.findIndex @list, (chr) ->
+          return chr.id is item.id
+        console.log index
         $playtemplate = $('#playlist .play-template').clone()
         $playtemplate
           .find '.playlist-title'
           .html item.title
         $playtemplate
           .find '.playlist-date'
-          .html item.date[0..9]
+          .html item.date
         $playtemplate
           .data 'video-id', item.id
         $playtemplate
-          .attr 'data-video-id', item.id
-        $playtemplate.on 'dblclick', (e) ->
-          $this = $ this
-          $video_id = $this.data 'video-id'
-          console.log 'from double click ' + $video_id
-          window.Playlist.play
-            videoId: $video_id
-            suggestedQuality: 'large'
+          .attr 'id', index
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $playtemplate.addClass 'item'
         $ '#playlist tbody'
           .append $playtemplate
+      
         console.log 'from render ' + @list
         console.log $playtemplate.data 'video-id'
-        true
 
       $ '#playlist .item'
         .on 'click', (e) ->
           $this = $ this
           $this.addClass 'active'
           $this.siblings().removeClass 'active'
+        .on 'dblclick', (e) ->
+          $this = $ this
+          offset = $this.find('td:first').offset()
+          height = $this.height()
+          $ '.bar-container'
+            .css
+              'top': offset.top + 37 + height * 0.5 
+              'left': offset.left - 10
+          window.Playlist.play
+            videoId: $this.data 'video-id'
+            suggestedQuality: 'large'
       
       window.ShuffledPlaylist = _.shuffle window.Playlist.get()
 
-    play: (item) ->
-      console.log '>1 ', item
-      
-      $ '#playlist .bar-container'
-        .addClass 'hide'
-      $ "#playlist tr[data-video-id=#{item.videoId}]"
-        .find '.bar-container'
-        .removeClass 'hide'
-      
-      window.Player.loadVideoById item
-
-      true
-
-    # play: (item) ->
-    #   console.error 'not implemented yet'
-    #   window.Player.loadVideoById 
-    #     id: item.id
-    #     suggestedQuality: 'large'
-    #   true
+    play: (i) ->
+      window.Player.loadVideoById @list[i].id, 0, 'large'
+      for item in @list
+        item.playing = 0
+      @list[i].playing = 1
+      offset = $("##{i}]").find('td:first').offset()
+      height = $("##{i}]").height
+      $ '.bar-container'
+        .css
+          'top': offset.top + 37 + height * 0.5
+          'left': offset.left - 10
 
     removeById: (id) ->
       index = _.findIndex @list, (chr) ->
@@ -191,9 +195,28 @@ jQuery ->
     shuffle: ->
       true
 
+    remap: ->
+      mapping = $("#sortable").sortable("toArray",{attribute: "id"})
+      tempVideos = []
+      tempVideos[i] = @list[mapping[i]] for i in [0..(@list.length-1)]
+      @list[i] = tempVideos[i] for i in [0..(@list.length-1)]
+      render()
 
   window.Playlist = new Playlist()
+  window.Playlist.add 
+    title: "California Drought Is God’s Punishment For Abortion Laws"
+    id: "Kn8_wCGd80g"
+    imgUrl: "https://i.ytimg.com/vi/Kn8_wCGd80g/default.jpg"
+    date: "2015-06-16"
+  window.Playlist.add
+    title: "OMFG - Hello"
+    id: "ih2xubMaZWI"
+    imgUrl: "https://i.ytimg.com/vi/ih2xubMaZWI/default.jpg"
+    date: "2014-12-25"
   
+
+  window.Playlist.render()
+
   Results = new Bloodhound 
     datumTokenizer: (d) ->
       Bloodhound.tokenizers.whitespace(d.title)
@@ -209,7 +232,8 @@ jQuery ->
             title: item.snippet.title
             id: item.id.videoId
             imgUrl: item.snippet.thumbnails.default.url
-            date: item.snippet.publishedAt
+            date: item.snippet.publishedAt[0..9]
+            playing: 0
           }
         return data
   
@@ -227,7 +251,7 @@ jQuery ->
       valueKey: 'name'
       source: Results.ttAdapter()
       templates: 
-        suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{title}} | {{id}}<strong></p>'
+        suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{title}} | {{date}}<strong></p>'
         # suggestion: (data) ->
         #   console.log '>>', data
         #   return Handlebars.compile '<p><strong>{{title}} - {{id}}<strong></p>', data
