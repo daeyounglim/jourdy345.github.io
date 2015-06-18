@@ -13,18 +13,26 @@ jQuery(function() {
           console.error('???');
           window.Playlist.removeById($this.data('video-id'));
           console.log($this.data('video-id'));
-          e.preventDefault();
-          e.stopPropagation();
           if ($this.data('video-id' === window.Player.getVideoData().video_id)) {
             $('.bar-container').css({
               'top': -9999,
               'left': -9999
             });
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
           }
-          return false;
         }
       }
     }
+  });
+  $(function() {
+    $('#sortable').sortable({
+      stop: function(event, ui) {
+        window.Playlist.remap();
+      }
+    });
+    $('#sortable').disableSelection();
   });
   $('.playlist-button button').on('click', function(e) {
     var $this;
@@ -51,17 +59,14 @@ jQuery(function() {
             return chr.id === window.Player.getVideoData().video_id;
           });
           console.log('>>', currentVideoIndex);
-          return window.Playlist.play({
-            videoId: window.Playlist.get()[currentVideoIndex + 1].id,
-            suggestedQuality: 'large'
-          });
+          return window.Playlist.play(currentVideoIndex + 1);
         }
       } else if ($('.playlist-button .repeat-one').hasClass('button-active')) {
         console.log('from repeat-one');
-        return window.Playlist.play({
-          videoId: window.Player.getVideoData().video_id,
-          suggestedQuality: 'large'
+        currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
+          return chr.id === window.Player.getVideoData().video_id;
         });
+        return window.Playlist.play(currentVideoIndex);
       } else if ($('.playlist-button .shuffle').hasClass('button-active')) {
         console.log('from shuffle');
         currentVideoIndex = _.findIndex(window.ShuffledPlaylist, function(chr) {
@@ -70,17 +75,14 @@ jQuery(function() {
         delete window.ShuffledPlaylist[currentVideoIndex];
         window.ShuffledPlaylist = _.compact(window.ShuffledPlaylist);
         if (window.ShuffledPlaylist.length) {
-          return window.Playlist.play({
-            videoId: window.ShuffledPlaylist[0].id,
-            suggestedQuality: 'large'
+          i = _.findIndex(window.Playlist.get(), function(chr) {
+            return chr.id === window.ShuffledPlaylist[0].id;
           });
+          return window.Playlist.play(i);
         } else {
           window.ShuffledPlaylist = _.shuffle(window.Playlist.get());
           i = Math.floor(Math.random() * window.Playlist.get().length);
-          return window.Playlist.play({
-            videoId: window.Playlist.get()[i].id,
-            suggestedQuality: 'large'
-          });
+          return window.Playlist.play(i);
         }
       } else {
         console.log('from no nothing');
@@ -88,10 +90,7 @@ jQuery(function() {
           return chr.id === window.Player.getVideoData().video_id;
         });
         console.log('>>', currentVideoIndex);
-        return window.Playlist.play({
-          videoId: window.Playlist.get()[currentVideoIndex + 1].id,
-          suggestedQuality: 'large'
-        });
+        return window.Playlist.play(currentVideoIndex + 1);
       }
     }
   };
@@ -180,33 +179,27 @@ jQuery(function() {
         $this = $(this);
         offset = $this.find('td:first').offset();
         height = $this.height();
-        $('.bar-container').css({
-          'top': offset.top + 37 + height * 0.5,
-          'left': offset.left - 10
-        });
-        return window.Playlist.play({
-          videoId: $this.data('video-id'),
-          suggestedQuality: 'large'
-        });
+        return window.Playlist.play($this.attr('id'));
       });
       return window.ShuffledPlaylist = _.shuffle(window.Playlist.get());
     };
 
     Playlist.prototype.play = function(i) {
       var height, item, j, len, offset, ref;
-      window.Player.loadVideoById(this.list[i].id, 0, 'large');
       ref = this.list;
       for (j = 0, len = ref.length; j < len; j++) {
         item = ref[j];
         item.playing = 0;
       }
       this.list[i].playing = 1;
-      offset = $("#" + i + "]").find('td:first').offset();
-      height = $("#" + i + "]").height;
-      return $('.bar-container').css({
+      offset = $("#" + i).find('td:first').offset();
+      height = $("#" + i).height();
+      console.log(offset, height);
+      $('.bar-container').css({
         'top': offset.top + 37 + height * 0.5,
         'left': offset.left - 10
       });
+      return window.Player.loadVideoById(this.list[i].id, 0, 'large');
     };
 
     Playlist.prototype.removeById = function(id) {
@@ -224,18 +217,28 @@ jQuery(function() {
     };
 
     Playlist.prototype.remap = function() {
-      var i, j, k, mapping, ref, ref1, tempVideos;
-      mapping = $("#sortable").sortable("toArray", {
+      var height, i, index, j, k, mapping, offset, ref, ref1, tempPlaylist;
+      mapping = _.compact($("#sortable").sortable("toArray", {
         attribute: "id"
-      });
-      tempVideos = [];
+      }));
+      tempPlaylist = [];
       for (i = j = 0, ref = this.list.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
-        tempVideos[i] = this.list[mapping[i]];
+        tempPlaylist[i] = this.list[mapping[i]];
       }
       for (i = k = 0, ref1 = this.list.length - 1; 0 <= ref1 ? k <= ref1 : k >= ref1; i = 0 <= ref1 ? ++k : --k) {
-        this.list[i] = tempVideos[i];
+        this.list[i] = tempPlaylist[i];
       }
-      return render();
+      window.Playlist.render();
+      index = _.findIndex(this.list, function(chr) {
+        return chr.id === window.Player.getVideoData().video_id;
+      });
+      offset = $("#" + index).find('td:first').offset();
+      height = $("#" + index).height();
+      console.log(offset, height);
+      return $('.bar-container').css({
+        'top': offset.top + 37 + height * 0.5,
+        'left': offset.left - 10
+      });
     };
 
     return Playlist;
@@ -246,13 +249,15 @@ jQuery(function() {
     title: "California Drought Is God’s Punishment For Abortion Laws",
     id: "Kn8_wCGd80g",
     imgUrl: "https://i.ytimg.com/vi/Kn8_wCGd80g/default.jpg",
-    date: "2015-06-16"
+    date: "2015-06-16",
+    playing: 0
   });
   window.Playlist.add({
     title: "OMFG - Hello",
     id: "ih2xubMaZWI",
     imgUrl: "https://i.ytimg.com/vi/ih2xubMaZWI/default.jpg",
-    date: "2014-12-25"
+    date: "2014-12-25",
+    playling: 0
   });
   window.Playlist.render();
   Results = new Bloodhound({

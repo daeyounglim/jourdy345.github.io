@@ -14,15 +14,23 @@ jQuery ->
             console.error '???'
             window.Playlist.removeById($this.data 'video-id')
             console.log $this.data 'video-id'
-            e.preventDefault()
-            e.stopPropagation()
             if $this.data 'video-id' is window.Player.getVideoData().video_id
               $ '.bar-container'
                 .css
                   'top': -9999
                   'left': -9999
-            return false
+              e.preventDefault()
+              e.stopPropagation()
+              return false
  
+  $ ->
+    $('#sortable').sortable
+      stop: (event, ui) ->
+        window.Playlist.remap()
+        return
+    $('#sortable').disableSelection()
+    return
+
   $ '.playlist-button button'
       .on 'click', (e) ->
         $this = $ this
@@ -47,14 +55,12 @@ jQuery ->
           currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
             return chr.id is window.Player.getVideoData().video_id
           console.log '>>', currentVideoIndex
-          window.Playlist.play 
-            videoId: window.Playlist.get()[currentVideoIndex + 1].id
-            suggestedQuality: 'large'
+          window.Playlist.play currentVideoIndex + 1
       else if $('.playlist-button .repeat-one').hasClass 'button-active'
         console.log 'from repeat-one'
-        window.Playlist.play 
-          videoId: window.Player.getVideoData().video_id
-          suggestedQuality: 'large'
+        currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
+            return chr.id is window.Player.getVideoData().video_id
+        window.Playlist.play currentVideoIndex
       else if $('.playlist-button .shuffle').hasClass 'button-active'
         console.log 'from shuffle'
         currentVideoIndex =  _.findIndex window.ShuffledPlaylist, (chr) ->
@@ -62,23 +68,25 @@ jQuery ->
         delete window.ShuffledPlaylist[currentVideoIndex]
         window.ShuffledPlaylist = _.compact window.ShuffledPlaylist
         if window.ShuffledPlaylist.length
-          window.Playlist.play 
-            videoId: window.ShuffledPlaylist[0].id
-            suggestedQuality: 'large'
+          i = _.findIndex window.Playlist.get(), (chr) ->
+            return chr.id is window.ShuffledPlaylist[0].id
+          window.Playlist.play i
+            # videoId: window.ShuffledPlaylist[0].id
+            # suggestedQuality: 'large'
         else
           window.ShuffledPlaylist = _.shuffle window.Playlist.get()
           i = Math.floor(Math.random()*window.Playlist.get().length)
-          window.Playlist.play
-            videoId: window.Playlist.get()[i].id
-            suggestedQuality: 'large'
+          window.Playlist.play i
+            # videoId: window.Playlist.get()[i].id
+            # suggestedQuality: 'large'
       else
         console.log 'from no nothing'
         currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
           return chr.id is window.Player.getVideoData().video_id
         console.log '>>', currentVideoIndex
-        window.Playlist.play 
-          videoId: window.Playlist.get()[currentVideoIndex + 1].id
-          suggestedQuality: 'large'
+        window.Playlist.play currentVideoIndex+1
+          # videoId: window.Playlist.get()[currentVideoIndex + 1].id
+          # suggestedQuality: 'large'
 
 
   stopVideo = ->
@@ -153,7 +161,6 @@ jQuery ->
       
         console.log 'from render ' + @list
         console.log $playtemplate.data 'video-id'
-
       $ '#playlist .item'
         .on 'click', (e) ->
           $this = $ this
@@ -163,27 +170,22 @@ jQuery ->
           $this = $ this
           offset = $this.find('td:first').offset()
           height = $this.height()
-          $ '.bar-container'
-            .css
-              'top': offset.top + 37 + height * 0.5 
-              'left': offset.left - 10
-          window.Playlist.play
-            videoId: $this.data 'video-id'
-            suggestedQuality: 'large'
+          window.Playlist.play $this.attr 'id'
       
       window.ShuffledPlaylist = _.shuffle window.Playlist.get()
 
     play: (i) ->
-      window.Player.loadVideoById @list[i].id, 0, 'large'
       for item in @list
         item.playing = 0
       @list[i].playing = 1
-      offset = $("##{i}]").find('td:first').offset()
-      height = $("##{i}]").height
+      offset = $("#" + i).find('td:first').offset()
+      height = $("#" + i).height()
+      console.log offset, height
       $ '.bar-container'
         .css
           'top': offset.top + 37 + height * 0.5
           'left': offset.left - 10
+      window.Player.loadVideoById @list[i].id, 0, 'large'
 
     removeById: (id) ->
       index = _.findIndex @list, (chr) ->
@@ -196,11 +198,21 @@ jQuery ->
       true
 
     remap: ->
-      mapping = $("#sortable").sortable("toArray",{attribute: "id"})
-      tempVideos = []
-      tempVideos[i] = @list[mapping[i]] for i in [0..(@list.length-1)]
-      @list[i] = tempVideos[i] for i in [0..(@list.length-1)]
-      render()
+      mapping = _.compact($("#sortable").sortable("toArray", {attribute: "id"}))
+      tempPlaylist = []
+      tempPlaylist[i] = @list[mapping[i]] for i in [0..(@list.length-1)]
+      @list[i] = tempPlaylist[i] for i in [0..(@list.length-1)]
+      window.Playlist.render()
+      index = _.findIndex @list, (chr) ->
+        return chr.id is window.Player.getVideoData().video_id
+      offset = $("#" + index).find('td:first').offset()
+      height = $("#" + index).height()
+      console.log offset, height
+      $ '.bar-container'
+        .css
+          'top': offset.top + 37 + height * 0.5
+          'left': offset.left - 10
+
 
   window.Playlist = new Playlist()
   window.Playlist.add 
@@ -208,11 +220,13 @@ jQuery ->
     id: "Kn8_wCGd80g"
     imgUrl: "https://i.ytimg.com/vi/Kn8_wCGd80g/default.jpg"
     date: "2015-06-16"
+    playing: 0
   window.Playlist.add
     title: "OMFG - Hello"
     id: "ih2xubMaZWI"
     imgUrl: "https://i.ytimg.com/vi/ih2xubMaZWI/default.jpg"
     date: "2014-12-25"
+    playling: 0
   
 
   window.Playlist.render()

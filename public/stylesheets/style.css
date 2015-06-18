@@ -188,31 +188,7 @@ body {
 }
 
 button.fixed-button {
-  color: #C10010;
   margin-top: 50px;
-  border-radius: 0 !important;
-  border-color: #C10010 !important;
-  background-color: rgba(0, 0, 0, 0) !important;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
-}
-
-button.fixed-button:hover {
-  color: #FFFFFF !important;
-  background-color: #C10010 !important;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
-}
-
-button.fixed-button:focus, button.fixed-button:active {
-  color: #C10010;
-  margin-top: 50px;
-  border-radius: 0 !important;
-  border-color: #C10010 !important;
-  background-color: rgba(0, 0, 0, 0) !important;
-  outline: none !important;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
 }
 
 button.square {
