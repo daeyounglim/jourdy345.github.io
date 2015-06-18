@@ -1,27 +1,48 @@
 jQuery ->
 
+  ## Local Storage
+  # window.setStyles = ->
+  #   videos = JSON.parse(localStorage.getItem('videos') or '[]')
+  #   for i in [0..videos.length-1]
+  #     window.Playlist.add(videos[i])
+  #   # window.Playlist.clear()
+
+  # window.populateStorage = ->
+  #   localStorage.setItem 'videos', JSON.stringify(window.Playlist.get())
+    # window.setStyles()
+
+  # playlistForm = document.getElementById('playlist')
+  # playlistForm.onchange = window.populateStorage
+  
+  # if Storage.length
+  #   window.setStyles()
+  # else
+  #  window.populateStorage()
+
   window.Player = undefined
   done = false
   $(document)
     .on 'keydown', (e) ->
       $active = $ '#playlist .item.active'
-      unless $('.form-control').is(':focus')
-        if $active.length
-          if e.keyCode is 8 or 46
-            $ '.forBackspace'
-              .focus()
-            $this = $active.first()
-            console.error '???'
-            window.Playlist.removeById($this.data 'video-id')
-            console.log $this.data 'video-id'
-            if $this.data 'video-id' is window.Player.getVideoData().video_id
-              $ '.bar-container'
-                .css
-                  'top': -9999
-                  'left': -9999
-              e.preventDefault()
-              e.stopPropagation()
-              return false
+      $this = $active.first()
+      if e.shiftKey
+        if e.keyCode is 8
+          if $this.attr('data-video-id') is window.Player.getVideoData().video_id
+            alert "Cannot delete currently running video."
+          else
+            window.Playlist.remove($this.attr('id'))
+            i = _.findIndex window.Playlist.get(), (chr) ->
+              return chr.id is window.Player.getVideoData().video_id
+            offset = $('#' + i).find('td:first').offset()
+            height = $('#' + i).height()
+            $ '.bar-container'
+              .css
+                'top': offset.top + 37 + height * 0.5
+                'left': offset.left - 10
+        return false
+      return true
+
+
  
   $ ->
     $('#sortable').sortable
@@ -110,8 +131,14 @@ jQuery ->
   ## Create a class to wrap all the functions needed when controlling the playlist
   class Playlist
     constructor: (@list) ->
-      unless @list
-        @list = []
+      # unless @list
+      #   @list = []
+      
+      @list = JSON.parse(localStorage.videos or '[]')
+      @render() if @list.length
+      # for video in videos
+      #   @add video
+    
     get: ->
       @list
 
@@ -121,6 +148,8 @@ jQuery ->
       #   title: '...'
       # }
       @list.push item
+      
+      localStorage.videos = JSON.stringify @list
 
     add_to_next: (item) ->
       @list.unshift item
@@ -153,6 +182,9 @@ jQuery ->
           .data 'video-id', item.id
         $playtemplate
           .attr 'id', index
+        $playtemplate
+          .attr 'data-video-id', item.id
+        
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $playtemplate.addClass 'item'
@@ -172,7 +204,7 @@ jQuery ->
           height = $this.height()
           window.Playlist.play $this.attr 'id'
       
-      window.ShuffledPlaylist = _.shuffle window.Playlist.get()
+      window.ShuffledPlaylist = _.shuffle @get()
 
     play: (i) ->
       for item in @list
@@ -187,15 +219,20 @@ jQuery ->
           'left': offset.left - 10
       window.Player.loadVideoById @list[i].id, 0, 'large'
 
-    removeById: (id) ->
-      index = _.findIndex @list, (chr) ->
-        return chr.id = id
-      delete @list[index]
+
+    remove: (i) ->
+      delete @list[i]
       @list = _.compact @list
       window.Playlist.render()
+    # removeById: (id) ->
+    #   index = _.findIndex @list, (chr) ->
+    #     return chr.id = id
+    #   delete @list[index]
+    #   @list = _.compact @list
+    #   window.Playlist.render()
   
-    shuffle: ->
-      true
+    clear: ->
+      @list = []
 
     remap: ->
       mapping = _.compact($("#sortable").sortable("toArray", {attribute: "id"}))
@@ -205,8 +242,8 @@ jQuery ->
       window.Playlist.render()
       index = _.findIndex @list, (chr) ->
         return chr.id is window.Player.getVideoData().video_id
-      offset = $("#" + index).find('td:first').offset()
-      height = $("#" + index).height()
+      offset = $('#'+index).find('td:first').offset()
+      height = $('#'+index).height()
       console.log offset, height
       $ '.bar-container'
         .css
@@ -215,21 +252,6 @@ jQuery ->
 
 
   window.Playlist = new Playlist()
-  window.Playlist.add 
-    title: "California Drought Is God’s Punishment For Abortion Laws"
-    id: "Kn8_wCGd80g"
-    imgUrl: "https://i.ytimg.com/vi/Kn8_wCGd80g/default.jpg"
-    date: "2015-06-16"
-    playing: 0
-  window.Playlist.add
-    title: "OMFG - Hello"
-    id: "ih2xubMaZWI"
-    imgUrl: "https://i.ytimg.com/vi/ih2xubMaZWI/default.jpg"
-    date: "2014-12-25"
-    playling: 0
-  
-
-  window.Playlist.render()
 
   Results = new Bloodhound 
     datumTokenizer: (d) ->

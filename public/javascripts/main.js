@@ -3,28 +3,29 @@ jQuery(function() {
   window.Player = void 0;
   done = false;
   $(document).on('keydown', function(e) {
-    var $active, $this;
+    var $active, $this, height, i, offset;
     $active = $('#playlist .item.active');
-    if (!$('.form-control').is(':focus')) {
-      if ($active.length) {
-        if (e.keyCode === 8 || 46) {
-          $('.forBackspace').focus();
-          $this = $active.first();
-          console.error('???');
-          window.Playlist.removeById($this.data('video-id'));
-          console.log($this.data('video-id'));
-          if ($this.data('video-id' === window.Player.getVideoData().video_id)) {
-            $('.bar-container').css({
-              'top': -9999,
-              'left': -9999
-            });
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-          }
+    $this = $active.first();
+    if (e.shiftKey) {
+      if (e.keyCode === 8) {
+        if ($this.attr('data-video-id') === window.Player.getVideoData().video_id) {
+          alert("Cannot delete currently running video.");
+        } else {
+          window.Playlist.remove($this.attr('id'));
+          i = _.findIndex(window.Playlist.get(), function(chr) {
+            return chr.id === window.Player.getVideoData().video_id;
+          });
+          offset = $('#' + i).find('td:first').offset();
+          height = $('#' + i).height();
+          $('.bar-container').css({
+            'top': offset.top + 37 + height * 0.5,
+            'left': offset.left - 10
+          });
         }
       }
+      return false;
     }
+    return true;
   });
   $(function() {
     $('#sortable').sortable({
@@ -115,8 +116,9 @@ jQuery(function() {
   Playlist = (function() {
     function Playlist(list) {
       this.list = list;
-      if (!this.list) {
-        this.list = [];
+      this.list = JSON.parse(localStorage.videos || '[]');
+      if (this.list.length) {
+        this.render();
       }
     }
 
@@ -125,7 +127,8 @@ jQuery(function() {
     };
 
     Playlist.prototype.add = function(item) {
-      return this.list.push(item);
+      this.list.push(item);
+      return localStorage.videos = JSON.stringify(this.list);
     };
 
     Playlist.prototype.add_to_next = function(item) {
@@ -162,6 +165,7 @@ jQuery(function() {
         $playtemplate.find('.playlist-date').html(item.date);
         $playtemplate.data('video-id', item.id);
         $playtemplate.attr('id', index);
+        $playtemplate.attr('data-video-id', item.id);
         $playtemplate.removeClass('play-template');
         $playtemplate.removeClass('hide');
         $playtemplate.addClass('item');
@@ -181,7 +185,7 @@ jQuery(function() {
         height = $this.height();
         return window.Playlist.play($this.attr('id'));
       });
-      return window.ShuffledPlaylist = _.shuffle(window.Playlist.get());
+      return window.ShuffledPlaylist = _.shuffle(this.get());
     };
 
     Playlist.prototype.play = function(i) {
@@ -202,18 +206,14 @@ jQuery(function() {
       return window.Player.loadVideoById(this.list[i].id, 0, 'large');
     };
 
-    Playlist.prototype.removeById = function(id) {
-      var index;
-      index = _.findIndex(this.list, function(chr) {
-        return chr.id = id;
-      });
-      delete this.list[index];
+    Playlist.prototype.remove = function(i) {
+      delete this.list[i];
       this.list = _.compact(this.list);
       return window.Playlist.render();
     };
 
-    Playlist.prototype.shuffle = function() {
-      return true;
+    Playlist.prototype.clear = function() {
+      return this.list = [];
     };
 
     Playlist.prototype.remap = function() {
@@ -232,8 +232,8 @@ jQuery(function() {
       index = _.findIndex(this.list, function(chr) {
         return chr.id === window.Player.getVideoData().video_id;
       });
-      offset = $("#" + index).find('td:first').offset();
-      height = $("#" + index).height();
+      offset = $('#' + index).find('td:first').offset();
+      height = $('#' + index).height();
       console.log(offset, height);
       return $('.bar-container').css({
         'top': offset.top + 37 + height * 0.5,
@@ -245,21 +245,6 @@ jQuery(function() {
 
   })();
   window.Playlist = new Playlist();
-  window.Playlist.add({
-    title: "California Drought Is God’s Punishment For Abortion Laws",
-    id: "Kn8_wCGd80g",
-    imgUrl: "https://i.ytimg.com/vi/Kn8_wCGd80g/default.jpg",
-    date: "2015-06-16",
-    playing: 0
-  });
-  window.Playlist.add({
-    title: "OMFG - Hello",
-    id: "ih2xubMaZWI",
-    imgUrl: "https://i.ytimg.com/vi/ih2xubMaZWI/default.jpg",
-    date: "2014-12-25",
-    playling: 0
-  });
-  window.Playlist.render();
   Results = new Bloodhound({
     datumTokenizer: function(d) {
       return Bloodhound.tokenizers.whitespace(d.title);
