@@ -58,3 +58,11 @@ I am currently working on a personalized youtube player after finding the origin
 * Korean / English tab
 * Create an audio version with a smaller YouTube video frame
 * Service intro page
+
+##June/18/2015
+###Done
+* Deletion bug fixed
+* Local Storage functionality added
+
+###Working on...
+* Server up
