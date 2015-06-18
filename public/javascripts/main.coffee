@@ -1,24 +1,4 @@
 jQuery ->
-
-  ## Local Storage
-  # window.setStyles = ->
-  #   videos = JSON.parse(localStorage.getItem('videos') or '[]')
-  #   for i in [0..videos.length-1]
-  #     window.Playlist.add(videos[i])
-  #   # window.Playlist.clear()
-
-  # window.populateStorage = ->
-  #   localStorage.setItem 'videos', JSON.stringify(window.Playlist.get())
-    # window.setStyles()
-
-  # playlistForm = document.getElementById('playlist')
-  # playlistForm.onchange = window.populateStorage
-  
-  # if Storage.length
-  #   window.setStyles()
-  # else
-  #  window.populateStorage()
-
   window.Player = undefined
   done = false
   $(document)
@@ -41,9 +21,6 @@ jQuery ->
                 'left': offset.left - 10
         return false
       return true
-
-
- 
   $ ->
     $('#sortable').sortable
       stop: (event, ui) ->
@@ -288,10 +265,6 @@ jQuery ->
       source: Results.ttAdapter()
       templates: 
         suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{title}} | {{date}}<strong></p>'
-        # suggestion: (data) ->
-        #   console.log '>>', data
-        #   return Handlebars.compile '<p><strong>{{title}} - {{id}}<strong></p>', data
-        # # suggestion: Handlebars.compile '<p><strong>{{title}} - {{id}}<strong></p>'
     .on 'typeahead:selected', (e, suggestion, name) ->
       console.log suggestion
       window.Playlist.add suggestion
