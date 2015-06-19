@@ -19,7 +19,7 @@ jQuery ->
               .css
                 'top': offset.top + 37 + height * 0.5
                 'left': offset.left - 10
-        return false
+        return true
       return true
   $ ->
     $('#sortable').sortable

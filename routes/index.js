@@ -7,44 +7,42 @@ router = express.Router();
 nodemailer = require('nodemailer');
 
 router.get('/', function(req, res, next) {
-  return res.render('index', {
+  return res.render('index.jade', {
     title: 'Express'
   });
 });
 
-router.get('/iframe', function(req, res) {
-  return res.render('iframe.jade');
-});
-
 router.post('/feedback', function(req, res) {
   var mailOptions, transporter;
-  return transporter = nodemailer.createTransport({
+  transporter = nodemailer.createTransport({
     service: 'iCloud',
     auth: {
-      user: 'jourdy345@me.com',
-      pass: 'iamDY123!'
+      user: "jourdy345@me.com",
+      pass: "iamDY123!"
     }
-  }, mailOptions = {
-    from: req.body.email,
-    to: "jourdy345@me.com",
-    subject: req.body.title,
-    text: req.body.body
-  }, transporter.sendMail(mailOptions, function(error, info) {
+  });
+  mailOptions = {
+    from: "jourdy345@me.com",
+    to: "jourdy345@gmail.com",
+    subject: "Feedback from Youtube Playlist",
+    text: req.body.content
+  };
+  return transporter.sendMail(mailOptions, function(error, info) {
     if (error) {
       console.log(error);
-      return res.redirect('/failure');
+      return res.redirect('/feedback/failure');
     }
     console.log("Message sent: " + info.response);
-    return res.redirect('/success');
-  }));
+    return res.redirect('/feedback/success');
+  });
 });
 
-router.get('/success', function(req, res) {
-  return res.send("We deeply appreciate your feedback.");
+router.get('/feedback/success', function(req, res) {
+  return res.render('feedback_success.jade');
 });
 
-router.get('/failure', function(req, res) {
-  return res.send("Message delivery failed");
+router.get('/feedback/failure', function(req, res) {
+  return res.render('feedback_failure.jade');
 });
 
 module.exports = router;

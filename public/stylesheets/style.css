@@ -290,3 +290,23 @@ button.square {
   left: 38px;
   bottom: 32px;
 }
+
+
+
+.feedback-container {
+  background-color: #EDEDED;
+}
+
+.feedback-container span.glyphicon {
+  font-size: 100px;
+  margin-top: 200px;
+}
+
+
+.feedback-container p {
+  font-size: 50px;
+}
+
+.feedback-container button {
+  margin-bottom: 100px;
+}

@@ -4,37 +4,34 @@ nodemailer = require 'nodemailer'
 
 ## GET home page.
 router.get '/', (req, res, next) -> 
-  res.render 'index', title: 'Express'
-
-router.get '/iframe', (req, res) ->
-  res.render 'iframe.jade'
+  res.render 'index.jade', title: 'Express'
 
 
 router.post '/feedback', (req, res) ->
   transporter = nodemailer.createTransport
     service: 'iCloud'
     auth:
-      user: 'jourdy345@me.com'
-      pass: 'iamDY123!'
+      user: "jourdy345@me.com"
+      pass: "iamDY123!"
 
-    mailOptions = 
-      from: req.body.email
-      to: "jourdy345@me.com"
-      subject: req.body.title
-      text: req.body.body
+  mailOptions = 
+    from: "jourdy345@me.com"
+    to: "jourdy345@gmail.com"
+    subject: "Feedback from Youtube Playlist"
+    text: req.body.content
 
-    transporter.sendMail mailOptions, (error, info) ->
-      if error
-        console.log error
-        return res.redirect '/failure'
-      console.log "Message sent: #{info.response}"
-      res.redirect '/success'
+  transporter.sendMail mailOptions, (error, info) ->
+    if error
+      console.log error
+      return res.redirect '/feedback/failure'
+    console.log "Message sent: #{info.response}"
+    res.redirect '/feedback/success'
 
-router.get '/success', (req, res) ->
-  res.send "We deeply appreciate your feedback."
+router.get '/feedback/success', (req, res) ->
+  res.render 'feedback_success.jade'
 
-router.get '/failure', (req, res) ->
-  res.send "Message delivery failed"
+router.get '/feedback/failure', (req, res) ->
+  res.render 'feedback_failure.jade'
 
 
 module.exports = router
