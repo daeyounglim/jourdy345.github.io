@@ -104,6 +104,11 @@ body {
   /*margin: 0 auto;*/
 }
 
+#playlist {
+  height: 700px;
+  overflow: auto;
+}
+
 #playlist table {
   text-align: justify;
 }
