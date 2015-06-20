@@ -17,16 +17,16 @@ block content
     .inside-navbar.pull-left
       .pull-left
         .row
-          .col-md-1
+          .col-md-1.col-sm-1.col.lg-1
             a.mainlogo(href='/'): span.icon-youtube-play
-          .col-md-6
+          .col-md-6.col-sm-6.col-lg-6
             .searchField.input-group.input-group-lg#bloodhound
               input.form-control.input-lg.typeahead(type='search' placeholder='Search here and add videos to Playlist just by pressing enter' aria-describedby='sizing-addon1') 
               span.input-group-btn
                 button.btn.btn-default.text-right.square
                   span.glyphicon.glyphicon-search
 
-          .col-md-5.text-right
+          .col-md-5.col-sm-5.col-lg-5.text-right
             .playlist-button
               button.btn.btn-xs.repeat-all Repeat all
               button.btn.btn-xs.repeat-one Repeat one
@@ -34,9 +34,9 @@ block content
 
   .body.container-youtube
     .row
-      .col-sm-8
+      .col-sm-8.col-md-8.col-lg-8
         #player
-      .col-sm-4
+      .col-sm-4.col-md-4.col-lg-4
         #playlist
           table.table.table-striped
             thead

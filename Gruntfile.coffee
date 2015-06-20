@@ -1,6 +1,19 @@
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
+    cssmin:
+      target:
+        files: [
+          expand: true
+          cwd: ''
+          src: [
+            'public/bower_components/typeahead.js-bootstrap3.less/*.css'
+            'public/stylesheets/*.css'
+            '!*.min.css'
+          ]
+          dest: '.'
+          ext: '.min.css'
+        ]
     uglify:
       my_target:
         files:
@@ -76,8 +89,10 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-shell'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
+  grunt.loadNpmTasks 'grunt-contrib-cssmin'
 
-  grunt.registerTask 'serve', ['coffee:dev', 'uglify:my_target', 'concurrent:dev']
+
+  grunt.registerTask 'serve', ['coffee:dev', 'uglify:my_target', 'cssmin:target', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """
