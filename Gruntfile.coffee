@@ -2,6 +2,12 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     # https://github.com/gruntjs/grunt-contrib-coffee
+    shell:
+      deploy:
+        command: """
+        ssh listify "cd ~/jourdy345.github.io/; . deploy.sh"
+        """
+        # ssh listify "source .bashrc; cd ~/jourdy345.github.io/; git pull; npm install; cd ./public/; bower install; cd ..; grunt coffee:dev; rs;"
     coffee:
       dev:
         expand: true
@@ -63,9 +69,10 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-nodemon'
   grunt.loadNpmTasks 'grunt-concurrent'
+  grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'serve', ['coffee:dev', 'concurrent:dev']
-
+  grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """
     Usage:
