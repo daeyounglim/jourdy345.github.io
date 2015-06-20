@@ -1,13 +1,17 @@
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
-    # https://github.com/gruntjs/grunt-contrib-coffee
+    uglify:
+      my_target:
+        files:
+          'public/javascripts/output.min.js': ['src/main.js']
     shell:
       deploy:
         command: """
         ssh listify "cd ~/jourdy345.github.io/;. deploy.sh"
         """
         # ssh listify "source .bashrc; cd ~/jourdy345.github.io/; git pull; npm install; cd ./public/; bower install; cd ..; grunt coffee:dev; rs;"
+    # https://github.com/gruntjs/grunt-contrib-coffee
     coffee:
       dev:
         expand: true
@@ -17,6 +21,7 @@ module.exports = (grunt) ->
           '!Gruntfile.coffee'
           'routes/*.coffee'
           'public/**/*.coffee'
+          'src/**/*.coffee'
           'models/*.coffee'
         ]
         dest: '.'
@@ -70,8 +75,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-nodemon'
   grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-shell'
+  grunt.loadNpmTasks 'grunt-contrib-uglify'
 
-  grunt.registerTask 'serve', ['coffee:dev', 'concurrent:dev']
+  grunt.registerTask 'serve', ['coffee:dev', 'uglify:my_target', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """
