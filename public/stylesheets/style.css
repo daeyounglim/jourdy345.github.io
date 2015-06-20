@@ -310,3 +310,28 @@ button.square {
 .feedback-container button {
   margin-bottom: 100px;
 }
+
+
+
+.btn-success{
+  color:#C10010 !important;
+  background-color: rgba(0, 0, 0, 0) !important;
+  border-color:#C10010 !important;
+  border-radius: 0 !important;
+}
+
+  .btn-success.active,.btn-success.focus,.btn-success:active,.btn-success:focus,.btn-success:hover,.open>.dropdown-toggle.btn-success{
+  color:#FFFFFF !important;
+  background-color: #C10010 !important;
+  border-color: #C10010 !important;
+  outline: none !important;
+}
+
+  .btn-success.active,.btn-success:active,.open>.dropdown-toggle.btn-success{
+  background-image:none !important;
+  outline: none !important;
+}
+
+
+
+

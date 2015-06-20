@@ -53,23 +53,19 @@ jQuery(function() {
     if (event.data === YT.PlayerState.ENDED) {
       if ($('.playlist-button .repeat-all').hasClass('button-active')) {
         if (window.Player.getVideoData().video_id === window.Playlist.get()[window.Playlist.get().length - 1].id) {
-          console.log('from repeat-all');
           return window.Playlist.play(0);
         } else {
           currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
             return chr.id === window.Player.getVideoData().video_id;
           });
-          console.log('>>', currentVideoIndex);
           return window.Playlist.play(currentVideoIndex + 1);
         }
       } else if ($('.playlist-button .repeat-one').hasClass('button-active')) {
-        console.log('from repeat-one');
         currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
           return chr.id === window.Player.getVideoData().video_id;
         });
         return window.Playlist.play(currentVideoIndex);
       } else if ($('.playlist-button .shuffle').hasClass('button-active')) {
-        console.log('from shuffle');
         currentVideoIndex = _.findIndex(window.ShuffledPlaylist, function(chr) {
           return chr.id === window.Player.getVideoData().video_id;
         });
@@ -86,11 +82,9 @@ jQuery(function() {
           return window.Playlist.play(i);
         }
       } else {
-        console.log('from no nothing');
         currentVideoIndex = _.findIndex(window.Playlist.get(), function(chr) {
           return chr.id === window.Player.getVideoData().video_id;
         });
-        console.log('>>', currentVideoIndex);
         return window.Playlist.play(currentVideoIndex + 1);
       }
     }
@@ -99,7 +93,6 @@ jQuery(function() {
     window.Player.stopVideo();
   };
   window.onYouTubeIframeAPIReady = function() {
-    console.log('CALL');
     window.Player = new YT.Player('player', {
       height: '631.8',
       width: '1036.8',
@@ -142,7 +135,6 @@ jQuery(function() {
         each = ref[j];
         templist = JSON.stringify(this.list, null, '  ');
         if (templist.match(item.id)) {
-          console.log('from check !!' + item.id);
           return true;
         }
         return false;
@@ -159,7 +151,6 @@ jQuery(function() {
         index = _.findIndex(this.list, function(chr) {
           return chr.id === item.id;
         });
-        console.log(index);
         $playtemplate = $('#playlist .play-template').clone();
         $playtemplate.find('.playlist-title').html(item.title);
         $playtemplate.find('.playlist-date').html(item.date);
@@ -170,8 +161,6 @@ jQuery(function() {
         $playtemplate.removeClass('hide');
         $playtemplate.addClass('item');
         $('#playlist tbody').append($playtemplate);
-        console.log('from render ' + this.list);
-        console.log($playtemplate.data('video-id'));
       }
       $('#playlist .item').on('click', function(e) {
         var $this;
@@ -198,7 +187,6 @@ jQuery(function() {
       this.list[i].playing = 1;
       offset = $("#" + i).find('td:first').offset();
       height = $("#" + i).height();
-      console.log(offset, height);
       $('.bar-container').css({
         'top': offset.top + 37 + height * 0.5,
         'left': offset.left - 10
@@ -234,7 +222,6 @@ jQuery(function() {
       });
       offset = $('#' + index).find('td:first').offset();
       height = $('#' + index).height();
-      console.log(offset, height);
       return $('.bar-container').css({
         'top': offset.top + 37 + height * 0.5,
         'left': offset.left - 10
@@ -287,7 +274,6 @@ jQuery(function() {
       suggestion: Handlebars.compile('<img src="{{imgUrl}}" /><p><strong>{{title}} | {{date}}<strong></p>')
     }
   }).on('typeahead:selected', function(e, suggestion, name) {
-    console.log(suggestion);
     window.Playlist.add(suggestion);
     return window.Playlist.render();
   });
