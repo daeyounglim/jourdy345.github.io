@@ -5,7 +5,7 @@ module.exports = (grunt) ->
     shell:
       deploy:
         command: """
-        ssh listify "cd ~/jourdy345.github.io/; . deploy.sh"
+        ssh listify "cd ~/jourdy345.github.io/;. deploy.sh"
         """
         # ssh listify "source .bashrc; cd ~/jourdy345.github.io/; git pull; npm install; cd ./public/; bower install; cd ..; grunt coffee:dev; rs;"
     coffee:
