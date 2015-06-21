@@ -188,6 +188,10 @@ jQuery ->
       delete @list[i]
       @list = _.compact @list
       window.Playlist.render()
+      $ '.bar-container'
+        .css
+          'top': -9999
+          'left': -9999
       localStorage.videos = JSON.stringify @list
   
     clear: ->
