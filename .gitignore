@@ -1,3 +1,4 @@
 node_modules
 *.js
 bower_components
+public/stylesheets/style.min.css
