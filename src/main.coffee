@@ -188,15 +188,12 @@ jQuery ->
       delete @list[i]
       @list = _.compact @list
       window.Playlist.render()
-    # removeById: (id) ->
-    #   index = _.findIndex @list, (chr) ->
-    #     return chr.id = id
-    #   delete @list[index]
-    #   @list = _.compact @list
-    #   window.Playlist.render()
+      localStorage.videos = JSON.stringify @list
   
     clear: ->
       @list = []
+      @render()
+      localStorage.videos = JSON.stringify @list
 
     remap: ->
       mapping = _.compact($("#sortable").sortable("toArray", {attribute: "id"}))
@@ -255,3 +252,11 @@ jQuery ->
       window.Playlist.add suggestion
       window.Playlist.render()
 
+  $ '.delete-all'
+    .on 'click', (e) ->
+      if confirm 'This cannot be undone. Do you want to proceed?'
+        window.Playlist.clear()
+        return true
+      else
+        e.preventDefault()
+        return false
