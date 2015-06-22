@@ -24,28 +24,17 @@ html
                     span(aria-hidden='true') &times;
                   h4.modal-title(id='myModalLabel') Let us hear what you have to say!
                 .modal-body
-                  //- .form-group
-                  //-   label.col-sm-2.control-label(for='inputEmail3') Email
-                  //-   .col-sm-10
-                  //-     input#inputEmail3.form-control(name='email', type='email', placeholder='youremail@domain.com')
-                  //- .form-group
-                  //-   label.col-sm-2.control-label(for='inputTitle') Subject
-                  //-   .col-sm-10
-                  //-     input#inputTitle.form-control(name='title',type='text', placeholder='Subject')
                   .form-group
                     label.col-sm-2.control-label(for='inputBody') Content
                     .col-sm-10
                       textarea#inputBody.form-control(name='content', type='text', rows= '10', placeholder='Please write your opinion here')
-                  //- .form-group
-                  //-   .col-sm-offset-2.col-sm-10
-                  //-     button.btn.btn-default(type='submit') Send
                   .modal-footer
                     button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
                     button.btn.btn-success.square(type='submit') Send
 
         .subcontent
           .row
-            .col-sm-6
+            .col-sm-6.col-md-6
               .subcontent-left
                 h1.subcontent-left-h1 How to use this
                 ul.multiline
@@ -57,7 +46,7 @@ html
                   li <strong>Reorder: </strong> Just drag and drop the item you wish to reorder.
                 h3.subcontent-left-h3 It's as simple as this.
 
-            .col-sm-6
+            .col-sm-6.col-md-6
               .subcontent-right
                 h1.subcontent-right-h1.multiline.
                   Your feedback is

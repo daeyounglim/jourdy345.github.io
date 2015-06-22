@@ -187,7 +187,7 @@ jQuery ->
     remove: (i) ->
       delete @list[i]
       @list = _.compact @list
-      window.Playlist.render()
+      @render()
       localStorage.videos = JSON.stringify @list
   
     clear: ->
@@ -264,3 +264,33 @@ jQuery ->
       else
         e.preventDefault()
         return false
+
+  $ '.btn-related-videos'
+    .on 'click', (e) ->
+      currentVideoId = window.Player.getVideoData().video_id
+      $.ajax
+        url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=' + currentVideoId
+        type: 'post'
+        success: (d, s, x) ->
+          if x.status isnt 200
+            return 'Error'
+          for item in d.items
+            $template = $('.related-template').clone()
+            $template
+              .find '.related-img'
+              .attr src, item.thumbnails.default.url
+            $template
+              .find '.related-title'
+              .html item.snippet.title
+            $template
+              .find '.related-description'
+              .html item.snippet.description
+            
+        error: (x, s, d) ->
+
+
+
+
+### Getting the related videos with the VideoId
+  https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=Gd5PEdHWkS4
+###

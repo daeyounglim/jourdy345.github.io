@@ -9,6 +9,22 @@ block content
 
     ga('create', 'UA-64280553-1', 'auto');
     ga('send', 'pageview');
+      // Button trigger modal
+  #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') ×
+          h4#myModalLabel.modal-title Related Videos
+        .modal-body
+          .related-template
+            img.related-img(src='')
+            p.related-title
+            p.related-description
+        .modal-footer
+          button.btn.btn-default(type='button', data-dismiss='modal') Close
+            button.btn.btn-primary(type='button') Save changes
   .bar-container
     div
     div
@@ -17,16 +33,16 @@ block content
     .inside-navbar.pull-left
       .pull-left
         .row
-          .col-md-1
+          .col-sm-1.col-md-1.col-lg-1
             a.mainlogo(href='/'): span.icon-youtube-play
-          .col-md-6
+          .col-sm-9.col-md-6.col-lg-6
             .searchField.input-group.input-group-lg#bloodhound
               input.form-control.input-lg.typeahead(type='search' placeholder='Search here and add videos to Playlist just by pressing enter' aria-describedby='sizing-addon1') 
               span.input-group-btn
                 button.btn.btn-default.text-right.square
                   span.glyphicon.glyphicon-search
 
-          .col-md-5.text-right
+          .col-sm-2.col-md-5.col-lg-5.text-right
             .playlist-button
               button.btn.btn-xs.repeat-all Repeat all
               button.btn.btn-xs.repeat-one Repeat one
@@ -34,9 +50,11 @@ block content
 
   .body.container-youtube
     .row
-      .col-sm-8
+      .col-xs-12.col-sm-6.col-md-9
         #player
-      .col-sm-4
+        button.btn.btn-success.btn-related-videos.pull-right(type='button', data-toggle='modal', data-target='#myModal')
+          span.glyphicon.glyphicon-plus
+      .col-xs-12.col-sm-6.col-md-3
         #playlist
           table.table.table-striped
             thead
