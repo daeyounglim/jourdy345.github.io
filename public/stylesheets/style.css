@@ -351,3 +351,8 @@ p.related-title {
   font-weight: 900;
   font-size: 15px;
 }
+
+.related-item:hover {
+  background-color: #F8F8F8;
+  cursor: pointer;
+}

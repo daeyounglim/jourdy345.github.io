@@ -65,20 +65,14 @@ jQuery ->
           i = _.findIndex window.Playlist.get(), (chr) ->
             return chr.id is window.ShuffledPlaylist[0].id
           window.Playlist.play i
-            # videoId: window.ShuffledPlaylist[0].id
-            # suggestedQuality: 'large'
         else
           window.ShuffledPlaylist = _.shuffle window.Playlist.get()
           i = Math.floor(Math.random()*window.Playlist.get().length)
           window.Playlist.play i
-            # videoId: window.Playlist.get()[i].id
-            # suggestedQuality: 'large'
       else
         currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
           return chr.id is window.Player.getVideoData().video_id
         window.Playlist.play currentVideoIndex+1
-          # videoId: window.Playlist.get()[currentVideoIndex + 1].id
-          # suggestedQuality: 'large'
 
 
   stopVideo = ->
@@ -245,7 +239,6 @@ jQuery ->
       highlight: true
     , 
       name: 'searchYoutube'
-      # displayKey: 'subtitle'
       minLength: 1
       highlight: true
       valueKey: 'name'
@@ -273,7 +266,6 @@ jQuery ->
           url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=50&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=' + currentVideoId
           method: 'get'
           success: (d, s, x) ->
-            console.log d
             for item in d.items
               $template = $('.related-template').clone()
               $template
@@ -290,6 +282,8 @@ jQuery ->
               $template
                 .attr 'data-video-id', item.id.videoId
               $template
+                .data 'video-title', item.snippet.title
+              $template
                 .addClass 'related-item'
               $template
                 .removeClass 'hide'
@@ -297,6 +291,13 @@ jQuery ->
                 .removeClass 'related-template'
               $ '#myrelatedModal .related-body'
                 .append $template
+            $ '.related-item'
+              .on 'click', (e) ->
+                $this = $ this
+                window.Playlist.add
+                  id: $this.data 'video-id'
+                  title: $this.data 'video-title'
+                window.Playlist.render()
             true  
           error: (x, s, d) ->
             alert x.status
