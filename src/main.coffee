@@ -284,6 +284,8 @@ jQuery ->
               $template
                 .data 'video-title', item.snippet.title
               $template
+                .data 'video-date', item.snippet.publishedAt[0..9]
+              $template
                 .addClass 'related-item'
               $template
                 .removeClass 'hide'
@@ -297,6 +299,7 @@ jQuery ->
                 window.Playlist.add
                   id: $this.data 'video-id'
                   title: $this.data 'video-title'
+                  date: $this.data 'video-date'
                 window.Playlist.render()
             true  
           error: (x, s, d) ->
