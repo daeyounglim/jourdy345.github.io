@@ -10,7 +10,7 @@ block content
     ga('create', 'UA-64280553-1', 'auto');
     ga('send', 'pageview');
       // Button trigger modal
-  #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
+  #myrelatedModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
     .modal-dialog(role='document')
       .modal-content
         .modal-header
@@ -50,11 +50,11 @@ block content
 
   .body.container-youtube
     .row
-      .col-xs-12.col-sm-6.col-md-9
+      .col-xs-12.col-sm-12.col-md-8
         #player
-        button.btn.btn-success.btn-related-videos.pull-right(type='button', data-toggle='modal', data-target='#myModal')
+        button.btn.btn-success.btn-related-videos.pull-right(type='button', data-toggle='modal', data-target='#myrelatedModal')
           span.glyphicon.glyphicon-plus
-      .col-xs-12.col-sm-6.col-md-3
+      .col-xs-12.col-sm-12.col-md-4
         #playlist
           table.table.table-striped
             thead

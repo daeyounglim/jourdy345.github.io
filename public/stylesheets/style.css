@@ -337,3 +337,17 @@ button.square {
 .btn-related-videos {
   margin-right: 34px;
 }
+
+.related-item {
+  border-bottom: solid 1px #DFDFDF;
+  padding: 10px;
+}
+
+.related-item:last-child {
+  border-bottom: none;
+}
+
+p.related-title {
+  font-weight: 900;
+  font-size: 15px;
+}

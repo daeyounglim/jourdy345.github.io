@@ -268,36 +268,42 @@ jQuery ->
   $ '.btn-related-videos'
     .on 'click', (e) ->
       currentVideoId = window.Player.getVideoData().video_id
-      $.ajax
-        url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=' + currentVideoId
-        type: 'post'
-        success: (d, s, x) ->
-          console.log d
-          for item in d.items
-            $template = $('.related-template').clone()
-            $template
-              .find '.related-img'
-              .attr src, item.thumbnails.default.url
-            $template
-              .find '.related-title'
-              .html item.snippet.title
-            $template
-              .find '.related-description'
-              .html item.snippet.description
-            $template
-              .data 'video-id', item.id.videoId
-            $template
-              .attr 'data-video-id', item.id.videoId
-            $template
-              .addClass 'relatedItem'
-            $template
-              .removeClass 'hide'
-            $template
-              .removeClass 'related-template'
-            $ '#myModal .related-body'
-              .append $template
-          true  
-        error: (x, s, d) ->
-          alert x.status
-          alert d
-          false
+      if currentVideoId
+        $.ajax
+          url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=50&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=' + currentVideoId
+          method: 'get'
+          success: (d, s, x) ->
+            console.log d
+            for item in d.items
+              $template = $('.related-template').clone()
+              $template
+                .find '.related-img'
+                .attr 'src', item.snippet.thumbnails.default.url
+              $template
+                .find '.related-title'
+                .html item.snippet.title
+              $template
+                .find '.related-description'
+                .html item.snippet.description
+              $template
+                .data 'video-id', item.id.videoId
+              $template
+                .attr 'data-video-id', item.id.videoId
+              $template
+                .addClass 'related-item'
+              $template
+                .removeClass 'hide'
+              $template
+                .removeClass 'related-template'
+              $ '#myrelatedModal .related-body'
+                .append $template
+            true  
+          error: (x, s, d) ->
+            alert x.status
+            e.preventDefault()
+            e.stopPropagation()
+            false
+      else
+        e.preventDefault()
+        e.stopPropagation()
+        alert 'No running video.'
