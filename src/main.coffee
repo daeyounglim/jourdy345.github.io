@@ -272,8 +272,7 @@ jQuery ->
         url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=' + currentVideoId
         type: 'post'
         success: (d, s, x) ->
-          if x.status isnt 200
-            return 'Error'
+          console.log d
           for item in d.items
             $template = $('.related-template').clone()
             $template
@@ -285,12 +284,20 @@ jQuery ->
             $template
               .find '.related-description'
               .html item.snippet.description
-            
+            $template
+              .data 'video-id', item.id.videoId
+            $template
+              .attr 'data-video-id', item.id.videoId
+            $template
+              .addClass 'relatedItem'
+            $template
+              .removeClass 'hide'
+            $template
+              .removeClass 'related-template'
+            $ '#myModal .related-body'
+              .append $template
+          true  
         error: (x, s, d) ->
-
-
-
-
-### Getting the related videos with the VideoId
-  https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM&relatedToVideoId=Gd5PEdHWkS4
-###
+          alert x.status
+          alert d
+          false

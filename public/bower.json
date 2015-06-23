@@ -16,7 +16,9 @@
     "lodash": "~3.9.3",
     "typeahead.js-bootstrap3.less": "~0.2.3",
     "handlebars": "~3.0.3",
-    "typeahead.js": "0.10.5"
+    "typeahead.js": "0.10.5",
+    "messenger": "~1.4.1",
+    "offline.js": "~1.0.1"
   },
   "resolutions": {
     "bootstrap": "~3.3.4",
