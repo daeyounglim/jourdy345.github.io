@@ -3,23 +3,52 @@ jQuery ->
     theme: 'air'
     extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right'
   }
-  rv = -1 ## Return value assumes failure.
-  if navigator.appName is 'Microsoft Internet Explorer'
-    ua = navigator.userAgent
-    re  = new RegExp "MSIE ([0-9]{1,}[\.0-9]{0,})"
-    if re.exec ua  isnt null
-      rv = parseFloat RegExp.$1
+  BrowserDetect = 
+    init: ->
+        @browser = @searchString(@dataBrowser) or "Other";
+        @version = @searchVersion(navigator.userAgent) or @searchVersion(navigator.appVersion) or "Unknown";
+
+    searchString: (data) -> 
+        for datum in data
+            dataString = datum.string
+            @versionSearchString = datum.subString
+
+            if dataString.indexOf(datum.subString) isnt -1
+                return datum.identity
+    
+    searchVersion: (dataString) ->
+        index = dataString.indexOf @versionSearchString
+        if index is -1
+          return
+
+        rv = dataString.indexOf "rv:"
+        if @versionSearchString is "Trident" and rv isnt -1
+            return parseFloat dataString.substring rv + 3
+        else
+          return parseFloat dataString.substring(index + @versionSearchString.length + 1)
   
-  if rv > -1
+
+    dataBrowser: [
+        {string: navigator.userAgent, subString: "Chrome", identity: "Chrome"},
+        {string: navigator.userAgent, subString: "MSIE", identity: "Explorer"},
+        {string: navigator.userAgent, subString: "Trident", identity: "Explorer"},
+        {string: navigator.userAgent, subString: "Firefox", identity: "Firefox"},
+        {string: navigator.userAgent, subString: "Safari", identity: "Safari"},
+        {string: navigator.userAgent, subString: "Opera", identity: "Opera"}
+    ]
+    
+  BrowserDetect.init()
+  if BrowserDetect.browser is 'Explorer'
     Messenger().post
-      message: 'I\'m sorry but some features might be restricted on Internet Explorer.'
+      message: 'Oh! I\'m sorry but features are limited on Internet Explorer.'
       type: 'error'
       showCloseButton: true
   else
     Messenger().post
-      message: 'It\'s good to see you not on Internet Explorer!'
+      message: 'Good to see you off Internet Explorer!'
       type: 'info'
       showCloseButton: true
+
 
   window.Player = undefined
   done = false
