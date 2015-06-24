@@ -8,6 +8,7 @@ module.exports = (grunt) ->
           cwd: ''
           src: [
             'public/bower_components/typeahead.js-bootstrap3.less/*.css'
+            'public/bower_components/offline/themes/*.css'
             'public/stylesheets/*.css'
             '!*.min.css'
           ]

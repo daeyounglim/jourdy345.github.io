@@ -18,7 +18,7 @@
     "handlebars": "~3.0.3",
     "typeahead.js": "0.10.5",
     "messenger": "~1.4.1",
-    "offline.js": "~1.0.1"
+    "offline": "~0.7.11"
   },
   "resolutions": {
     "bootstrap": "~3.3.4",
