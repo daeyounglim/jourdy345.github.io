@@ -8,7 +8,10 @@ module.exports = (grunt) ->
           cwd: ''
           src: [
             'public/bower_components/typeahead.js-bootstrap3.less/*.css'
-            'public/bower_components/offline/themes/*.css'
+            'public/bower_components/offline/themes/offline-language-english.css'
+            'public/bower_components/offline/themes/offline-theme-dark.css'
+            'public/bower_components/messenger/build/css/messenger-theme-air.css'
+            'public/bower_components/messenger/build/css/messenger.css'
             'public/stylesheets/*.css'
             '!*.min.css'
           ]
@@ -19,6 +22,7 @@ module.exports = (grunt) ->
       my_target:
         files:
           'public/javascripts/output.min.js': ['src/main.js']
+          'public/javascripts/output2.min.js': ['public/bower_components/messenger/build/js/messenger-theme-flat.js']
     shell:
       deploy:
         command: """

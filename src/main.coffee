@@ -1,4 +1,26 @@
 jQuery ->
+  Messenger.options = {
+    theme: 'air'
+    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right'
+  }
+  rv = -1 ## Return value assumes failure.
+  if navigator.appName is 'Microsoft Internet Explorer'
+    ua = navigator.userAgent
+    re  = new RegExp "MSIE ([0-9]{1,}[\.0-9]{0,})"
+    if re.exec ua  isnt null
+      rv = parseFloat RegExp.$1
+  
+  if rv > -1
+    Messenger().post
+      message: 'I\'m sorry but some features might be restricted on Internet Explorer.'
+      type: 'error'
+      showCloseButton: true
+  else
+    Messenger().post
+      message: 'It\'s good to see you not on Internet Explorer!'
+      type: 'info'
+      showCloseButton: true
+
   window.Player = undefined
   done = false
   $(document)
@@ -251,12 +273,17 @@ jQuery ->
 
   $ '.delete-all'
     .on 'click', (e) ->
-      if confirm 'This cannot be undone. Do you want to proceed?'
-        window.Playlist.clear()
-        return true
-      else
-        e.preventDefault()
-        return false
+      msg = Messenger().post
+        message: 'This cannot be undone. Do you want to proceed?'
+        actions:
+          delete:
+            label: "Delete"
+            action: ->
+              window.Playlist.clear()
+              msg.hide()
+          cancel:
+            action: ->
+              msg.hide()
 
   $ '.btn-related-videos'
     .on 'click', (e) ->
