@@ -1,16 +1,7 @@
 express = require 'express'
 router = express.Router()
 nodemailer = require 'nodemailer'
-Mariasql = require 'mariasql'
-connection = new Mariasql()
-connection.connect
-  host: 'localhost'
-  user: 'root'
-  password: '024160'
-  db: 'IDPW'
-
-
-module.exports = connection
+connection = require('../db/db').connection
 
 ## GET home page.
 router.get '/', (req, res, next) -> 
@@ -51,16 +42,19 @@ router.get '/signup', (req, res) ->
 
 ## POST signup / STORE User ID/PW
 router.post '/signup', (req, res) ->
-  console.log req.body.UserAccount, req.body.UserPassword
-  query = connection.query 'INSERT INTO Id_Password SET id = #{req.body.UserAccount}, password = #{req.body.UserPassword};'
-  query.on 'result', (result) ->
-    console.log result
-  query.on 'error', (err) ->
-    console.log err
-  query.on 'fields', (fields) ->
-    console.log fields
+  post = {UserId: req.body.UserAccount, UserPassword: req.body.UserPassword}
+  connection.connect (err) ->
+    console.log('error connection: ' + err.stack) if err
+    return true
+    console.log 'connected as id'
+  connection.query 'INSERT INTO Users SET ?', post, (error, results, fields) ->
+    console.log error, results, fields
   connection.end()
   res.redirect '/'
+
+
+
+
 module.exports = router
 
 

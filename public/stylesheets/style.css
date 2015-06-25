@@ -1,5 +1,4 @@
 body {
- 
   font: 14px 'Open Sans', Arial, sans-serif !important;
   background-color: #FEFEFE !important;
 }
@@ -167,12 +166,15 @@ body {
 }
 
 .subcontent-left ul li:first-child {
-  margin-top: 0px;
+  margin-top: 20px;
 }
 
 .subcontent-left-h3 {
   margin-top: 30px;
-  
+}
+
+.subcontent-left-h1, .subcontent-right-h1 {
+  font-weight: 600;
 }
 
 .subcontent-right-h1 {
@@ -364,8 +366,17 @@ p.related-description {
 
 .sign-up-title {
   margin-top: 100px;
+  font-weight: 600;
+  font-size: 45px;
 }
 
+.sign-up-body {
+  font-weight: 600;
+}
+
+.sign-up-body2 {
+  line-height: 40px;
+}
 .sign-up-container {
   margin-top: 100px;
 }

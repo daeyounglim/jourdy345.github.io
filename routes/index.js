@@ -1,4 +1,4 @@
-var Mariasql, connection, express, nodemailer, router;
+var connection, express, nodemailer, router;
 
 express = require('express');
 
@@ -6,18 +6,7 @@ router = express.Router();
 
 nodemailer = require('nodemailer');
 
-Mariasql = require('mariasql');
-
-connection = new Mariasql();
-
-connection.connect({
-  host: 'localhost',
-  user: 'root',
-  password: '024160',
-  db: 'IDPW'
-});
-
-module.exports = connection;
+connection = require('../db/db').connection;
 
 router.get('/', function(req, res, next) {
   return res.render('index.jade', {
@@ -63,17 +52,20 @@ router.get('/signup', function(req, res) {
 });
 
 router.post('/signup', function(req, res) {
-  var query;
-  console.log(req.body.UserAccount, req.body.UserPassword);
-  query = connection.query('INSERT INTO Id_Password SET id = #{req.body.UserAccount}, password = #{req.body.UserPassword};');
-  query.on('result', function(result) {
-    return console.log(result);
+  var post;
+  post = {
+    UserId: req.body.UserAccount,
+    UserPassword: req.body.UserPassword
+  };
+  connection.connect(function(err) {
+    if (err) {
+      console.log('error connection: ' + err.stack);
+    }
+    return true;
+    return console.log('connected as id');
   });
-  query.on('error', function(err) {
-    return console.log(err);
-  });
-  query.on('fields', function(fields) {
-    return console.log(fields);
+  connection.query('INSERT INTO Users SET ?', post, function(error, results, fields) {
+    return console.log(error, results, fields);
   });
   connection.end();
   return res.redirect('/');

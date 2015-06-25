@@ -71,3 +71,72 @@ block content
       .col-sm-10
       .col-sm-2.text-right
         button.btn.btn-default.btn-xs.delete-all Delete all
+
+block subcontent
+  nav.navbar.navbar-default.navbar-static-bottom.subcontent-nav
+    .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          form.form-horizontal(action='/signin', method='post')
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span(aria-hidden='true') &times;
+              h4.modal-title(id='myModalLabel') Sign in
+            .modal-body
+              .form-group
+                label.col-sm-2.control-label(for='UserID') User ID
+                .col-sm-10
+                  input#UserID.form-control(name='UserID', type='text')
+              .form-group
+                label.col-sm-2.control-label(for='UserPassword') Password
+                .col-sm-10
+                  input#UserPassword.form-control(name='UserPassword', type='password')
+              .modal-footer
+                .col-md-6
+                .col-md-6
+                  a.signup-link(href='/signup'): p.text-warning Don't have an account? Sign up now!
+                  button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
+                  button.btn.btn-success.square(type='submit') Sign in
+    .modal.fade#myModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          form.form-horizontal(action='/feedback', method='post')
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span(aria-hidden='true') &times;
+              h4.modal-title(id='myModalLabel') Let us hear what you have to say!
+            .modal-body
+              .form-group
+                label.col-sm-2.control-label(for='inputBody') Content
+                .col-sm-10
+                  textarea#inputBody.form-control(name='content', type='text', rows= '10', placeholder='Please write your opinion here')
+              .modal-footer
+                button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
+                button.btn.btn-success.square(type='submit') Send
+
+    .container.subcontent
+      .row
+        .col-sm-12.col-md-6
+          .subcontent-left
+            h1.subcontent-left-h1 How to use this
+            ul.multiline
+              li <strong>Search: </strong> Type in the search bar.
+              li <strong>Add: </strong> Once the drop-down appears, click the video you want.
+              li <strong>Play: </strong> Double-click the video in the Playlist and it will start immediately.
+              li
+                | <strong>Delete: </strong> Click the item in the Playlist and press Shift + Delete.
+              li <strong>Reorder: </strong> Just drag and drop the item you wish to reorder.
+              li <strong>Related videos: </strong> Click the Plus sign.
+            h3.subcontent-left-h3 It's as simple as this.
+
+        .col-sm-12.col-md-6
+          .subcontent-right
+            h1.subcontent-right-h1.multiline.
+              Your feedback is
+              what makes us better
+            button.center-block.fixed-button.btn.btn-success(type='button', data-toggle='modal', data-target="#myModal") Feedback
+      .row
+        .col-xs-12.col-sm-12.col-md-12.col-lg-12
+          .sign-in
+            if process.env.NODE_ENV !== 'production'
+              button.btn.btn-lg.btn-success.center-block(type='button', data-toggle='modal', data-target='#signinModal') Sign in
