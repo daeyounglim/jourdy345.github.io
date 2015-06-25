@@ -1,10 +1,23 @@
-var express, nodemailer, router;
+var Mariasql, connection, express, nodemailer, router;
 
 express = require('express');
 
 router = express.Router();
 
 nodemailer = require('nodemailer');
+
+Mariasql = require('mariasql');
+
+connection = new Mariasql();
+
+connection.connect({
+  host: 'localhost',
+  user: 'root',
+  password: '024160',
+  db: 'IDPW'
+});
+
+module.exports = connection;
 
 router.get('/', function(req, res, next) {
   return res.render('index.jade', {
@@ -43,6 +56,27 @@ router.get('/feedback/success', function(req, res) {
 
 router.get('/feedback/failure', function(req, res) {
   return res.render('feedback_failure.jade');
+});
+
+router.get('/signup', function(req, res) {
+  return res.render('signup.jade');
+});
+
+router.post('/signup', function(req, res) {
+  var query;
+  console.log(req.body.UserAccount, req.body.UserPassword);
+  query = connection.query('INSERT INTO Id_Password SET id = #{req.body.UserAccount}, password = #{req.body.UserPassword};');
+  query.on('result', function(result) {
+    return console.log(result);
+  });
+  query.on('error', function(err) {
+    return console.log(err);
+  });
+  query.on('fields', function(fields) {
+    return console.log(fields);
+  });
+  connection.end();
+  return res.redirect('/');
 });
 
 module.exports = router;

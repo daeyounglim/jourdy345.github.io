@@ -40,7 +40,7 @@ module.exports = (grunt) ->
           'routes/*.coffee'
           'public/**/*.coffee'
           'src/**/*.coffee'
-          'models/*.coffee'
+          'db/*.coffee'
         ]
         dest: '.'
         ext: '.js'
@@ -58,7 +58,7 @@ module.exports = (grunt) ->
       coffee:
         files: [
           '*.coffee'
-          # 'models/*.coffee'
+          'db/*.coffee'
           'routes/*.coffee'
           'public/**/*.coffee' 
         ]
@@ -94,10 +94,11 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-shell'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
+  grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-concurrent'
 
 
-  grunt.registerTask 'serve', ['coffee:dev', 'uglify:my_target', 'cssmin:target', 'concurrent:dev']
+  grunt.registerTask 'serve', ['coffee:dev', 'uglify:my_target', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """

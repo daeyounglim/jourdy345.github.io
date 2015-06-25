@@ -1,6 +1,7 @@
 body {
-  font: 14px Helvetica, Arial, sans-serif;
-  background-color: #FAFAFA !important;
+ 
+  font: 14px 'Open Sans', Arial, sans-serif !important;
+  background-color: #FEFEFE !important;
 }
 
 .mainlogo {
@@ -80,8 +81,8 @@ body {
 .form-control:focus {
   border-color: #C10010 !important;
   outline: 0;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3) !important;
+          box-shadow: inset 0 1px 2px rgba(0,0,0,0.3) !important;
 }
 
 * {
@@ -91,7 +92,7 @@ body {
 }
 .content-nav {
   margin: auto;
-  background-color: #FFFFFF !important;
+  /*background-color: #FFFFFF !important;*/
   color: #C10010;
 }
 
@@ -149,24 +150,19 @@ body {
   margin-bottom: 100px;
 }
 
-.subcontent-nav {
-  margin: auto;
-  background-color: #F0F0F0 !important;
-}
-
 .subcontent-left {
   width: 600px;
   display: block;
-  margin-left: 200px;
 }
-.subcontent-left-h1 {
+/*.subcontent-left-h1 {
   margin-left: 40px;
   margin-bottom: 30px;
-}
+}*/
 
 .subcontent-left ul li {
   font-size: 17px;
   margin-top: 10px;
+  margin-left: -38px;
   list-style: none;
 }
 
@@ -175,14 +171,8 @@ body {
 }
 
 .subcontent-left-h3 {
-  margin-left: 40px;
   margin-top: 30px;
   
-}
-
-.subcontent-right {
-  display: block;
-  margin-right: 200px;
 }
 
 .subcontent-right-h1 {
@@ -289,11 +279,6 @@ button.square {
 }
 
 
-
-.feedback-container {
-  background-color: #EDEDED;
-}
-
 .feedback-container span.glyphicon {
   font-size: 100px;
   margin-top: 200px;
@@ -339,7 +324,7 @@ button.square {
 }
 
 .related-item {
-  border-bottom: solid 1px #DFDFDF;
+  border-bottom: solid 2px #DFDFDF;
   padding: 10px;
 }
 
@@ -350,9 +335,41 @@ button.square {
 p.related-title {
   font-weight: 900;
   font-size: 15px;
+  margin-left: -40px;
+}
+
+p.related-description {
+  clear: both;
+  border-left: solid 3px #DFDFDF;
+  padding: 10px;
 }
 
 .related-item:hover {
   background-color: #F8F8F8;
   cursor: pointer;
+}
+
+.sign-in {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  background-color: #FFF;
+  margin-bottom: 200px;
+  margin-top: 200px;
+}
+
+.signup-link, .signup-link:hover, .signup-link:active, .signup-link:focus {
+  text-decoration: none;
+}
+
+.sign-up-title {
+  margin-top: 100px;
+}
+
+.sign-up-container {
+  margin-top: 100px;
+}
+
+.password-check {
+  color: #C10010;
 }

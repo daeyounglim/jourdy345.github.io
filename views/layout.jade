@@ -4,7 +4,7 @@ html
     meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no')
     title Youtube Player
-    link(rel='stylesheet', href='/stylesheets/style.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/stylesheets/offline.min.css')
     link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/bower_components/typeahead.js-bootstrap3.less/typeahead.min.css')
@@ -13,6 +13,7 @@ html
     link(rel='stylesheet', href='/bower_components/messenger/build/css/messenger-theme-air.min.css')
     link(rel='stylesheet', href='/bower_components/messenger/build/css/messenger.min.css')
     link(href="https://fontastic.s3.amazonaws.com/MQHkGRcDbNRHsc7j2GzZPF/icons.css" rel="stylesheet")
+    link(href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css')
   body
     
 
@@ -20,6 +21,29 @@ html
     hr
     block subcontent
       nav.navbar.navbar-default.navbar-static-bottom.subcontent-nav
+        .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog
+            .modal-content
+              form.form-horizontal(action='/signin', method='post')
+                .modal-header
+                  button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                  h4.modal-title(id='myModalLabel') Sign in
+                .modal-body
+                  .form-group
+                    label.col-sm-2.control-label(for='UserID') User ID
+                    .col-sm-10
+                      input#UserID.form-control(name='UserID', type='text')
+                  .form-group
+                    label.col-sm-2.control-label(for='UserPassword') Password
+                    .col-sm-10
+                      input#UserPassword.form-control(name='UserPassword', type='password')
+                  .modal-footer
+                    .col-md-6
+                    .col-md-6
+                      a.signup-link(href='/signup'): p.text-warning Don't have an account? Sign up now!
+                      button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
+                      button.btn.btn-success.square(type='submit') Sign in
         .modal.fade#myModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
           .modal-dialog
             .modal-content
@@ -37,7 +61,7 @@ html
                     button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
                     button.btn.btn-success.square(type='submit') Send
 
-        .subcontent
+        .container.subcontent
           .row
             .col-sm-12.col-md-6
               .subcontent-left
@@ -58,6 +82,10 @@ html
                   Your feedback is
                   what makes us better
                 button.center-block.fixed-button.btn.btn-success(type='button', data-toggle='modal', data-target="#myModal") Feedback
+          //- .row
+          //-   .col-xs-12.col-sm-12.col-md-12.col-lg-12
+          //-     .sign-in
+          //-       button.btn.btn-lg.btn-success.center-block(type='button', data-toggle='modal', data-target='#signinModal') Sign in
 
 
     //- Scripts

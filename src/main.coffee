@@ -367,3 +367,32 @@ jQuery ->
         e.preventDefault()
         e.stopPropagation()
         alert 'No running video.'
+
+
+
+  $ '#signinModal'
+    .on 'shown.bs.modal', (e) ->
+      $ '#signinModal #UserID'
+        .focus()
+
+
+  $ '#signup-ConfirmPassword'
+    .on 'keyup', (e) ->
+      $this = $ this
+      if $this.val() isnt $('.sign-up-container #signup-UserPassword').val()
+        $ '.password-check'
+          .removeClass 'hide'
+      else
+        $ '.password-check'
+          .addClass 'hide'
+
+  $ '.sign-up-container button'
+    .on 'click', (e) ->
+      if $('#signup-ConfirmPassword').val() isnt $('#signup-UserPassword').val()
+        e.preventDefault()
+        e.stopPropagation()
+        Messenger().post
+          message: 'Passwords do not match.'
+          type: 'error'
+          showCloseButton: true
+        $('#signup-ConfirmPassword').focus()
