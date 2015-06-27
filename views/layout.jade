@@ -7,7 +7,10 @@ html
     script(src="//use.typekit.net/ham3tya.js")
     script.
         try{Typekit.load();}catch(e){}
-    link(rel='stylesheet', href='/stylesheets/style.min.css')
+    if process.env.NODE_ENV === 'production'
+        link(rel='stylesheet', href='/stylesheets/style.min.css')
+    else
+        link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/stylesheets/offline.min.css')
     link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/bower_components/typeahead.js-bootstrap3.less/typeahead.min.css')

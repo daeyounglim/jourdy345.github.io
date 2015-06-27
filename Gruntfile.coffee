@@ -60,7 +60,6 @@ module.exports = (grunt) ->
           '*.coffee'
           'db/*.coffee'
           'routes/*.coffee'
-          'db/*.coffee'
           'public/**/*.coffee' 
         ]
         tasks: [
