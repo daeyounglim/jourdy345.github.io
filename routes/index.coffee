@@ -49,23 +49,23 @@ router.get '/logout', (req, res) ->
 #POST methods
 ## POST signin
 router.post '/signin', (req, res) ->
-  post = {UserId: req.body.UserAccount, UserPassword: req.body.UserPassword}
   connection.connect (err) ->
     console.log('error connection: ' + err.stack) if err
-    return true
-  connection.query "
-  SELECT * 
-  FROM Users
-  WHERE UserId = ?
-    AND UserPassword = ?
-  ", [req.body.UserAccount, req.body.UserPassword], (error, results, fields) ->
-    connection.end()
-    if results
-      req.session.user = results[0]
-      res.redirect '/'
-    else
-      req.session.error = 'Whoops! No match found!'
-      res.redirect '/'
+    connection.query "
+    SELECT * 
+    FROM Users
+    WHERE UserId = ?
+      AND UserPassword = ?
+    ", [req.body.UserAccount, req.body.UserPassword], (error, results, fields) ->
+      if results
+        req.session.user = results[0]
+        console.log results
+        connection.end()
+        return res.redirect '/'
+      else
+        req.session.error = 'Whoops! No match found!'
+        connection.end()
+        return res.redirect '/'
 
 
 ## POST signup / STORE User ID/PW
@@ -76,18 +76,18 @@ router.post '/signup', (req, res) ->
     return true
     console.log 'connected as id'
 
-  connection.query 'SELECT * FROM Users WHERE UserId = ?', req.body.UserAccount, (err, results) ->
-    console.log err if err
-    console.log results
-    if not results
-      connection.query 'INSERT INTO Users SET ?', post, (error, results, fields) ->
+    connection.query "SELECT * FROM Users WHERE UserId = ?", req.body.UserAccount, (err, results) ->
+      console.log err if err
+      console.log results
+      if not results
+        connection.query "INSERT INTO Users SET ?", post, (error, results, fields) ->
+          console.log error, results, fields
+          connection.end()
+          return res.redirect '/'
+      else
         connection.end()
-        console.log error, results, fields
-      return res.redirect '/'
-    else
-      connection.end()
-      req.session.error = 'Account name already exists! Please pick another one.'
-      return res.redirect '/signup'
+        req.session.error = 'Account name already exists! Please pick another one.'
+        return res.redirect '/signup'
       
 
 

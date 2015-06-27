@@ -69,12 +69,16 @@ block content
               tr
                 th.col-sm-1 
                 th.col-sm-8 Title
-                th.col-sm-3 Published on
+                th.col-sm-2 Published on
+                th.col-sm-1
             tbody#sortable
               tr.playlist.play-template.hide
                 td
                 td.playlist-title 
-                td.playlist-date 
+                td.playlist-date
+                td.playlist-comment
+                  span.icon-bubble
+                  p.comment-number
     .row
       .col-sm-10
       .col-sm-2.text-right
@@ -143,8 +147,17 @@ block subcontent
               Your feedback is
               what makes us better
             button.center-block.fixed-button.btn.btn-success(type='button', data-toggle='modal', data-target="#myModal") Feedback
-      //- .row
-      //-   .col-xs-12.col-sm-12.col-md-12.col-lg-12
-      //-     .sign-in
-      //-       if process.env.NODE_ENV !== 'production' || locals.session.user
-      //-         button.btn.btn-lg.btn-success.center-block(type='button', data-toggle='modal', data-target='#signinModal') Sign in
+  if process.env.NODE_ENV !== 'production'  
+    .notification-container
+      .row
+        .col-xs-12.col-sm-12.col-md-12.col-lg-12
+          h2.notification.text-center.multiline.
+            NEW FEATURES ARE UNDER PREPARATION AND WILL BE IMPLEMENTED UPON COMPLETION
+          p.notification.text-center.multiline.
+            - Create multiple Playlists
+            - Store Playlists
+            - Share Playlists
+            - Comment on friends' Playlists
+
+
+
