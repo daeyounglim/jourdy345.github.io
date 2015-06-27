@@ -4,9 +4,10 @@ favicon = require 'serve-favicon'
 logger = require 'morgan'
 cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
-
 routes = require './routes/index'
 users = require './routes/users'
+sessions = require 'client-sessions'
+
 
 app = express()
 
@@ -22,8 +23,34 @@ app.use bodyParser.urlencoded extended: false
 app.use cookieParser()
 app.use express.static path.join __dirname, 'public'
 
+# Session set-up
+app.use sessions 
+  cookieName: 'ListifySession'
+  requestKey: 'session'
+  secret: 'a'
+  duration: 24 * 60 * 60 * 1000
+  activeDuration: 1000 * 60 * 5
+  cookie:
+    domain: '.lvh.me'
+    # cannot be used with maxAge
+    ephemeral: true
+    httpOnly: true
+    secure: false
+
+app.use (req, res, next) ->
+  res.locals.success = req.session.success
+  res.locals.error = req.session.error
+  res.locals.session = req.session or {}
+  delete req.session.success
+  delete req.session.error
+  next()
+
 app.use '/', routes
 app.use '/users', users
+
+
+
+
 
 # if process.env.NODE_ENV is 'production'
 #   ...

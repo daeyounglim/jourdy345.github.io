@@ -51,6 +51,35 @@ router.get('/signup', function(req, res) {
   return res.render('signup.jade');
 });
 
+router.get('/logout', function(req, res) {
+  req.session = {};
+  return res.redirect('/');
+});
+
+router.post('/signin', function(req, res) {
+  var post;
+  post = {
+    UserId: req.body.UserAccount,
+    UserPassword: req.body.UserPassword
+  };
+  connection.connect(function(err) {
+    if (err) {
+      console.log('error connection: ' + err.stack);
+    }
+    return true;
+  });
+  return connection.query("SELECT * FROM Users WHERE UserId = ? AND UserPassword = ?", [req.body.UserAccount, req.body.UserPassword], function(error, results, fields) {
+    connection.end();
+    if (results) {
+      req.session.user = results[0];
+      return res.redirect('/');
+    } else {
+      req.session.error = 'Whoops! No match found!';
+      return res.redirect('/');
+    }
+  });
+});
+
 router.post('/signup', function(req, res) {
   var post;
   post = {
@@ -64,11 +93,23 @@ router.post('/signup', function(req, res) {
     return true;
     return console.log('connected as id');
   });
-  connection.query('INSERT INTO Users SET ?', post, function(error, results, fields) {
-    return console.log(error, results, fields);
+  return connection.query('SELECT * FROM Users WHERE UserId = ?', req.body.UserAccount, function(err, results) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(results);
+    if (!results) {
+      connection.query('INSERT INTO Users SET ?', post, function(error, results, fields) {
+        connection.end();
+        return console.log(error, results, fields);
+      });
+      return res.redirect('/');
+    } else {
+      connection.end();
+      req.session.error = 'Account name already exists! Please pick another one.';
+      return res.redirect('/signup');
+    }
   });
-  connection.end();
-  return res.redirect('/');
 });
 
 module.exports = router;

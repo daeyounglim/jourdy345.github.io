@@ -33,16 +33,24 @@ block content
     .inside-navbar.pull-left
       .pull-left
         .row
-          .col-sm-1.col-md-1.col-lg-1
+          .hidden-xs.hidden-sm.col-md-1.col-lg-1
             a.mainlogo(href='/'): span.icon-youtube-play
-          .col-sm-9.col-md-6.col-lg-6
+          .col-md-6.col-lg-6
             .searchField.input-group.input-group-lg#bloodhound
               input.form-control.input-lg.typeahead(type='search' placeholder='Search here and add videos to Playlist just by pressing enter' aria-describedby='sizing-addon1') 
               span.input-group-btn
                 button.btn.btn-default.text-right.square
                   span.glyphicon.glyphicon-search
 
-          .col-sm-2.col-md-5.col-lg-5.text-right
+          .col-xs-12.col-sm-12.col-md-5.col-lg-5.text-right
+            .sign-in
+              if !locals.session.user
+                button.btn.btn-success.sign-in-button(type='button', data-toggle='modal', data-target='#signinModal') Sign in
+              else
+                p.self-p
+                  img.img-self.img-circle(src='http://wynway.com/wp-content/uploads/2014/11/blank_person_81.png')
+                  | #{locals.session.user.UserId}
+                  a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button Log out
             .playlist-button
               button.btn.btn-xs.repeat-all Repeat all
               button.btn.btn-xs.repeat-one Repeat one
@@ -73,7 +81,7 @@ block content
         button.btn.btn-default.btn-xs.delete-all Delete all
 
 block subcontent
-  nav.navbar.navbar-default.navbar-static-bottom.subcontent-nav
+  nav.hidden-xs.hidden-sm.navbar.navbar-default.navbar-static-bottom.subcontent-nav
     .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
         .modal-content
@@ -86,7 +94,7 @@ block subcontent
               .form-group
                 label.col-sm-2.control-label(for='UserID') User ID
                 .col-sm-10
-                  input#UserID.form-control(name='UserID', type='text')
+                  input#UserID.form-control(name='UserAccount', type='text')
               .form-group
                 label.col-sm-2.control-label(for='UserPassword') Password
                 .col-sm-10
@@ -135,8 +143,8 @@ block subcontent
               Your feedback is
               what makes us better
             button.center-block.fixed-button.btn.btn-success(type='button', data-toggle='modal', data-target="#myModal") Feedback
-      .row
-        .col-xs-12.col-sm-12.col-md-12.col-lg-12
-          .sign-in
-            if process.env.NODE_ENV !== 'production'
-              button.btn.btn-lg.btn-success.center-block(type='button', data-toggle='modal', data-target='#signinModal') Sign in
+      //- .row
+      //-   .col-xs-12.col-sm-12.col-md-12.col-lg-12
+      //-     .sign-in
+      //-       if process.env.NODE_ENV !== 'production' || locals.session.user
+      //-         button.btn.btn-lg.btn-success.center-block(type='button', data-toggle='modal', data-target='#signinModal') Sign in

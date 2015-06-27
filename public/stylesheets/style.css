@@ -304,14 +304,14 @@ button.square {
   border-radius: 0 !important;
 }
 
-  .btn-success.active,.btn-success.focus,.btn-success:active,.btn-success:focus,.btn-success:hover,.open>.dropdown-toggle.btn-success{
+.btn-success.active,.btn-success.focus,.btn-success:active,.btn-success:focus,.btn-success:hover,.open>.dropdown-toggle.btn-success{
   color:#FFFFFF !important;
   background-color: #C10010 !important;
   border-color: #C10010 !important;
   outline: none !important;
 }
 
-  .btn-success.active,.btn-success:active,.open>.dropdown-toggle.btn-success{
+.btn-success.active,.btn-success:active,.open>.dropdown-toggle.btn-success{
   background-image:none !important;
   outline: none !important;
 }
@@ -353,11 +353,9 @@ p.related-description {
 
 .sign-in {
   position: absolute;
-  text-align: center;
-  width: 100%;
-  background-color: #FFF;
-  margin-bottom: 200px;
-  margin-top: 200px;
+  top: 20px;
+  right: 43px;
+  bottom: 20px;
 }
 
 .signup-link, .signup-link:hover, .signup-link:active, .signup-link:focus {
@@ -365,22 +363,51 @@ p.related-description {
 }
 
 .sign-up-title {
-  margin-top: 100px;
-  font-weight: 600;
+  margin-top: 150px;
+  font-weight: 300;
   font-size: 45px;
 }
 
 .sign-up-body {
-  font-weight: 600;
+  font-weight: 300;
+  margin-top: 15px !important;
 }
 
 .sign-up-body2 {
   line-height: 40px;
+  font-weight: 100;
+  margin-top: 20px;
 }
 .sign-up-container {
-  margin-top: 100px;
+  margin-top: 50px;
+}
+
+.create-account-into {
+  padding: 25px;
+}
+
+.create-account-form {
+  background-color: #F2F2F2;
+  padding: 25px;
+}
+
+.create-account-form-group {
+  width: 350px;
+  margin: 0 auto;
 }
 
 .password-check {
   color: #C10010;
+}
+.self-p {
+  color: #565656;
+}
+
+.img-self {
+  width: 30px;
+  margin-right: 10px;
+}
+
+.log-out-button {
+  margin-left: 10px;
 }
