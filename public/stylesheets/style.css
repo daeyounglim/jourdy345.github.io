@@ -422,24 +422,18 @@ p.related-description {
 
 
 .notification-container {
-  position: absolute;
-  width: 100%;
-  background-color: #363636;
-  color: #F0F0F0;
-  padding: 50px 0;
+  border-top: 1px solid #B2B2B2;
+  padding: 50px;
+}
+
+.glyphicon-send {
+  font-size: 100px;
 }
 
 h2.notification {
-  font-family: "league-gothic", sans-serif;
   font-weight: 500;
   font-size: 50px;
-  letter-spacing: 1px;
-}
-
-p.notification {
-  font-family: "league-gothic", sans-serif;
-  line-height: 60px;
-  font-size: 40px;
-  font-weight: 100;
-  opacity: 0.8;
+  color: #262626;
+  opacity: 0.9;
+  letter-spacing: -2px;
 }
