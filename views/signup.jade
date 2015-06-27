@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h1.sign-up-title.text-center Create Your Listify Account
+  .container.sign-up-container
+    .row
+      .col-xs-12.col-sm-8.col-md-6.col-ls-6.text-center.create-account-intro
+        h2.sign-up-body(style='margin-top:0px') One account is all you need
+        h4.sign-up-body2.multiline.
+         Store your Playlists
+         Share with friends
+
+      .col-xs-12.col-sm-4.col-md-6.col-ls-6.pull-right.create-account-form
+        form(action='/signup', method='post').create-account-form-group
+          .form-group
+            label(for='signup-UserAccount') Create an account
+            input#signup-UserAccount.form-control(name='UserAccount' type='text' autofocus)
+            if !locals.error
+              p(style='color:#C10010')= locals.error
+          .form-group
+            label(for='signup-UserPassword') Create a password
+            input#signup-UserPassword.form-control(name='UserPassword' type='password')
+          .form-group
+            label(for='signup-ConfirmPassword') Confirm your Password
+            input#signup-ConfirmPassword.form-control(name='ConfirmPassword' type='password')
+            p.password-check.hide Passwords do not match.
+          button.btn.btn-success.pull-right(type='submit') Submit
