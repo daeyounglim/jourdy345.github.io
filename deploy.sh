@@ -6,5 +6,5 @@ bower install;
 cd ..;
 grunt coffee;
 grunt uglify;
-grunt cssmin;
+# grunt cssmin;
 forever restart -l listify.log -o out.log -e err.log -a bin/www;
