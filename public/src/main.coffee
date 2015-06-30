@@ -396,3 +396,42 @@ jQuery ->
           type: 'error'
           showCloseButton: true
         $('#signup-ConfirmPassword').focus()
+
+
+
+  $('.playlist-menu').popover 
+    html: true
+    title: "
+      <div class='playlist-popover'>
+        <ul class='nav nav-tabs' role='tablist'>
+          <li role='presentation' class='active'><a href='#choosePlaylist' class='choosePlaylist-a' aria-controls='choosePlaylist' role='tab' data-toggle='tab'>Choose Playlist</a></li>
+          <li role='presentation'><a href='#addPlaylist' aria-controls='addPlaylist' role='tab' data-toggle='tab'>Add Playlist</a></li>
+        </ul>
+      </div>
+      "
+    content: "
+      <div class='tab-content'>
+        <div role='tabpanel' class='tab-pane fade in active' id='choosePlaylist'>
+          <div class='choosePlaylist-template'>
+            <p>...</p>
+          </div>
+        </div>
+        <div role='tabpanel' class='tab-pane fade' id='addPlaylist'>
+          <form action='/addPlaylist' type='post'>
+            <div class='form-group'>
+              <label for='PlaylistName'>New Playlist</label>
+              <input type='text' class='form-control' id='PlaylistName' placeholder='New Playlist'>
+            </div>
+            <button type='submit' class='btn btn-success'>Add</button>
+          </form>
+        </div>
+      </div>
+      "
+
+
+
+  $('.playlist-popover a')
+    .on 'click', (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      $(this).tab('show')

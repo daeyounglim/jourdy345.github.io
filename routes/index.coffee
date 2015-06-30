@@ -64,6 +64,7 @@ router.post '/signin', (req, res) ->
         return res.redirect '/'
       else
         req.session.error = 'Whoops! No match found!'
+        console.log 'No match found'
         connection.end()
         return res.redirect '/'
 
@@ -88,9 +89,6 @@ router.post '/signup', (req, res) ->
         connection.end()
         req.session.error = 'Account name already exists! Please pick another one.'
         return res.redirect '/signup'
-      
-
-
 
 module.exports = router
 

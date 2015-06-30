@@ -1,6 +1,10 @@
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
+    less: 
+      dev:
+        files:
+          'public/stylesheets/style.css': 'public/stylesheets/style.less'
     cssmin:
       target:
         files: [
@@ -21,7 +25,7 @@ module.exports = (grunt) ->
     uglify:
       my_target:
         files:
-          'public/javascripts/output.min.js': ['src/main.js']
+          # 'public/javascripts/output.min.js': ['src/main.js']
           'public/javascripts/output2.min.js': ['public/bower_components/messenger/build/js/messenger-theme-flat.js']
     shell:
       deploy:
@@ -39,7 +43,6 @@ module.exports = (grunt) ->
           '!Gruntfile.coffee'
           'routes/*.coffee'
           'public/**/*.coffee'
-          'src/**/*.coffee'
           'db/*.coffee'
         ]
         dest: '.'
@@ -58,6 +61,7 @@ module.exports = (grunt) ->
       coffee:
         files: [
           '*.coffee'
+          'src/*.coffee'
           'db/*.coffee'
           'routes/*.coffee'
           'public/**/*.coffee' 
@@ -76,6 +80,12 @@ module.exports = (grunt) ->
       css:
         files: [
           'public/**/*.css'
+        ]
+        options:
+          livereload: true
+      less:
+        files: [
+          'public/**/*.less'
         ]
         options:
           livereload: true
@@ -98,7 +108,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-concurrent'
 
 
-  grunt.registerTask 'serve', ['coffee:dev', 'uglify:my_target', 'concurrent:dev']
+  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'cssmin:target', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """

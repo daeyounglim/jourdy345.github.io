@@ -51,6 +51,7 @@ block content
                   img.img-self.img-circle(src='http://wynway.com/wp-content/uploads/2014/11/blank_person_81.png')
                   | #{locals.session.user.UserId}
                   a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button Log out
+                  button.setting-button.btn.btn-xs.btn-success(type='text'): span.glyphicon.glyphicon-cog
             .playlist-button
               button.btn.btn-xs.repeat-all Repeat all
               button.btn.btn-xs.repeat-one Repeat one
@@ -60,8 +61,7 @@ block content
     .row
       .col-xs-12.col-sm-12.col-md-8
         #player
-        button.btn.btn-success.btn-related-videos.pull-right(type='button', data-toggle='modal', data-target='#myrelatedModal')
-          span.glyphicon.glyphicon-plus
+        button.btn.btn-success.btn-related-videos.pull-right(type='button', data-toggle='modal', data-target='#myrelatedModal') Related Videos
       .col-xs-12.col-sm-12.col-md-4
         #playlist
           table.table.table-striped
@@ -81,10 +81,17 @@ block content
                   td.playlist-comment
                     span.icon-bubble
                     p.comment-number
-    .row
-      .col-sm-10
-      .col-sm-2.text-right
-        button.btn.btn-default.btn-xs.delete-all Delete all
+        .row.under-playlist
+          .col-sm-6
+            p
+              button.btn.btn-success.fork-playlist(type='text')
+                span.glyphicon.glyphicon-menu-up
+                | Fork
+          .col-sm-6.text-right
+            p
+              button.btn.btn-default.btn-xs Delete all
+              if locals.session.user
+                a.btn.btn-xs.btn-success.playlist-menu(tabindex="0" role="button" data-toggle="popover" data-placement="left"): span.glyphicon.glyphicon-menu-hamburger
 
 block subcontent
   nav.hidden-xs.hidden-sm.navbar.navbar-default.navbar-static-bottom.subcontent-nav

@@ -69,6 +69,7 @@ router.post('/signin', function(req, res) {
         return res.redirect('/');
       } else {
         req.session.error = 'Whoops! No match found!';
+        console.log('No match found');
         connection.end();
         return res.redirect('/');
       }
