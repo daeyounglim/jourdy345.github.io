@@ -1,4 +1,4 @@
-var connection, express, nodemailer, router;
+var connection, express, nodemailer, pool, router;
 
 express = require('express');
 
@@ -8,9 +8,43 @@ nodemailer = require('nodemailer');
 
 connection = require('../db/db').connection;
 
+pool = require('../db/db').pool;
+
 router.get('/', function(req, res, next) {
   return res.render('index.jade', {
     title: 'Express'
+  });
+});
+
+router.get('/feedback/success', function(req, res) {
+  return res.render('feedback_success.jade');
+});
+
+router.get('/feedback/failure', function(req, res) {
+  return res.render('feedback_failure.jade');
+});
+
+router.get('/signup', function(req, res) {
+  return res.render('signup.jade');
+});
+
+router.get('/logout', function(req, res) {
+  req.session = {};
+  return res.redirect('/');
+});
+
+router.get('/getPlaylist', function(req, res) {
+  return pool.getConnection(function(err, conn) {
+    if (err) {
+      console.log(err);
+    }
+    return conn.query("SELECT * FROM Playlists WHERE user_id = ?", [req.session.user.user_id], function(error, results) {
+      conn.release();
+      if (error) {
+        return console.log(error);
+      }
+      return res.status(200).json(results);
+    });
   });
 });
 
@@ -39,29 +73,12 @@ router.post('/feedback', function(req, res) {
   });
 });
 
-router.get('/feedback/success', function(req, res) {
-  return res.render('feedback_success.jade');
-});
-
-router.get('/feedback/failure', function(req, res) {
-  return res.render('feedback_failure.jade');
-});
-
-router.get('/signup', function(req, res) {
-  return res.render('signup.jade');
-});
-
-router.get('/logout', function(req, res) {
-  req.session = {};
-  return res.redirect('/');
-});
-
 router.post('/signin', function(req, res) {
   return connection.connect(function(err) {
     if (err) {
       console.log('error connection: ' + err.stack);
     }
-    return connection.query("SELECT * FROM Users WHERE UserId = ? AND UserPassword = ?", [req.body.UserAccount, req.body.UserPassword], function(error, results, fields) {
+    return connection.query("SELECT * FROM Users WHERE user_id = ? AND user_password = ?", [req.body.UserAccount, req.body.UserPassword], function(error, results, fields) {
       if (results) {
         req.session.user = results[0];
         console.log(results);
@@ -69,7 +86,6 @@ router.post('/signin', function(req, res) {
         return res.redirect('/');
       } else {
         req.session.error = 'Whoops! No match found!';
-        console.log('No match found');
         connection.end();
         return res.redirect('/');
       }
@@ -80,8 +96,8 @@ router.post('/signin', function(req, res) {
 router.post('/signup', function(req, res) {
   var post;
   post = {
-    UserId: req.body.UserAccount,
-    UserPassword: req.body.UserPassword
+    user_id: req.body.UserAccount,
+    user_password: req.body.UserPassword
   };
   return connection.connect(function(err) {
     if (err) {
@@ -89,7 +105,7 @@ router.post('/signup', function(req, res) {
     }
     return true;
     console.log('connected as id');
-    return connection.query("SELECT * FROM Users WHERE UserId = ?", req.body.UserAccount, function(err, results) {
+    return connection.query("SELECT * FROM Users WHERE user_id = ?", req.body.UserAccount, function(err, results) {
       if (err) {
         console.log(err);
       }
@@ -104,6 +120,31 @@ router.post('/signup', function(req, res) {
         connection.end();
         req.session.error = 'Account name already exists! Please pick another one.';
         return res.redirect('/signup');
+      }
+    });
+  });
+});
+
+router.post('/playlist/add', function(req, res) {
+  return connection.connect(function(err) {
+    var playlist;
+    if (err) {
+      console.log('error connection: ' + err.stack);
+    }
+    playlist = {
+      user_id: req.session.user.user_id,
+      playlist_name: req.body.playlist_name
+    };
+    return connection.query("INSERT INTO Playlists SET ?", playlist, function(err, results) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(results);
+      connection.end();
+      if (req.accepts('application/json') && !req.accepts('html')) {
+        return res.json(results);
+      } else {
+        return res.redirect('/');
       }
     });
   });

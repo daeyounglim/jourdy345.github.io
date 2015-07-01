@@ -1,14 +1,14 @@
 extends layout
 
 block content
-  script.
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  //- script.
+  //-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  //-   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  //-   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  //-   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    ga('create', 'UA-64280553-1', 'auto');
-    ga('send', 'pageview');
+  //-   ga('create', 'UA-64280553-1', 'auto');
+  //-   ga('send', 'pageview');
       // Button trigger modal
   #myrelatedModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
     .modal-dialog(role='document')
@@ -84,12 +84,13 @@ block content
         .row.under-playlist
           .col-sm-6
             p
-              button.btn.btn-success.fork-playlist(type='text')
-                span.glyphicon.glyphicon-menu-up
-                | Fork
+              if locals.session.user
+                button.btn.btn-success.fork-playlist(type='text')
+                  span.glyphicon.glyphicon-menu-up
+                  | Fork
           .col-sm-6.text-right
             p
-              button.btn.btn-default.btn-xs Delete all
+              button.btn.btn-default.btn-xs.delete-all Delete all
               if locals.session.user
                 a.btn.btn-xs.btn-success.playlist-menu(tabindex="0" role="button" data-toggle="popover" data-placement="left"): span.glyphicon.glyphicon-menu-hamburger
 

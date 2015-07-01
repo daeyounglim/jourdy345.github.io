@@ -4,7 +4,7 @@ module.exports = (grunt) ->
     less: 
       dev:
         files:
-          'public/stylesheets/style.css': 'public/stylesheets/style.less'
+          'public/stylesheets/style.min.css': 'public/stylesheets/style.less'
     cssmin:
       target:
         files: [
@@ -85,10 +85,13 @@ module.exports = (grunt) ->
           livereload: true
       less:
         files: [
-          'public/**/*.less'
+          'public/stylesheets/*.less'
+        ]
+        tasks: [
+          'less:dev'
         ]
         options:
-          livereload: true
+          livereload: false
     concurrent:
       dev:
         tasks: [
@@ -108,7 +111,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-concurrent'
 
 
-  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'cssmin:target', 'concurrent:dev']
+  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """

@@ -302,18 +302,15 @@ jQuery ->
 
   $ '.delete-all'
     .on 'click', (e) ->
-      msg = Messenger().post
-        message: 'This cannot be undone. Do you want to proceed?'
-        actions:
-          delete:
-            label: "Delete"
-            action: ->
-              window.Playlist.clear()
-              msg.hide()
-          cancel:
-            action: ->
-              msg.hide()
-
+      if window.Playlist.get().length
+        if confirm 'This cannot be undone. Do you want to proceed?'
+          window.Playlist.clear()
+          return true
+        else
+          e.preventDefault()
+          return false
+      else
+        alert 'There\'s nothing to delete.'
   $ '.btn-related-videos'
     .on 'click', (e) ->
       currentVideoId = window.Player.getVideoData().video_id
@@ -405,22 +402,28 @@ jQuery ->
       <div class='playlist-popover'>
         <ul class='nav nav-tabs' role='tablist'>
           <li role='presentation' class='active'><a href='#choosePlaylist' class='choosePlaylist-a' aria-controls='choosePlaylist' role='tab' data-toggle='tab'>Choose Playlist</a></li>
-          <li role='presentation'><a href='#addPlaylist' aria-controls='addPlaylist' role='tab' data-toggle='tab'>Add Playlist</a></li>
+          <li role='presentation'><a href='#addPlaylist' class='addPlaylist-a' aria-controls='addPlaylist' role='tab' data-toggle='tab'>Add Playlist</a></li>
         </ul>
       </div>
       "
     content: "
       <div class='tab-content'>
         <div role='tabpanel' class='tab-pane fade in active' id='choosePlaylist'>
-          <div class='choosePlaylist-template'>
-            <p>...</p>
+          <div class='appendPlaylist'>
+            <div class='choosePlaylist-template hide'>
+              <p>...</p>
+            </div>
           </div>
         </div>
+        <div class='playlist-create-success hide'>
+          <h1>Playlist created!</h1>
+        </div>
         <div role='tabpanel' class='tab-pane fade' id='addPlaylist'>
-          <form action='/addPlaylist' type='post'>
+          <form>
             <div class='form-group'>
+              <p class='successfully-added hide'>Successfully added</p>
               <label for='PlaylistName'>New Playlist</label>
-              <input type='text' class='form-control' id='PlaylistName' placeholder='New Playlist'>
+              <input type='text' class='form-control' name='PlaylistName' id='PlaylistName' placeholder='New Playlist' autocomplete='off'>
             </div>
             <button type='submit' class='btn btn-success'>Add</button>
           </form>
@@ -428,10 +431,61 @@ jQuery ->
       </div>
       "
 
+  $('.playlist-menu')
+    .on 'inserted.bs.popover', ->
+      $ '#addPlaylist form'
+        .on 'submit', (e) ->
+          # e.preventDefault()
+          # e.stopPropagation()
+          if $('#PlaylistName').val().trim().length is 0
+            return alert 'Please make a name for the Playlist.'
+            
+          $.ajax
+            url: '/playlist/add'
+            method: 'post'
+            data: 
+              playlist_name: $('#PlaylistName').val()
+            headers: 
+              Accept: 'application/json'
+            success: (d, s, x) ->
+              console.log d
+              if x.status isnt 200
+                return 'Error'
+              $('.successfully-added').removeClass('hide')
 
+              true
+            error: (x, s, d) ->
+              console.log s, d
 
+          return false
+    .on 'click', ->
+      # $('.choosePlaylist-a')
+      #   .on 'show.bs.tab', ->
+      $.ajax
+        url: '/getPlaylist'
+        method: 'get'
+        success: (d, s, x) ->
+          console.log x.status
+          console.log d
+          $ '.choosePlaylist-item'
+            .remove()
+          for each in d
+            $template = $('.choosePlaylist-template').clone()
+            $template
+              .find 'p'
+              .html each.playlist_name
+            $template
+              .data 'playlist-id', each.id
+            $template.removeClass 'hide'
+            $template.removeClass 'choosePlaylist-template'
+            $template.addClass 'choosePlaylist-item'
+            $('.appendPlaylist').append $template
+        error: (x, s, d) ->
+          alert 'Error: ' + s
+      return true
   $('.playlist-popover a')
     .on 'click', (e) ->
       e.preventDefault()
       e.stopPropagation()
       $(this).tab('show')
+      $('#PlaylistName').trigger 'focus'
