@@ -48,6 +48,24 @@ router.get('/playlist', function(req, res) {
   });
 });
 
+router.get('/get/videos', function(req, res) {
+  return pool.getConnection(function(err, conn) {
+    var post;
+    post = [req.body.playlist_id, req.session.user.user_id];
+    if (err) {
+      console.log(err);
+    }
+    return conn.query("SELECT * FROM Videos WHERE playlist_id = ? AND user_id = ?", post, function(err, results) {
+      conn.release();
+      if (err) {
+        return console.log(err);
+      }
+      console.log(results);
+      return res.status(200).json(results);
+    });
+  });
+});
+
 router.post('/feedback', function(req, res) {
   var mailOptions, transporter;
   transporter = nodemailer.createTransport({
@@ -127,19 +145,36 @@ router.post('/signup', function(req, res) {
 
 router.post('/playlist/add', function(req, res) {
   return pool.getConnection(function(err, conn) {
-    var playlist;
+    var items, playlist;
     if (err) {
       console.log('error connection: ' + err.stack);
     }
+    items = JSON.parse(req.body.video_list);
     playlist = {
       user_id: req.session.user.user_id,
       playlist_name: req.body.playlist_name
     };
     return conn.query("INSERT INTO Playlists SET ?", playlist, function(err, results) {
+      var i, item, len, post;
       if (err) {
         console.log(err);
       }
       console.log(results);
+      for (i = 0, len = items.length; i < len; i++) {
+        item = items[i];
+        post = {
+          playlist_id: results.insertId,
+          youtube_video_id: item.id,
+          user_id: req.session.user.user_id,
+          video_title: item.title
+        };
+        conn.query("INSERT INTO Videos SET ?", post, function(err, results) {
+          if (err) {
+            console.log(err);
+          }
+          return console.log(results);
+        });
+      }
       conn.release();
       if (req.accepts('application/json') && !req.accepts('html')) {
         return res.json(results);

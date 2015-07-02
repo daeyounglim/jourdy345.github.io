@@ -10,6 +10,22 @@ block content
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
       // Button trigger modal
+  #createPlaylistModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') ×
+          h4#myModalLabel.modal-title Create Playlist
+        .modal-body.createPlaylist-body
+          form.createPlaylist-form
+            .form-group
+              label(for='createPlaylist-input') Title
+              input#createPlaylist-input.form-control(name='createPlaylist-name' type='text' autofocus)
+          .createPlaylist-template.hide
+            h2.createPlaylist-videos(style='border-bottom: 1px solid #EFEFEF; padding-bottom: 5px; font-weight: 500') Videos
+            img.createPlaylist-img.pull-left(src='')
+            p.createPlaylist-title
   #myrelatedModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
     .modal-dialog(role='document')
       .modal-content
@@ -84,15 +100,11 @@ block content
           .col-sm-6
             p
               if locals.session.user
-                button.btn.btn-success.fork-playlist(type='text')
-                  span.glyphicon.glyphicon-menu-up
-                  | Fork
+                a.btn.btn-xs.btn-success.createPlaylistModal-button(type='button', data-toggle='modal', data-target="#createPlaylistModal"): span.glyphicon.glyphicon-plus
+                a.btn.btn-xs.btn-success.playlist-menu(tabindex="0" role="button" data-toggle="popover" data-placement="left"): span.glyphicon.glyphicon-menu-hamburger
           .col-sm-6.text-right
             p
               button.btn.btn-default.btn-xs.delete-all Delete all
-              if locals.session.user
-                a.btn.btn-xs.btn-success.playlist-menu(tabindex="0" role="button" data-toggle="popover" data-placement="left"): span.glyphicon.glyphicon-menu-hamburger
-
 block subcontent
   nav.hidden-xs.hidden-sm.navbar.navbar-default.navbar-static-bottom.subcontent-nav
     .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')

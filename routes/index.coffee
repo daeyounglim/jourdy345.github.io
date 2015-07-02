@@ -39,6 +39,25 @@ router.get '/playlist', (req, res) ->
         .status 200
         .json results
 
+## GET Videos
+router.get '/get/videos', (req, res) ->
+  pool.getConnection (err, conn) ->
+    post = [req.body.playlist_id, req.session.user.user_id]
+    console.log err if err
+    conn.query "
+    SELECT *
+    FROM Videos
+    WHERE playlist_id = ?
+      AND user_id = ?
+    "
+    , post, (err, results) ->
+      conn.release()
+      return console.log err if err
+      console.log results
+      res
+        .status 200
+        .json results
+
 
 #POST methods
 ## POST feedback (nodemailer)
@@ -111,7 +130,7 @@ router.post '/signup', (req, res) ->
 router.post '/playlist/add', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
-
+    items = JSON.parse(req.body.video_list)
     playlist =
       user_id: req.session.user.user_id
       playlist_name: req.body.playlist_name
@@ -119,6 +138,15 @@ router.post '/playlist/add', (req, res) ->
     conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
       console.log err if err
       console.log results
+      for item in items
+        post = 
+          playlist_id: results.insertId
+          youtube_video_id: item.id
+          user_id: req.session.user.user_id
+          video_title: item.title
+        conn.query "INSERT INTO Videos SET ?", post, (err, results) ->
+          console.log err if err
+          console.log results
       conn.release()
       if req.accepts('application/json') and not req.accepts('html')
         res.json(results)

@@ -193,6 +193,8 @@ jQuery ->
           .attr 'id', index
         $playtemplate
           .attr 'data-video-id', item.id
+        $playtemplate
+          .attr 'data-thumbnail', item.imgUrl
         
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
@@ -301,7 +303,7 @@ jQuery ->
       valueKey: 'name'
       source: Results.ttAdapter()
       templates: 
-        suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{title}} | {{date}}<strong></p>'
+        suggestion: Handlebars.compile '<img src="{{imgUrl}}" class="pull-left" /><p style="position: relative, padding-left: 15px, padding-top: auto"><strong>{{title}}</strong></p>'
     .on 'typeahead:selected', (e, suggestion, name) ->
       window.Playlist.add suggestion
       window.Playlist.render()
@@ -370,7 +372,6 @@ jQuery ->
         e.preventDefault()
         e.stopPropagation()
         alert 'No running video.'
-
 
 
   $ '#signinModal'
@@ -479,14 +480,38 @@ jQuery ->
               .find 'p'
               .html each.playlist_name
             $template
-              .data 'playlist-id', each.id
+              .attr 'data-playlist-id', each.id
             $template.removeClass 'hide'
             $template.removeClass 'choosePlaylist-template'
             $template.addClass 'choosePlaylist-item'
             $('.appendPlaylist').append $template
+
+          $ '.choosePlaylist-item'
+            .on 'click', (e) ->
+              data_playlist_id = $(this).attr('data-playlist-id')
+              $.ajax
+                url: '/get/videos'
+                method: 'get'
+                data:
+                  playlist_id: +data_playlist_id
+                success: (d, s, x) ->
+                  console.log x.status
+                  console.log 'here it is', d
+
+                error: (x, s, d) ->
+                  console.log s, d
+              return true
         error: (x, s, d) ->
           alert 'Error: ' + s
       return true
+
+  
+
+
+
+
+
+
   $('a[href=#choosePlaylist]')
     .on 'click', (e) ->
       e.preventDefault()
@@ -500,21 +525,51 @@ jQuery ->
 
 
 
+  $('a[data-target=#createPlaylistModal]')
+    .on 'click', (e) ->
+      list = window.Playlist.get()
+      console.log '>>>>', list
+      $ '.createPlaylist-item'
+        .remove()
+      for item in list
+        $template = $('.createPlaylist-template').clone()
+        $template
+          .find 'img'
+          .attr 'src', item.imgUrl
+        $template
+          .find 'p'
+          .html item.title
+        $template
+          .removeClass 'hide'
+        $template
+          .removeClass 'createPlaylist-template'
+        $template
+          .addClass 'createPlaylist-item'
+        $('.createPlaylist-body')
+          .append $template
+  $('.createPlaylist-form')
+    .on 'submit', (e) ->
+      if $('#createPlaylist-input').val().trim().length is 0
+        return alert 'Please make a name for the Playlist.'
+        
+      $.ajax
+        url: '/playlist/add'
+        method: 'post'
+        data: 
+          playlist_name: $('#createPlaylist-input').val()
+          video_list: JSON.stringify(window.Playlist.get())
+        headers: 
+          Accept: 'application/json'
+        success: (d, s, x) ->
+          console.log d
+          if x.status isnt 200
+            return 'Error'
 
-  $('#comment').popover
-    html: true
-    content: "
-      <div>
-        <p></p>
-      </div>
-      <div>
-        <p> Leave a comment </p>
-        <form>
-            <div class='form-group'>
-              <label for='comment-form'>New Playlist</label>
-              <input type='text' class='form-control' name='comment-form' id='comment-form' autocomplete='off' autofocus>
-            </div>
-            <button type='submit' class='btn btn-success'>Add</button>
-        </form>
-      </div>
-      "
+          true
+        error: (x, s, d) ->
+          console.log s, d
+
+
+
+
+
