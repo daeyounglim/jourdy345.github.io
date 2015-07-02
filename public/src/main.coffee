@@ -97,24 +97,24 @@ jQuery ->
   onPlayerStateChange = (event) ->
     if event.data is YT.PlayerState.ENDED
       if $('.playlist-button .repeat-all').hasClass 'button-active'
-        if window.Player.getVideoData().video_id is window.Playlist.get()[window.Playlist.get().length - 1].id
+        if window.Player.getVideoData().video_id is window.Playlist.get()[window.Playlist.get().length - 1].youtube_video_id
           window.Playlist.play 0
         else
           currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
-            return chr.id is window.Player.getVideoData().video_id
+            return chr.youtube_video_id is window.Player.getVideoData().video_id
           window.Playlist.play currentVideoIndex + 1
       else if $('.playlist-button .repeat-one').hasClass 'button-active'
         currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
-            return chr.id is window.Player.getVideoData().video_id
+            return chr.youtube_video_id is window.Player.getVideoData().video_id
         window.Playlist.play currentVideoIndex
       else if $('.playlist-button .shuffle').hasClass 'button-active'
         currentVideoIndex =  _.findIndex window.ShuffledPlaylist, (chr) ->
-          return chr.id is window.Player.getVideoData().video_id
+          return chr.youtube_video_id is window.Player.getVideoData().video_id
         delete window.ShuffledPlaylist[currentVideoIndex]
         window.ShuffledPlaylist = _.compact window.ShuffledPlaylist
         if window.ShuffledPlaylist.length
           i = _.findIndex window.Playlist.get(), (chr) ->
-            return chr.id is window.ShuffledPlaylist[0].id
+            return chr.youtube_video_id is window.ShuffledPlaylist[0].youtube_video_id
           window.Playlist.play i
         else
           window.ShuffledPlaylist = _.shuffle window.Playlist.get()
@@ -122,7 +122,7 @@ jQuery ->
           window.Playlist.play i
       else
         currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
-          return chr.id is window.Player.getVideoData().video_id
+          return chr.youtube_video_id is window.Player.getVideoData().video_id
         window.Playlist.play currentVideoIndex+1
 
 
@@ -153,7 +153,8 @@ jQuery ->
       @render() if @list.length
       # for video in videos
       #   @add video
-    
+    set: (list) ->
+      @list = list
     get: ->
       @list
 
@@ -167,13 +168,6 @@ jQuery ->
       localStorage.videos = JSON.stringify @list
     add_to_next: (item) ->
       @list.unshift item
-
-    check: (item) ->
-      for each in @list
-        templist = JSON.stringify @list, null, '  '
-        if templist.match item.id
-          return true
-        return false
       
     render: ->
       $playtemplate = $ '.play-template'
@@ -182,17 +176,17 @@ jQuery ->
 
       for item in @list
         index = _.findIndex @list, (chr) ->
-          return chr.id is item.id
+          return chr.youtube_video_id is item.youtube_video_id
         $playtemplate = $('#playlist .play-template').clone()
         $playtemplate
           .find '.playlist-title'
-          .html item.title
+          .html item.video_title
         $playtemplate
-          .data 'video-id', item.id
+          .data 'video-id', item.youtube_video_id
         $playtemplate
           .attr 'id', index
         $playtemplate
-          .attr 'data-video-id', item.id
+          .attr 'data-video-id', item.youtube_video_id
         $playtemplate
           .attr 'data-thumbnail', item.imgUrl
         
@@ -235,7 +229,7 @@ jQuery ->
         .css
           'top': offset.top + 37 + height * 0.5
           'left': offset.left - 10
-      window.Player.loadVideoById @list[i].id, 0, 'large'
+      window.Player.loadVideoById @list[i].youtube_video_id, 0, 'large'
 
 
     remove: (i) ->
@@ -260,7 +254,7 @@ jQuery ->
       @list[i] = tempPlaylist[i] for i in [0..(@list.length-1)]
       window.Playlist.render()
       index = _.findIndex @list, (chr) ->
-        return chr.id is window.Player.getVideoData().video_id
+        return chr.youtube_video_id is window.Player.getVideoData().video_id
       offset = $('#'+index).find('td:first').offset()
       height = $('#'+index).height()
       $ '.bar-container'
@@ -283,8 +277,8 @@ jQuery ->
         data = []
         for item in response.items
           data.push {
-            title: item.snippet.title
-            id: item.id.videoId
+            video_title: item.snippet.title
+            youtube_video_id: item.id.videoId
             imgUrl: item.snippet.thumbnails.default.url
             playing: 0
           }
@@ -303,7 +297,7 @@ jQuery ->
       valueKey: 'name'
       source: Results.ttAdapter()
       templates: 
-        suggestion: Handlebars.compile '<img src="{{imgUrl}}" class="pull-left" /><p style="position: relative, padding-left: 15px, padding-top: auto"><strong>{{title}}</strong></p>'
+        suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{video_title}}</strong></p>'
     .on 'typeahead:selected', (e, suggestion, name) ->
       window.Playlist.add suggestion
       window.Playlist.render()
@@ -358,9 +352,8 @@ jQuery ->
               .on 'click', (e) ->
                 $this = $ this
                 window.Playlist.add
-                  id: $this.data 'video-id'
-                  title: $this.data 'video-title'
-                  date: $this.data 'video-date'
+                  youtube_video_id: $this.data 'video-id'
+                  video_title: $this.data 'video-title'
                 window.Playlist.render()
             true  
           error: (x, s, d) ->
@@ -405,66 +398,15 @@ jQuery ->
 
   $('.playlist-menu').popover 
     html: true
-    title: "
-      <div class='playlist-popover'>
-        <ul class='nav nav-tabs' role='tablist'>
-          <li role='presentation' class='active'><a href='#choosePlaylist' class='choosePlaylist-a' aria-controls='choosePlaylist' role='tab' data-toggle='tab'>Choose Playlist</a></li>
-          <li role='presentation'><a href='#addPlaylist' class='addPlaylist-a' aria-controls='addPlaylist' role='tab' data-toggle='tab'>Add Playlist</a></li>
-        </ul>
-      </div>
-      "
     content: "
-      <div class='tab-content'>
-        <div role='tabpanel' class='tab-pane fade in active' id='choosePlaylist'>
-          <div class='appendPlaylist'>
-            <div class='choosePlaylist-template hide'>
-              <p>...</p>
-            </div>
-          </div>
-        </div>
-        <div class='playlist-create-success hide'>
-          <h1>Playlist created!</h1>
-        </div>
-        <div role='tabpanel' class='tab-pane fade' id='addPlaylist'>
-          <form>
-            <div class='form-group'>
-              <p class='successfully-added hide' style='color:#C10010'>Successfully added</p>
-              <label for='PlaylistName'>New Playlist</label>
-              <input type='text' class='form-control' name='PlaylistName' id='PlaylistName' placeholder='New Playlist' autocomplete='off' autofocus>
-            </div>
-            <button type='submit' class='btn btn-success'>Add</button>
-          </form>
+      <div class='appendPlaylist'>
+        <div class='choosePlaylist-template hide'>
+          <p>...</p>
         </div>
       </div>
       "
 
-  $('.playlist-menu')
-    .on 'inserted.bs.popover', ->
-      $ '#addPlaylist form'
-        .on 'submit', (e) ->
-          # e.preventDefault()
-          # e.stopPropagation()
-          if $('#PlaylistName').val().trim().length is 0
-            return alert 'Please make a name for the Playlist.'
-            
-          $.ajax
-            url: '/playlist/add'
-            method: 'post'
-            data: 
-              playlist_name: $('#PlaylistName').val()
-            headers: 
-              Accept: 'application/json'
-            success: (d, s, x) ->
-              console.log d
-              if x.status isnt 200
-                return 'Error'
-              $('.successfully-added').removeClass('hide')
-
-              true
-            error: (x, s, d) ->
-              console.log s, d
-
-          return false
+  $ '.playlist-menu'
     .on 'click', ->
       $.ajax
         url: '/playlist'
@@ -488,41 +430,23 @@ jQuery ->
 
           $ '.choosePlaylist-item'
             .on 'click', (e) ->
-              data_playlist_id = $(this).attr('data-playlist-id')
-              $.ajax
-                url: '/get/videos'
-                method: 'get'
-                data:
-                  playlist_id: +data_playlist_id
-                success: (d, s, x) ->
-                  console.log x.status
-                  console.log 'here it is', d
+              if confirm 'You could lose the current Playlist. Still want to proceed?'
+                data_playlist_id = $(this).attr('data-playlist-id')
+                $.ajax
+                  url: "/playlist/#{data_playlist_id}/videos"
+                  method: 'get'
+                  success: (d, s, x) ->
+                    console.log x.status
+                    window.Playlist.set(d)
+                    window.Playlist.render()
+                  error: (x, s, d) ->
+                    console.log s, d
+                return true
+              else
 
-                error: (x, s, d) ->
-                  console.log s, d
-              return true
         error: (x, s, d) ->
           alert 'Error: ' + s
       return true
-
-  
-
-
-
-
-
-
-  $('a[href=#choosePlaylist]')
-    .on 'click', (e) ->
-      e.preventDefault()
-      e.stopPropagation()
-      $(this).tab('show')
-  $('a[href=#addPlaylist]')
-    .on 'click', (e) ->
-      e.preventDefault()
-      e.stopPropagation()
-      $(this).tab('show')
-
 
 
   $('a[data-target=#createPlaylistModal]')
@@ -538,7 +462,7 @@ jQuery ->
           .attr 'src', item.imgUrl
         $template
           .find 'p'
-          .html item.title
+          .html item.video_title
         $template
           .removeClass 'hide'
         $template

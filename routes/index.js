@@ -48,14 +48,12 @@ router.get('/playlist', function(req, res) {
   });
 });
 
-router.get('/get/videos', function(req, res) {
+router.get('/playlist/:id/videos', function(req, res) {
   return pool.getConnection(function(err, conn) {
-    var post;
-    post = [req.body.playlist_id, req.session.user.user_id];
     if (err) {
       console.log(err);
     }
-    return conn.query("SELECT * FROM Videos WHERE playlist_id = ? AND user_id = ?", post, function(err, results) {
+    return conn.query("SELECT * FROM Videos WHERE playlist_id = ? AND user_id = ?", [+req.params.id, req.session.user.user_id], function(err, results) {
       conn.release();
       if (err) {
         return console.log(err);

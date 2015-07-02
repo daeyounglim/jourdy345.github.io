@@ -40,17 +40,15 @@ router.get '/playlist', (req, res) ->
         .json results
 
 ## GET Videos
-router.get '/get/videos', (req, res) ->
+router.get '/playlist/:id/videos', (req, res) ->
   pool.getConnection (err, conn) ->
-    post = [req.body.playlist_id, req.session.user.user_id]
     console.log err if err
     conn.query "
     SELECT *
     FROM Videos
     WHERE playlist_id = ?
       AND user_id = ?
-    "
-    , post, (err, results) ->
+    ", [+req.params.id, req.session.user.user_id], (err, results) ->
       conn.release()
       return console.log err if err
       console.log results
