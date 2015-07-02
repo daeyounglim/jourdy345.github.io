@@ -25,7 +25,7 @@ router.get '/logout', (req, res) ->
   return res.redirect '/'
 
 ## GET Playlist
-router.get '/getPlaylist', (req, res) ->
+router.get '/playlist', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log err if err
     conn.query "
@@ -109,21 +109,43 @@ router.post '/signup', (req, res) ->
 
 ## POST add, store Playlist / respond to AJAX request
 router.post '/playlist/add', (req, res) ->
-  connection.connect (err) ->
+  pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
 
     playlist =
       user_id: req.session.user.user_id
       playlist_name: req.body.playlist_name
 
-    connection.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
+    conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
       console.log err if err
       console.log results
-      connection.end()
+      conn.release()
       if req.accepts('application/json') and not req.accepts('html')
         res.json(results)
       else
         res.redirect('/')
+
+# router.post '/video/add', (req, res) ->
+#   items = JSON.parse(req.body.video_list)
+#   videos =
+#     playlist_id: 
+#     youtube_video_id:
+#     comment_count:
+#     user_id:
+#   pool.getConnection (err, conn) ->
+#     console.log('error connection: ' + err.stack) if err
+#     # item = [{"title":"윤하 (Younha) - 없어 (Not There) (feat. Eluphant)","id":"LRGJcX27qTA","imgUrl":"https://i.ytimg.com/vi/LRGJcX27qTA/default.jpg","date":"2013-12-06","playing":0}]
+#     for item in items
+#       post = 
+#         playlist_id: 
+#         youtube_video_id: item.id
+#         video_title: item.title
+#         user_id: req.session.user.user_id
+#       conn.query "
+#       INSERT INTO Videos
+#       SET ?
+#       "
+
 
 
 module.exports = router

@@ -33,7 +33,7 @@ router.get('/logout', function(req, res) {
   return res.redirect('/');
 });
 
-router.get('/getPlaylist', function(req, res) {
+router.get('/playlist', function(req, res) {
   return pool.getConnection(function(err, conn) {
     if (err) {
       console.log(err);
@@ -126,7 +126,7 @@ router.post('/signup', function(req, res) {
 });
 
 router.post('/playlist/add', function(req, res) {
-  return connection.connect(function(err) {
+  return pool.getConnection(function(err, conn) {
     var playlist;
     if (err) {
       console.log('error connection: ' + err.stack);
@@ -135,12 +135,12 @@ router.post('/playlist/add', function(req, res) {
       user_id: req.session.user.user_id,
       playlist_name: req.body.playlist_name
     };
-    return connection.query("INSERT INTO Playlists SET ?", playlist, function(err, results) {
+    return conn.query("INSERT INTO Playlists SET ?", playlist, function(err, results) {
       if (err) {
         console.log(err);
       }
       console.log(results);
-      connection.end();
+      conn.release();
       if (req.accepts('application/json') && !req.accepts('html')) {
         return res.json(results);
       } else {

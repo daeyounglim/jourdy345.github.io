@@ -165,7 +165,6 @@ jQuery ->
       @list.push item
       
       localStorage.videos = JSON.stringify @list
-
     add_to_next: (item) ->
       @list.unshift item
 
@@ -188,9 +187,6 @@ jQuery ->
         $playtemplate
           .find '.playlist-title'
           .html item.title
-        $playtemplate
-          .find '.playlist-date'
-          .html item.date
         $playtemplate
           .data 'video-id', item.id
         $playtemplate
@@ -215,6 +211,17 @@ jQuery ->
           window.Playlist.play $this.attr 'id'
       
       window.ShuffledPlaylist = _.shuffle @get()
+      # $.ajax
+      #   url: '/video/add'
+      #   method: 'post'
+      #   data:
+      #     video_list: JSON.stringify(@get())
+      #   success: (d, s, x) ->
+      #     console.log x.status
+      #     console.log d
+      #   error: (x, s, d) ->
+      #     console.log s, d
+      # return true
 
     play: (i) ->
       for item in @list
@@ -277,7 +284,6 @@ jQuery ->
             title: item.snippet.title
             id: item.id.videoId
             imgUrl: item.snippet.thumbnails.default.url
-            date: item.snippet.publishedAt[0..9]
             playing: 0
           }
         return data
@@ -421,9 +427,9 @@ jQuery ->
         <div role='tabpanel' class='tab-pane fade' id='addPlaylist'>
           <form>
             <div class='form-group'>
-              <p class='successfully-added hide'>Successfully added</p>
+              <p class='successfully-added hide' style='color:#C10010'>Successfully added</p>
               <label for='PlaylistName'>New Playlist</label>
-              <input type='text' class='form-control' name='PlaylistName' id='PlaylistName' placeholder='New Playlist' autocomplete='off'>
+              <input type='text' class='form-control' name='PlaylistName' id='PlaylistName' placeholder='New Playlist' autocomplete='off' autofocus>
             </div>
             <button type='submit' class='btn btn-success'>Add</button>
           </form>
@@ -459,10 +465,8 @@ jQuery ->
 
           return false
     .on 'click', ->
-      # $('.choosePlaylist-a')
-      #   .on 'show.bs.tab', ->
       $.ajax
-        url: '/getPlaylist'
+        url: '/playlist'
         method: 'get'
         success: (d, s, x) ->
           console.log x.status
@@ -483,9 +487,34 @@ jQuery ->
         error: (x, s, d) ->
           alert 'Error: ' + s
       return true
-  $('.playlist-popover a')
+  $('a[href=#choosePlaylist]')
     .on 'click', (e) ->
       e.preventDefault()
       e.stopPropagation()
       $(this).tab('show')
-      $('#PlaylistName').trigger 'focus'
+  $('a[href=#addPlaylist]')
+    .on 'click', (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      $(this).tab('show')
+
+
+
+
+  $('#comment').popover
+    html: true
+    content: "
+      <div>
+        <p></p>
+      </div>
+      <div>
+        <p> Leave a comment </p>
+        <form>
+            <div class='form-group'>
+              <label for='comment-form'>New Playlist</label>
+              <input type='text' class='form-control' name='comment-form' id='comment-form' autocomplete='off' autofocus>
+            </div>
+            <button type='submit' class='btn btn-success'>Add</button>
+        </form>
+      </div>
+      "

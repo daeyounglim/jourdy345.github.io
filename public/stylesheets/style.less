@@ -23,7 +23,7 @@ body {
 
 .mainlogo {
   color: @main-color;
-  &:hover:focus {
+  &:hover, &:focus {
     text-decoration: none;
   }
 }
@@ -50,7 +50,7 @@ body {
     color: #C1C1C1;
     background-color: #FFF;
     border-color: #C1C1C1;
-    &:active:focus {
+    &:active, &:focus {
       color: #C1C1C1;
       background-color: #FFFFFF;
       border-color: #C1C1C1;
@@ -60,6 +60,7 @@ body {
     }
     &:hover {
       color: @main-color;
+      border-color: @main-color;
       background-color: #FFFFFF;
       outline: 0;
       -webkit-box-shadow: none;
@@ -69,15 +70,15 @@ body {
 }
 
 .button-active {
-  color: @main-color;
-  border-color: @main-color;
+  color: @main-color !important;
+  border-color: @main-color !important;
   outline: 0;
   -webkit-box-shadow: none;
           box-shadow: none;
 }
 
 .form-control {
-  border-radius: 0;
+  border-radius: 0 !important;
   &:focus {
     border-color: @main-color;
     outline: 0;
@@ -178,8 +179,8 @@ button.fixed-button {
 }
 
 button.square {
-  border-radius: 0 !important;
-  outline: none !important;
+  border-radius: 0;
+  outline: none;
 }
 
 @keyframes equalizer1 {
@@ -334,7 +335,7 @@ p.related-title {
 
 p.related-description {
   clear: both;
-  border-left: solid 3px #DFDFDF;
+  border-left: solid 2px #DFDFDF;
   padding: 10px;
 }
 
@@ -404,8 +405,12 @@ p.related-description {
   margin-left: 10px;
 }
 
+#comment, #comment:hover:focus:active {
+  text-decoration: none;
+}
+
 .icon-bubble {
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .comment-number {
