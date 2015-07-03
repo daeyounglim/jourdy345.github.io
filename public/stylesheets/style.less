@@ -1,13 +1,105 @@
 @import "../bower_components/bootstrap/less/bootstrap.less";
+@import url(http://fonts.googleapis.com/css?family=Merriweather:400,400italic,300italic,300,700,700italic,900,900italic);
 
+@main-intro-font: 'Merriweather';
 @body-background-color: #FEFEFE;
 @main-color: #C10010;
 @background-color: #F4F7F8;
+@border-color: #E3E3E3;
+@test-color: #FD8500;
+
+
+@navbar-default-color:             #fff0df;
+@navbar-default-bg:                @test-color;
+@navbar-default-border:            @test-color;
+
+// Navbar links
+@navbar-default-link-color:                #FFF;
+@navbar-default-link-hover-color:          #FFF;
+@navbar-default-link-hover-bg:             lighten(@navbar-default-bg, 10%);
+@navbar-default-link-active-color:         #fff;
+@navbar-default-link-active-bg:            lighten(@navbar-default-bg, 10%);
+@navbar-default-link-disabled-color:       #ccc;
+@navbar-default-link-disabled-bg:          transparent;
+
+// Navbar brand label
+@navbar-default-brand-color:               @navbar-default-link-color;
+@navbar-default-brand-hover-color:         darken(@navbar-default-brand-color, 10%);
+@navbar-default-brand-hover-bg:            transparent;
+
+// Navbar toggle
+@navbar-default-toggle-hover-bg:           #FFF;
+@navbar-default-toggle-icon-bar-bg:        #FFF;
+@navbar-default-toggle-border-color:       #FFF;
+
+
+
+@btn-warning-color:              #fff;
+@btn-warning-bg:                 @test-color;
+@btn-warning-border:             lighten(@btn-warning-bg, 5%);
+
+
 
 @table-bg-hover: @background-color;
 @popover-max-width: 476px;
 @icon-font-path: '/bower_components/bootstrap/fonts/';
 
+
+.button-variant(@color; @background; @border) {
+  color: @color;
+  background-color: @background;
+  border-color: @border;
+
+  &:focus,
+  &.focus {
+    color: @color;
+    background-color: lighten(@background, 10%);
+        border-color: lighten(@border, 25%);
+  }
+  &:hover {
+    color: @color;
+    background-color: lighten(@background, 10%);
+        border-color: lighten(@border, 12%);
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: @color;
+    background-color: lighten(@background, 10%);
+        border-color: lighten(@border, 12%);
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: @color;
+      background-color: lighten(@background, 17%);
+          border-color: lighten(@border, 25%);
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}
 
 
 
@@ -21,6 +113,43 @@ body {
   font: 14px 'Open Sans', Arial, sans-serif;
   background-color: @body-background-color;
 }
+
+.main-intro-h2 {
+  margin-top: 90px;
+  width: 950px;
+  color: lighten(black, 30%);
+  font-family: @main-intro-font;
+  border-bottom: 1px solid @border-color;
+  height: 50px;
+}
+
+.main-intro-h4 {
+  font-family: @main-intro-font;
+  font-weight: 100;
+  margin-top: 20px;
+  line-height: 40px;
+  width: 950px;
+}
+
+.main-intro-content {
+  font-family: @main-intro-font;
+  height: 220px;
+  border-bottom: 1px solid @border-color;
+  margin-bottom: 50px;
+  padding: 10px;
+  p {
+    font-size: 20px;
+    margin-top: 30px;
+    line-height: 30px;
+    font-weight: 100;
+  }
+}
+
+i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
+  font-size: 60px;
+  color: @test-color;
+}
+
 
 
 .mainlogo {

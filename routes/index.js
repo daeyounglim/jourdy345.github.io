@@ -11,7 +11,7 @@ connection = require('../db/db').connection;
 pool = require('../db/db').pool;
 
 router.get('/', function(req, res, next) {
-  return res.render('index.jade', {
+  return res.render('main.jade', {
     title: 'Express'
   });
 });

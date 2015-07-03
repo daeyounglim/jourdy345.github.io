@@ -7,7 +7,7 @@ pool = require('../db/db').pool
 #GET methods
 ## GET home page.
 router.get '/', (req, res, next) ->
-  res.render 'index.jade', title: 'Express'
+  res.render 'main.jade', title: 'Express'
 
 ## Redirect success / failure
 router.get '/feedback/success', (req, res) ->
@@ -23,6 +23,8 @@ router.get '/signup', (req, res) ->
 router.get '/logout', (req, res) ->
   req.session = {}
   return res.redirect '/'
+
+
 
 ## GET Playlist
 router.get '/playlist', (req, res) ->

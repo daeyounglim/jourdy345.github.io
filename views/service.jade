@@ -1,0 +1,48 @@
+extends layout
+
+block content
+  //- script.
+  //-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  //-   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  //-   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  //-   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  //-   ga('create', 'UA-64280553-1', 'auto');
+  //-   ga('send', 'pageview');
+      // Button trigger modal
+  nav.navbar.navbar-default
+    .container-fluid
+      .collapse.navbar-collapse
+        ul.nav.navbar-nav
+          li.active: a(href='#') About
+          li: a(href='#') Service
+          li: a(href='#') Contact
+  .container
+    .row
+      .col-md-12
+        .main-intro.text-center
+          h2.main-intro-h2.center-block What is Listify?
+          h4.main-intro-h4.center-block.multiline.text-center.
+            Listify helps you make YouTube Playlists easily. You can add songs to a Playlist and set Playlist behaviour
+            just like any other music player. You can create, share multiple Playlists, follow friends, and see what
+            songs they are listening to. Try out and check how easy it is to do what's impossible with YouTube.
+  .container(style='margin-top: 100px')
+    .row
+      .col-md-4 
+        .main-intro-content
+          i.icon-list-unordered.center-block.text-center
+          p.multiline.text-center.
+            Create Playlists with each
+            having its own theme.
+      .col-md-4
+        .main-intro-content
+          i.icon-gear.center-block.text-center
+          p.text-center.multiline.
+            Choose between
+            <em> Repeat all / Repeat one / Shuffle </em>
+      .col-md-4
+        .main-intro-content
+          i.icon-repo-forked.center-block.text-center
+          p.text-center.
+            Fork other users' Playlists
+
