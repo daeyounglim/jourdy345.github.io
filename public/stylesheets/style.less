@@ -6,7 +6,8 @@
 @main-color: #C10010;
 @background-color: #F4F7F8;
 @border-color: #E3E3E3;
-@test-color: #FD8500;
+// @test-color: #FD8500;
+@test-color: tomato;
 
 
 @navbar-default-color:             #fff0df;
@@ -102,6 +103,11 @@
 }
 
 
+.container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 
 * {
   -webkit-box-sizing: border-box;
@@ -110,29 +116,28 @@
 }
 
 body {
-  font: 14px 'Open Sans', Arial, sans-serif;
+  font: 14px 'Merriweather', serif;
   background-color: @body-background-color;
 }
 
 .main-intro-h2 {
   margin-top: 90px;
-  width: 950px;
   color: lighten(black, 30%);
   font-family: @main-intro-font;
-  border-bottom: 1px solid @border-color;
   height: 50px;
 }
 
 .main-intro-h4 {
-  font-family: @main-intro-font;
+  font-family: @main-intro-font, serif;
   font-weight: 100;
   margin-top: 20px;
+  padding-bottom: 20px;
   line-height: 40px;
-  width: 950px;
+  border-bottom: 1px solid @border-color;
 }
 
 .main-intro-content {
-  font-family: @main-intro-font;
+  font-family: @main-intro-font, serif;
   height: 220px;
   border-bottom: 1px solid @border-color;
   margin-bottom: 50px;
@@ -140,6 +145,7 @@ body {
   p {
     font-size: 20px;
     margin-top: 30px;
+    margin-bottom: 100px;
     line-height: 30px;
     font-weight: 100;
   }
@@ -150,10 +156,65 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
   color: @test-color;
 }
 
+.main-sign-in {
+  margin-top: 50px;
+  font-family: @main-intro-font, serif;
+}
+
+.no-sign-in {
+  margin-top: 20px;
+  margin-bottom: 100px;
+  font-family: @main-intro-font, serif;
+  a {
+    color: lighten(black, 20%);
+  }
+}
+
+// /main/service
+.icon-mark-github {
+  font-size: 20px;
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.play-video, .add-video {
+  &:hover{
+    background-color: darken(@background-color, 5%);
+  }
+}
+
+#playlist {
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+}
+
+.item {
+  border-bottom: 1px solid #CCC;
+  line-height: 23px;
+  padding: 10px;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:nth-child(even) {
+    background-color: #F3F3F3;
+  }
+}
+
+.video-search-result {
+  &:nth-child(even) .row {
+    background-color: #F3F3F3;
+  }
+}
+
+
 
 
 .mainlogo {
   color: @main-color;
+  margin-bottom: 50px;
   &:hover, &:focus {
     text-decoration: none;
   }
@@ -209,9 +270,8 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
 }
 
 .form-control {
-  border-radius: 0 !important;
   &:focus {
-    border-color: @main-color;
+    border-color: @test-color;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
@@ -228,26 +288,22 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
   padding: 0 30px;
 }
 
-#player {
-  margin-top: 15px;
-}
+// #playlist {
+//   height: 700px;
+//   border-bottom: 1px solid #EAEAEA;
+//   overflow: auto;
+// }
 
-#playlist {
-  height: 700px;
-  border-bottom: 1px solid #EAEAEA;
-  overflow: auto;
-}
+// #playlist table {
+//   text-align: justify;
+// }
 
-#playlist table {
-  text-align: justify;
-}
-
-#playlist .item {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
+// #playlist .item {
+//   -webkit-user-select: none;
+//   -moz-user-select: none;
+//   -ms-user-select: none;
+//   user-select: none;
+// }
 
 
 .glyphicon-remove {
@@ -431,16 +487,15 @@ button.square {
 
 
 .btn-success{
-  color: @main-color;
+  color: @test-color;
   background-color: rgba(0, 0, 0, 0);
-  border-color: @main-color;
-  border-radius: 0;
+  border-color: @test-color;
 }
 
 .btn-success.active,.btn-success.focus,.btn-success:active,.btn-success:focus,.btn-success:hover,.open>.dropdown-toggle.btn-success{
   color:#FFFFFF;
-  background-color: @main-color;
-  border-color: @main-color;
+  background-color: @test-color;
+  border-color: @test-color;
   outline: none;
 }
 

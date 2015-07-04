@@ -16,6 +16,10 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/main/service', function(req, res) {
+  return res.render('main_service.jade');
+});
+
 router.get('/feedback/success', function(req, res) {
   return res.render('feedback_success.jade');
 });

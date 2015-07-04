@@ -10,6 +10,29 @@ block content
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
       // Button trigger modal
+  .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        form.form-horizontal(action='/signin', method='post')
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;
+            h4.modal-title(id='myModalLabel') Sign in
+          .modal-body
+            .form-group
+              label.col-sm-2.control-label(for='UserID') User ID
+              .col-sm-10
+                input#UserID.form-control(name='UserAccount', type='text')
+            .form-group
+              label.col-sm-2.control-label(for='UserPassword') Password
+              .col-sm-10
+                input#UserPassword.form-control(name='UserPassword', type='password')
+            .modal-footer
+              .col-md-6
+              .col-md-6
+                a.signup-link(href='/signup'): p.text-warning Don't have an account? Sign up now!
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                button.btn.btn-success(type='submit') Sign in
   nav.navbar.navbar-default
     .container-fluid
       .collapse.navbar-collapse
@@ -25,7 +48,7 @@ block content
           h4.main-intro-h4.center-block.multiline.text-center.
             Listify helps you make YouTube Playlists easily. You can add songs to a Playlist and set Playlist behaviour
             just like any other music player. You can create, share multiple Playlists, follow friends, and see what
-            songs they are listening to. Try out and check how easy it is to do what's impossible with YouTube.
+            songs they are listening to. Try out and check how easy it is to do what had been impossible with YouTube.
   .container(style='margin-top: 100px')
     .row
       .col-md-4 
@@ -33,7 +56,7 @@ block content
           i.icon-list-unordered.center-block.text-center
           p.multiline.text-center.
             Create Playlists with each
-            having its own theme.
+            having its own theme
       .col-md-4
         .main-intro-content
           i.icon-gear.center-block.text-center
@@ -47,4 +70,7 @@ block content
             Fork other users' Playlists
 
       .col-md-12
-        button.btn.btn-warning.main-sign-in.center-block(type='text') Sign in
+        button.btn.btn-warning.btn-lg.main-sign-in.center-block(type='button', data-toggle='modal', data-target='#signinModal') Sign in
+        if locals.session.error
+          p.text-center #{locals.session.error}
+        p.no-sign-in.text-center: a(href='/main/service') continue without signing in

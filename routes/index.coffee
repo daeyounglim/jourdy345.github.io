@@ -9,6 +9,9 @@ pool = require('../db/db').pool
 router.get '/', (req, res, next) ->
   res.render 'main.jade', title: 'Express'
 
+router.get '/main/service', (req, res) ->
+  res.render 'main_service.jade'
+
 ## Redirect success / failure
 router.get '/feedback/success', (req, res) ->
   res.render 'feedback_success.jade'

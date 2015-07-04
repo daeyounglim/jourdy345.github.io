@@ -1,0 +1,65 @@
+extends layout
+
+block content
+  //- script.
+  //-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  //-   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  //-   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  //-   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  //-   ga('create', 'UA-64280553-1', 'auto');
+  //-   ga('send', 'pageview');
+      // Button trigger modal
+  nav.navbar.navbar-default
+    .container-fluid
+      .navbar-header
+        a.navbar-brand(href='/main')
+          i.icon-mark-github
+        form.navbar-form.navbar-left.video-search-form(role="search")
+          .form-group
+            input(type="text" class="form-control" placeholder="Search")
+          button.btn.btn-default(type="submit", style="margin-left: 10px"): i.glyphicon.glyphicon-search
+        a(href='/signin'): button.btn.btn-default(type='button') Sign in
+  .container-fluid
+    .row
+      .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist
+        .row
+          .col-xs-12.col-sm-12
+            #player
+        .row.main-playlist(style='padding: 10px')
+          .col-xs-10.col-sm-10(style='line-height: 23px;') Playlist
+          .col-xs-1.col-sm-1
+            i.icon-plus(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+          .col-xs-1.col-sm-1  
+            i.icon-block-menu(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+        .row.play-template.hide
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
+          .col-xs-9.col-sm-9.col-md-9.col-lg-9(style='font-weight:100; font-size: 12px') dd
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-play(style='color: tomato; cursor: pointer; line-height: 23px; font-size: 18px;')
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-cross(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
+      .col-md-1.col-lg-1
+      .col-md-8.col-lg-8
+        .when-no-result
+          p.text-muted(style='font-size: 40px; margin-top: 100px;') Search Results will appear here
+        .video-search-title.hide(style='font-size: 40px; padding: 10px;') Results
+        .video-search-results(style='border-bottom: 1px solid #D3D3D3; margin-bottom: 50px;')
+          .video-search-result-template.hide
+            .row(style='border-bottom: 1px solid #D3D3D3;')
+              .col-md-1.text-center(style='line-height: 120px; font-size: 30px; font-style: italic;')
+              .col-md-2(style='line-height: 120px;')
+                img(src='http://bin.zari.me/120x120' style='line-height: 120px;')
+              .col-md-7(style='padding: 10px; line-height: 20px')
+              .col-md-1.play-video.text-center(style='line-height: 120px; cursor: pointer')
+                i.icon-play(style='font-size: 30px; color: tomato;')
+              .col-md-1.add-video.text-center(style='line-height: 120px; cursor: pointer;')
+                i.icon-plus(style='font-size: 30px; color: #CCC')
+          
+
+
+
+
+
+
+

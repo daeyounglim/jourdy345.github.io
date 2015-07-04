@@ -37,17 +37,17 @@ jQuery ->
         {string: navigator.userAgent, subString: "Opera", identity: "Opera"}
     ]
     
-  BrowserDetect.init()
-  if BrowserDetect.browser is 'Explorer'
-    Messenger().post
-      message: 'Oh! I\'m sorry but features are limited on Internet Explorer.'
-      type: 'error'
-      showCloseButton: true
-  else
-    Messenger().post
-      message: 'Good to see you off Internet Explorer!'
-      type: 'info'
-      showCloseButton: true
+  # BrowserDetect.init()
+  # if BrowserDetect.browser is 'Explorer'
+  #   Messenger().post
+  #     message: 'Oh! I\'m sorry but features are limited on Internet Explorer.'
+  #     type: 'error'
+  #     showCloseButton: true
+  # else
+  #   Messenger().post
+  #     message: 'Good to see you off Internet Explorer!'
+  #     type: 'info'
+  #     showCloseButton: true
 
 
   window.Player = undefined
@@ -132,16 +132,25 @@ jQuery ->
 
   window.onYouTubeIframeAPIReady = ->
     window.Player = new YT.Player 'player',
-      height: '631.8'
-      width: '1036.8'
+      height: '200'
+      width: '300'
       videoId: ''
       playerVars:
         'autoplay': 1
         'controls': 1
       events:
-        # 'onReady': onPlayerReady
         'onStateChange': onPlayerStateChange
+    width = $('.main-playlist').width()
+    window.Player.setSize(width, width*9/16)
     return
+
+
+  $(window)
+    .on 'resize', (e) ->
+      width = $('.main-playlist').width()
+      window.Player.setSize(width, width*9/16)
+
+
 
   ## Create a class to wrap all the functions needed when controlling the playlist
   class Playlist
@@ -170,7 +179,6 @@ jQuery ->
       @list.unshift item
       
     render: ->
-      $playtemplate = $ '.play-template'
       $ '#playlist .item'
         .remove()
 
@@ -179,8 +187,16 @@ jQuery ->
           return chr.youtube_video_id is item.youtube_video_id
         $playtemplate = $('#playlist .play-template').clone()
         $playtemplate
-          .find '.playlist-title'
-          .html item.video_title
+          .find '.col-sm-1:first'
+          .html index+1
+        if item.video_title.length > 40
+          $playtemplate
+            .find '.col-md-9'
+            .html item.video_title[0..39] + '...'
+        else
+          $playtemplate
+            .find '.col-md-9'
+            .html item.video_title
         $playtemplate
           .data 'video-id', item.youtube_video_id
         $playtemplate
@@ -193,18 +209,19 @@ jQuery ->
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $playtemplate.addClass 'item'
-        $ '#playlist tbody'
+        $ '#playlist'
           .append $playtemplate
-      $ '#playlist .item'
+      $ '#playlist .item .icon-play'
         .on 'click', (e) ->
           $this = $ this
-          $this.addClass 'active'
-          $this.siblings().removeClass 'active'
-        .on 'dblclick', (e) ->
+          $item = $this.closest '.item'
+          window.Playlist.play $item.attr 'id'
+      $ '#playlist .item .icon-cross'
+        .on 'click', (e) ->
           $this = $ this
-          offset = $this.find('td:first').offset()
-          height = $this.height()
-          window.Playlist.play $this.attr 'id'
+          $item = $this.closest '.item'
+          window.Playlist.remove $item.attr 'id'
+      
       
       window.ShuffledPlaylist = _.shuffle @get()
       # $.ajax
@@ -220,15 +237,15 @@ jQuery ->
       # return true
 
     play: (i) ->
-      for item in @list
-        item.playing = 0
-      @list[i].playing = 1
-      offset = $("#" + i).find('td:first').offset()
-      height = $("#" + i).height()
-      $ '.bar-container'
-        .css
-          'top': offset.top + 37 + height * 0.5
-          'left': offset.left - 10
+      # for item in @list
+      #   item.playing = 0
+      # @list[i].playing = 1
+      # offset = $("#" + i).find('td:first').offset()
+      # height = $("#" + i).height()
+      # $ '.bar-container'
+      #   .css
+      #     'top': offset.top + 37 + height * 0.5
+      #     'left': offset.left - 10
       window.Player.loadVideoById @list[i].youtube_video_id, 0, 'large'
 
 
@@ -264,6 +281,89 @@ jQuery ->
 
 
   window.Playlist = new Playlist()
+
+
+
+  $ '.video-search-form'
+    .on 'submit', (e) ->
+      $this = $ this
+      __QUERY__ = $this.find('input').val()
+      if __QUERY__.trim().length is 0
+        e.preventDefault()
+        e.stopPropagation()
+        return alert 'Please insert a search string'
+      $.ajax
+        url: "https://www.googleapis.com/youtube/v3/search?q=#{__QUERY__}&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM"
+        method: 'get'
+        success: (d, s, x) ->
+          console.log x.status
+          $ '.when-no-result'
+            .addClass 'hide'
+          $ '.video-search-title'
+            .removeClass 'hide'
+            .html 'Results for ' + '<em>" ' +  __QUERY__ + ' "</em>'
+          $ '.video-search-result'
+            .remove()
+          for item in d.items
+            index = _.findIndex d.items, (chr) ->
+              return chr.id.videoId is item.id.videoId
+            $template = $('.video-search-result-template').clone()
+            $template
+              .find 'img'
+              .attr 'src', item.snippet.thumbnails.default.url
+            $template
+              .find '.col-md-1:first'
+              .html index+1
+            $template
+              .find '.col-md-7'
+              .html item.snippet.title
+            $template
+              .data 'video-id', item.id.videoId
+            $template
+              .attr 'data-video-id', item.id.videoId
+            $template
+              .attr 'data-thumbnail', item.snippet.thumbnails.default.url
+            $template
+              .attr 'data-title', item.snippet.title
+            $template
+              .removeClass 'hide'
+            $template
+              .removeClass 'video-search-result-template'
+            $template
+              .addClass 'video-search-result'
+            $ '.video-search-results'
+              .append $template
+          $ '.video-search-result .add-video'
+            .on 'click', (e) ->
+              $this = $ this 
+              $item = $this.closest '.video-search-result'
+              window.Playlist.add
+                youtube_video_id: $item.data 'video-id'
+                video_title: $item.find('.col-md-7').html()
+                imgUrl: $item.find('img').attr('src')
+              window.Playlist.render()
+          $ '.video-search-result .play-video'
+            .on 'click', (e) ->
+              $this = $ this
+              $item = $this.closest '.video-search-result'
+              window.Player.loadVideoById $item.data 'video-id', 'large'
+        error: (x, s, d) ->
+          console.log s, d
+      return false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   Results = new Bloodhound 
     datumTokenizer: (d) ->
@@ -365,6 +465,14 @@ jQuery ->
         e.preventDefault()
         e.stopPropagation()
         alert 'No running video.'
+
+
+  
+
+
+
+
+
 
 
   $ '#signinModal'
