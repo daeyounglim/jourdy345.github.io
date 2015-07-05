@@ -9,17 +9,24 @@ block content
 
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
-  #template-playlist-popover.hide(style='min-width:200px;')
-  #template-playlist-item.hide
-    .row(style='min-width:200px;')
-      .col-md-12.col-lg-12
-        span.name(style='padding:5px 10px;')
-
-  #menu-popover.hide
-    .row
-      .col-md-12.col-lg-12
-        .appendPlaylist
-          .choosePlaylist-template.hide
+  .modal.fade#addBlankPlaylistModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        form.form-horizontal(action='/playlist/add', method='post')
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;
+            h4.modal-title(id='myModalLabel') Create a new Playlist
+          .modal-body
+            .form-group
+              label.col-sm-2.control-label(for='newBlankPlaylistName') Name
+              .col-sm-10
+                input#newBlankPlaylistName.form-control(name='blank_playlist_name', type='text')
+            .modal-footer
+              .col-md-6
+              .col-md-6
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                button.btn.btn-success(type='submit') Submit
   .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
       .modal-content
@@ -49,12 +56,18 @@ block content
         .row
           .col-xs-12.col-sm-12
             #player
+        .row.playlist-playlist-menu.hide(style='padding: 10px; background-color: tomato; color: #EEE')
+          .col-xs-10.col-sm-10.col-md-10.col-lg-10 My Playlists
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-plus.add-blank-playlist(data-toggle='modal' data-target='#addBlankPlaylistModal' style='cursor: pointer; line-height: 23px; font-size: 18px;')
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-music(style='cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.main-playlist(style='padding: 10px; background-color: tomato; color: #EEE')
           .col-xs-10.col-sm-10.col-md-10.col-lg-10 New Playlist
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-plus.add-playlist(style='cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
-            i.icon-block-menu(tabindex="0" role="button" data-toggle="popover" data-placement="bottom" data-title="Choose a Playlist" style='cursor: pointer; line-height: 23px; font-size: 18px;')
+            i.icon-block-menu(style='cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.playlist-slide.hide
           .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
           .col-xs-10.col-sm-10.col-md-10.col-lg-10(style='font-weight:100; font-size: 12px; cursor: pointer;') dd
@@ -83,12 +96,11 @@ block content
                   img.img-self.img-circle(src='http://wynway.com/wp-content/uploads/2014/11/blank_person_81.png')
                   | #{locals.session.user.user_id}
                   a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button(style='color: #AAA') Log out
-                  button.setting-button.btn.btn-xs.btn-success(type='text'): span.glyphicon.glyphicon-cog
         .row              
-          .col-md-1.col-lg-1
-          .col-md-8.col-lg-8
+          .col-md-12.col-lg-12(style='border-left: 1px solid tomato;')
             .when-no-result
-              p.text-muted(style='font-size: 40px; margin-top: 100px;') Search Results will appear here
+              p.text-muted(style='font-size: 40px; margin-left: 50px; margin-top: 100px;') Search Results will appear here
+              .nothing(style='height: 700px;')
             .video-search-title.hide(style='font-size: 40px; padding: 10px;') Results
             .video-search-results(style='border-bottom: 1px solid #D3D3D3; margin-bottom: 50px;')
               .video-search-result-template.hide

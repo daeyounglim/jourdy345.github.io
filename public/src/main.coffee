@@ -351,57 +351,6 @@ jQuery ->
           console.log s, d
       return false
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  Results = new Bloodhound 
-    datumTokenizer: (d) ->
-      Bloodhound.tokenizers.whitespace(d.title)
-    queryTokenizer: Bloodhound.tokenizers.whitespace
-    limit: 50
-    remote: 
-      url: "https://www.googleapis.com/youtube/v3/search?q=__QUERY__&part=snippet&maxResults=50&type=video&key=AIzaSyCImmWz0DcJdeD45YTwGB_ZmhNv167bwpM"
-      wildcard: '__QUERY__'
-      filter: (response) ->
-        data = []
-        for item in response.items
-          data.push {
-            video_title: item.snippet.title
-            youtube_video_id: item.id.videoId
-            imgUrl: item.snippet.thumbnails.default.url
-            playing: 0
-          }
-        return data
-  
-  Results.initialize()
-  $ '#bloodhound .typeahead'
-    .typeahead 
-      limit: 5
-      minLength: 1
-      highlight: true
-    , 
-      name: 'searchYoutube'
-      minLength: 1
-      highlight: true
-      valueKey: 'name'
-      source: Results.ttAdapter()
-      templates: 
-        suggestion: Handlebars.compile '<img src="{{imgUrl}}" /><p><strong>{{video_title}}</strong></p>'
-    .on 'typeahead:selected', (e, suggestion, name) ->
-      window.Playlist.add suggestion
-      window.Playlist.render()
-
   $ '.delete-all'
     .on 'click', (e) ->
       if window.Playlist.get().length
@@ -526,26 +475,35 @@ jQuery ->
             $ '#playlist'
               .append $template
           $ '#playlist .item'
-            .addClass 'animated slideOutRight'
+            .addClass 'animated fadeOutDown'
           $ '#playlist .item'
             .addClass 'hide'
           $ '.playlist-item'
             .removeClass 'hide'
-            .addClass 'animated slideInRight'
-          $ '.main-playlist .col-md-10'
-            .html 'My Playlists'
-          $ '.main-playlist i:first'
-            .removeClass 'add-playlist'
-            .addClass 'add-blank-playlist'
-          $ '.main-playlist i:last'
-            .removeClass 'icon-block-menu'
-            .addClass 'icon-music'
-
-
-          $ '.'
+            .addClass 'animated fadeInUp'
+          $ '.main-playlist'
+            .addClass 'hide'
+          $ '.playlist-playlist-menu'
+            .removeClass 'hide'
           true
         error: (x, s, d) ->
           alert 'Error: ' + s
+
+  $ '.icon-music'
+    .on 'click', (e) ->
+      window.Playlist.set JSON.parse(localStorage.videos or '[]')
+      window.Playlist.render()
+      $ '.playlist-item'
+        .addClass 'animated fadeOutDown'
+      $ '.playlist-item'
+        .addClass 'hide'
+      $ '#playlist .item'
+        .removeClass 'hide'
+        .addClass 'animated fadeInUp'
+      $ '.playlist-playlist-menu'
+        .addClass 'hide'
+      $ '.main-playlist'
+        .removeClass 'hide'
 
   $('a[data-target=#createPlaylistModal]')
     .on 'click', (e) ->
@@ -569,29 +527,61 @@ jQuery ->
           .addClass 'createPlaylist-item'
         $('.createPlaylist-body')
           .append $template
-  $('.createPlaylist-form')
+  $('#addBlankPlaylistModal form')
     .on 'submit', (e) ->
-      if $('#createPlaylist-input').val().trim().length is 0
+      e.preventDefault()
+      e.stopPropagation()
+      if $('#newBlankPlaylistName').val().trim().length is 0
         return alert 'Please make a name for the Playlist.'
         
       $.ajax
         url: '/playlist/add'
         method: 'post'
-        data: 
-          playlist_name: $('#createPlaylist-input').val()
-          video_list: JSON.stringify(window.Playlist.get())
-        headers: 
-          Accept: 'application/json'
+        headers:
+          Accept:
+            'application/json'
         success: (d, s, x) ->
           console.log d
           if x.status isnt 200
             return 'Error'
+          # clean
+          $ '.playlist-item'
+            .remove()
+          for each, i in d
+            console.log each
+            $template = $('.playlist-slide').clone()
+            $template
+              .find '.col-md-1:first'
+              .html i+1
+            $template
+              .find '.col-md-10'
+              .html each.playlist_name
+            $template
+              .removeClass 'playlist-slide'
+              .addClass 'playlist-item'
+            $ '#playlist'
+              .append $template
 
           true
         error: (x, s, d) ->
           console.log s, d
 
+      # $.ajax
+      #   url: '/playlist/add'
+      #   method: 'post'
+      #   data: 
+      #     playlist_name: $('#createPlaylist-input').val()
+      #     video_list: JSON.stringify(window.Playlist.get())
+      #   headers: 
+      #     Accept: 'application/json'
+      #   success: (d, s, x) ->
+      #     console.log d
+      #     if x.status isnt 200
+      #       return 'Error'
 
+      #     true
+      #   error: (x, s, d) ->
+      #     console.log s, d
 
 
 

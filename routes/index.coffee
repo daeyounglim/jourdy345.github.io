@@ -133,28 +133,42 @@ router.post '/signup', (req, res) ->
 router.post '/playlist/add', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
-    items = JSON.parse(req.body.video_list)
     playlist =
       user_id: req.session.user.user_id
-      playlist_name: req.body.playlist_name
+      playlist_name: req.body.blank_playlist_name
 
     conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
       console.log err if err
       console.log results
-      for item in items
-        post = 
-          playlist_id: results.insertId
-          youtube_video_id: item.id
-          user_id: req.session.user.user_id
-          video_title: item.title
-        conn.query "INSERT INTO Videos SET ?", post, (err, results) ->
-          console.log err if err
-          console.log results
-      conn.release()
-      if req.accepts('application/json') and not req.accepts('html')
-        res.json(results)
-      else
-        res.redirect('/')
+      conn.query "
+      SELECT *
+      FROM Playlists
+      WHERE user_id = ?
+      ", [req.session.user.user_id], (error, results) ->
+        conn.release()
+        console.log error if error
+        if req.accepts 'application/json' and not req.accepts 'html'
+          res
+            .status 200
+            .json results
+
+    # conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
+    #   console.log err if err
+    #   console.log results
+    #   for item in items
+    #     post = 
+    #       playlist_id: results.insertId
+    #       youtube_video_id: item.id
+    #       user_id: req.session.user.user_id
+    #       video_title: item.title
+    #     conn.query "INSERT INTO Videos SET ?", post, (err, results) ->
+    #       console.log err if err
+    #       console.log results
+    #   conn.release()
+    #   if req.accepts('application/json') and not req.accepts('html')
+    #     res.json(results)
+    #   else
+    #     res.redirect('/')
 
 # router.post '/video/add', (req, res) ->
 #   items = JSON.parse(req.body.video_list)
