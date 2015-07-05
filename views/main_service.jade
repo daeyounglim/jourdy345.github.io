@@ -9,29 +9,57 @@ block content
 
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
-      // Button trigger modal
-  nav.navbar.navbar-default
-    .container-fluid
-      .navbar-header
-        a.navbar-brand(href='/main')
-          i.icon-mark-github
-        form.navbar-form.navbar-left.video-search-form(role="search")
-          .form-group
-            input(type="text" class="form-control" placeholder="Search")
-          button.btn.btn-default(type="submit", style="margin-left: 10px"): i.glyphicon.glyphicon-search
-        a(href='/signin'): button.btn.btn-default(type='button') Sign in
+  #template-playlist-popover.hide(style='min-width:200px;')
+  #template-playlist-item.hide
+    .row(style='min-width:200px;')
+      .col-md-12.col-lg-12
+        span.name(style='padding:5px 10px;')
+
+  #menu-popover.hide
+    .row
+      .col-md-12.col-lg-12
+        .appendPlaylist
+          .choosePlaylist-template.hide
+  .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        form.form-horizontal(action='/signin', method='post')
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;
+            h4.modal-title(id='myModalLabel') Sign in
+          .modal-body
+            .form-group
+              label.col-sm-2.control-label(for='UserID') User ID
+              .col-sm-10
+                input#UserID.form-control(name='UserAccount', type='text')
+            .form-group
+              label.col-sm-2.control-label(for='UserPassword') Password
+              .col-sm-10
+                input#UserPassword.form-control(name='UserPassword', type='password')
+            .modal-footer
+              .col-md-6
+              .col-md-6
+                a.signup-link(href='/signup'): p(style='font-size: 12px;').text-warning Don't have an account? Sign up now!
+                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                button.btn.btn-success(type='submit') Sign in
   .container-fluid
     .row
       .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist
         .row
           .col-xs-12.col-sm-12
             #player
-        .row.main-playlist(style='padding: 10px')
-          .col-xs-10.col-sm-10(style='line-height: 23px;') Playlist
-          .col-xs-1.col-sm-1
-            i.icon-plus(style='cursor: pointer; line-height: 23px; font-size: 18px;')
-          .col-xs-1.col-sm-1  
-            i.icon-block-menu(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+        .row.main-playlist(style='padding: 10px; background-color: tomato; color: #EEE')
+          .col-xs-10.col-sm-10.col-md-10.col-lg-10 New Playlist
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-plus.add-playlist(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-block-menu(tabindex="0" role="button" data-toggle="popover" data-placement="bottom" data-title="Choose a Playlist" style='cursor: pointer; line-height: 23px; font-size: 18px;')
+        .row.playlist-slide.hide
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
+          .col-xs-10.col-sm-10.col-md-10.col-lg-10(style='font-weight:100; font-size: 12px; cursor: pointer;') dd
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-minus(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.play-template.hide
           .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
           .col-xs-9.col-sm-9.col-md-9.col-lg-9(style='font-weight:100; font-size: 12px') dd
@@ -39,23 +67,41 @@ block content
             i.icon-play(style='color: tomato; cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-cross(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
-      .col-md-1.col-lg-1
-      .col-md-8.col-lg-8
-        .when-no-result
-          p.text-muted(style='font-size: 40px; margin-top: 100px;') Search Results will appear here
-        .video-search-title.hide(style='font-size: 40px; padding: 10px;') Results
-        .video-search-results(style='border-bottom: 1px solid #D3D3D3; margin-bottom: 50px;')
-          .video-search-result-template.hide
-            .row(style='border-bottom: 1px solid #D3D3D3;')
-              .col-md-1.text-center(style='line-height: 120px; font-size: 30px; font-style: italic;')
-              .col-md-2(style='line-height: 120px;')
-                img(src='http://bin.zari.me/120x120' style='line-height: 120px;')
-              .col-md-7(style='padding: 10px; line-height: 20px')
-              .col-md-1.play-video.text-center(style='line-height: 120px; cursor: pointer')
-                i.icon-play(style='font-size: 30px; color: tomato;')
-              .col-md-1.add-video.text-center(style='line-height: 120px; cursor: pointer;')
-                i.icon-plus(style='font-size: 30px; color: #CCC')
-          
+      .col-md-9.col-lg-9
+        .row
+          .col-md-12.col-lg-12(style='border-bottom: 1px solid #D3D3D3; background-color: tomato; opacity: 0.7;')
+            nav.navbar.navbar-default
+              a.navbar-brand(href='/main'): i.icon-mark-github
+              form.navbar-form.video-search-form.pull-left(role='search')
+                .form-group
+                  input(type='text' class='form-control' placeholder='Search')
+                button.btn.btn-default(type='submit' style='margin-left: 10px;'): i.glyphicon.glyphicon-search
+              if !locals.session.user
+                button.btn.btn-default.pull-right(type='button' data-toggle='modal' data-target='#signinModal') Sign in
+              else
+                .self-p.pull-right(style='line-height: 53px;')
+                  img.img-self.img-circle(src='http://wynway.com/wp-content/uploads/2014/11/blank_person_81.png')
+                  | #{locals.session.user.user_id}
+                  a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button(style='color: #AAA') Log out
+                  button.setting-button.btn.btn-xs.btn-success(type='text'): span.glyphicon.glyphicon-cog
+        .row              
+          .col-md-1.col-lg-1
+          .col-md-8.col-lg-8
+            .when-no-result
+              p.text-muted(style='font-size: 40px; margin-top: 100px;') Search Results will appear here
+            .video-search-title.hide(style='font-size: 40px; padding: 10px;') Results
+            .video-search-results(style='border-bottom: 1px solid #D3D3D3; margin-bottom: 50px;')
+              .video-search-result-template.hide
+                .row(style='border-bottom: 1px solid #D3D3D3;')
+                  .col-md-1.text-center(style='line-height: 120px; font-size: 30px; font-style: italic;')
+                  .col-md-2(style='line-height: 120px;')
+                    img(src='http://bin.zari.me/120x120' style='line-height: 120px;')
+                  .col-md-7(style='padding: 10px; line-height: 20px')
+                  .col-md-1.play-video.text-center(style='line-height: 120px; cursor: pointer')
+                    i.icon-play(style='font-size: 30px; color: tomato;')
+                  .col-md-1.add-video.text-center(style='line-height: 120px; cursor: pointer;')
+                    i.icon-plus(style='font-size: 30px; color: #CCC')
+              
 
 
 

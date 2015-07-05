@@ -1,41 +1,41 @@
 jQuery ->
-  Messenger.options = {
-    theme: 'air'
-    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right'
-  }
-  BrowserDetect = 
-    init: ->
-        @browser = @searchString(@dataBrowser) or "Other";
-        @version = @searchVersion(navigator.userAgent) or @searchVersion(navigator.appVersion) or "Unknown";
+  # Messenger.options = {
+  #   theme: 'air'
+  #   extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right'
+  # }
+  # BrowserDetect = 
+  #   init: ->
+  #       @browser = @searchString(@dataBrowser) or "Other";
+  #       @version = @searchVersion(navigator.userAgent) or @searchVersion(navigator.appVersion) or "Unknown";
 
-    searchString: (data) -> 
-        for datum in data
-            dataString = datum.string
-            @versionSearchString = datum.subString
+  #   searchString: (data) -> 
+  #       for datum in data
+  #           dataString = datum.string
+  #           @versionSearchString = datum.subString
 
-            if dataString.indexOf(datum.subString) isnt -1
-                return datum.identity
+  #           if dataString.indexOf(datum.subString) isnt -1
+  #               return datum.identity
     
-    searchVersion: (dataString) ->
-        index = dataString.indexOf @versionSearchString
-        if index is -1
-          return
+  #   searchVersion: (dataString) ->
+  #       index = dataString.indexOf @versionSearchString
+  #       if index is -1
+  #         return
 
-        rv = dataString.indexOf "rv:"
-        if @versionSearchString is "Trident" and rv isnt -1
-            return parseFloat dataString.substring rv + 3
-        else
-          return parseFloat dataString.substring(index + @versionSearchString.length + 1)
+  #       rv = dataString.indexOf "rv:"
+  #       if @versionSearchString is "Trident" and rv isnt -1
+  #           return parseFloat dataString.substring rv + 3
+  #       else
+  #         return parseFloat dataString.substring(index + @versionSearchString.length + 1)
   
 
-    dataBrowser: [
-        {string: navigator.userAgent, subString: "Chrome", identity: "Chrome"},
-        {string: navigator.userAgent, subString: "MSIE", identity: "Explorer"},
-        {string: navigator.userAgent, subString: "Trident", identity: "Explorer"},
-        {string: navigator.userAgent, subString: "Firefox", identity: "Firefox"},
-        {string: navigator.userAgent, subString: "Safari", identity: "Safari"},
-        {string: navigator.userAgent, subString: "Opera", identity: "Opera"}
-    ]
+  #   dataBrowser: [
+  #       {string: navigator.userAgent, subString: "Chrome", identity: "Chrome"},
+  #       {string: navigator.userAgent, subString: "MSIE", identity: "Explorer"},
+  #       {string: navigator.userAgent, subString: "Trident", identity: "Explorer"},
+  #       {string: navigator.userAgent, subString: "Firefox", identity: "Firefox"},
+  #       {string: navigator.userAgent, subString: "Safari", identity: "Safari"},
+  #       {string: navigator.userAgent, subString: "Opera", identity: "Opera"}
+  #   ]
     
   # BrowserDetect.init()
   # if BrowserDetect.browser is 'Explorer'
@@ -270,14 +270,14 @@ jQuery ->
       tempPlaylist[i] = @list[mapping[i]] for i in [0..(@list.length-1)]
       @list[i] = tempPlaylist[i] for i in [0..(@list.length-1)]
       window.Playlist.render()
-      index = _.findIndex @list, (chr) ->
-        return chr.youtube_video_id is window.Player.getVideoData().video_id
-      offset = $('#'+index).find('td:first').offset()
-      height = $('#'+index).height()
-      $ '.bar-container'
-        .css
-          'top': offset.top + 37 + height * 0.5
-          'left': offset.left - 10
+      # index = _.findIndex @list, (chr) ->
+      #   return chr.youtube_video_id is window.Player.getVideoData().video_id
+      # offset = $('#'+index).find('td:first').offset()
+      # height = $('#'+index).height()
+      # $ '.bar-container'
+      #   .css
+      #     'top': offset.top + 37 + height * 0.5
+      #     'left': offset.left - 10
 
 
   window.Playlist = new Playlist()
@@ -496,66 +496,56 @@ jQuery ->
       if $('#signup-ConfirmPassword').val() isnt $('#signup-UserPassword').val()
         e.preventDefault()
         e.stopPropagation()
-        Messenger().post
-          message: 'Passwords do not match.'
-          type: 'error'
-          showCloseButton: true
+        alert 'Passwords do not match.'
         $('#signup-ConfirmPassword').focus()
 
-
-
-  $('.playlist-menu').popover 
-    html: true
-    content: "
-      <div class='appendPlaylist'>
-        <div class='choosePlaylist-template hide'>
-          <p>...</p>
-        </div>
-      </div>
-      "
-
-  $ '.playlist-menu'
-    .on 'click', ->
+  # get Playlists
+  $ '.main-playlist .icon-block-menu'
+    .on 'click', (e) ->
+      unless window.Session.user
+        return alert 'Please sign in for more features!'
       $.ajax
         url: '/playlist'
         method: 'get'
         success: (d, s, x) ->
-          console.log x.status
-          console.log d
-          $ '.choosePlaylist-item'
+          # clean
+          $ '.playlist-item'
             .remove()
-          for each in d
-            $template = $('.choosePlaylist-template').clone()
+          for each, i in d
+            console.log each
+            $template = $('.playlist-slide').clone()
             $template
-              .find 'p'
+              .find '.col-md-1:first'
+              .html i+1
+            $template
+              .find '.col-md-10'
               .html each.playlist_name
             $template
-              .attr 'data-playlist-id', each.id
-            $template.removeClass 'hide'
-            $template.removeClass 'choosePlaylist-template'
-            $template.addClass 'choosePlaylist-item'
-            $('.appendPlaylist').append $template
+              .removeClass 'playlist-slide'
+              .addClass 'playlist-item'
+            $ '#playlist'
+              .append $template
+          $ '#playlist .item'
+            .addClass 'animated slideOutRight'
+          $ '#playlist .item'
+            .addClass 'hide'
+          $ '.playlist-item'
+            .removeClass 'hide'
+            .addClass 'animated slideInRight'
+          $ '.main-playlist .col-md-10'
+            .html 'My Playlists'
+          $ '.main-playlist i:first'
+            .removeClass 'add-playlist'
+            .addClass 'add-blank-playlist'
+          $ '.main-playlist i:last'
+            .removeClass 'icon-block-menu'
+            .addClass 'icon-music'
 
-          $ '.choosePlaylist-item'
-            .on 'click', (e) ->
-              if confirm 'You could lose the current Playlist. Still want to proceed?'
-                data_playlist_id = $(this).attr('data-playlist-id')
-                $.ajax
-                  url: "/playlist/#{data_playlist_id}/videos"
-                  method: 'get'
-                  success: (d, s, x) ->
-                    console.log x.status
-                    window.Playlist.set(d)
-                    window.Playlist.render()
-                  error: (x, s, d) ->
-                    console.log s, d
-                return true
-              else
 
+          $ '.'
+          true
         error: (x, s, d) ->
           alert 'Error: ' + s
-      return true
-
 
   $('a[data-target=#createPlaylistModal]')
     .on 'click', (e) ->

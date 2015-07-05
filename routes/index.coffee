@@ -89,43 +89,43 @@ router.post '/feedback', (req, res) ->
 
 ## POST signin
 router.post '/signin', (req, res) ->
-  connection.connect (err) ->
+  pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
-    connection.query "
+    conn.query "
     SELECT * 
     FROM Users
     WHERE user_id = ?
       AND user_password = ?
     ", [req.body.UserAccount, req.body.UserPassword], (error, results, fields) ->
+      conn.release()
       if results
+        delete results[0].user_password
         req.session.user = results[0]
         console.log results
-        connection.end()
-        return res.redirect '/'
+        return res.redirect '/main/service'
       else
         req.session.error = 'Whoops! No match found!'
-        connection.end()
-        return res.redirect '/'
+        return res.redirect '/main/service'
 
 
 ## POST signup / STORE User ID/PW
 router.post '/signup', (req, res) ->
   post = {user_id: req.body.UserAccount, user_password: req.body.UserPassword}
-  connection.connect (err) ->
+  pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
     return true
     console.log 'connected as id'
 
-    connection.query "SELECT * FROM Users WHERE user_id = ?", req.body.UserAccount, (err, results) ->
+    conn.query "SELECT * FROM Users WHERE user_id = ?", req.body.UserAccount, (err, results) ->
       console.log err if err
       console.log results
       if not results
-        connection.query "INSERT INTO Users SET ?", post, (error, results, fields) ->
+        conn.query "INSERT INTO Users SET ?", post, (error, results, fields) ->
           console.log error, results, fields
-          connection.end()
+          conn.release()
           return res.redirect '/'
       else
-        connection.end()
+        conn.release()
         req.session.error = 'Account name already exists! Please pick another one.'
         return res.redirect '/signup'
 

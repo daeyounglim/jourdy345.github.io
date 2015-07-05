@@ -94,20 +94,20 @@ router.post('/feedback', function(req, res) {
 });
 
 router.post('/signin', function(req, res) {
-  return connection.connect(function(err) {
+  return pool.getConnection(function(err, conn) {
     if (err) {
       console.log('error connection: ' + err.stack);
     }
-    return connection.query("SELECT * FROM Users WHERE user_id = ? AND user_password = ?", [req.body.UserAccount, req.body.UserPassword], function(error, results, fields) {
+    return conn.query("SELECT * FROM Users WHERE user_id = ? AND user_password = ?", [req.body.UserAccount, req.body.UserPassword], function(error, results, fields) {
+      conn.release();
       if (results) {
+        delete results[0].user_password;
         req.session.user = results[0];
         console.log(results);
-        connection.end();
-        return res.redirect('/');
+        return res.redirect('/main/service');
       } else {
         req.session.error = 'Whoops! No match found!';
-        connection.end();
-        return res.redirect('/');
+        return res.redirect('/main/service');
       }
     });
   });
@@ -119,25 +119,25 @@ router.post('/signup', function(req, res) {
     user_id: req.body.UserAccount,
     user_password: req.body.UserPassword
   };
-  return connection.connect(function(err) {
+  return pool.getConnection(function(err, conn) {
     if (err) {
       console.log('error connection: ' + err.stack);
     }
     return true;
     console.log('connected as id');
-    return connection.query("SELECT * FROM Users WHERE user_id = ?", req.body.UserAccount, function(err, results) {
+    return conn.query("SELECT * FROM Users WHERE user_id = ?", req.body.UserAccount, function(err, results) {
       if (err) {
         console.log(err);
       }
       console.log(results);
       if (!results) {
-        return connection.query("INSERT INTO Users SET ?", post, function(error, results, fields) {
+        return conn.query("INSERT INTO Users SET ?", post, function(error, results, fields) {
           console.log(error, results, fields);
-          connection.end();
+          conn.release();
           return res.redirect('/');
         });
       } else {
-        connection.end();
+        conn.release();
         req.session.error = 'Account name already exists! Please pick another one.';
         return res.redirect('/signup');
       }

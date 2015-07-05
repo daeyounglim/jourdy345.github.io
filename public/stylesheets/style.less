@@ -10,9 +10,11 @@
 @test-color: tomato;
 
 
-@navbar-default-color:             #fff0df;
-@navbar-default-bg:                @test-color;
-@navbar-default-border:            @test-color;
+@navbar-default-color:             #B3A99C;
+@navbar-default-bg:                transparent;
+@navbar-default-border:            transparent;
+@navbar-border-radius:             0;
+@border-radius-base:               0;
 
 // Navbar links
 @navbar-default-link-color:                #FFF;
@@ -38,8 +40,6 @@
 @btn-warning-color:              #fff;
 @btn-warning-bg:                 @test-color;
 @btn-warning-border:             lighten(@btn-warning-bg, 5%);
-
-
 
 @table-bg-hover: @background-color;
 @popover-max-width: 476px;
@@ -202,6 +202,20 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
     background-color: #F3F3F3;
   }
 }
+
+.playlist-item {
+  border-bottom: 1px solid #CCC;
+  line-height: 23px;
+  padding: 10px;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:nth-child(even) {
+    background-color: #F3F3F3;
+  }
+}
+
 
 .video-search-result {
   &:nth-child(even) .row {
