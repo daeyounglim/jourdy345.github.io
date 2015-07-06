@@ -9,24 +9,6 @@ block content
 
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
-  .modal.fade#addBlankPlaylistModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-    .modal-dialog
-      .modal-content
-        form.form-horizontal(action='/playlist/add', method='post')
-          .modal-header
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') &times;
-            h4.modal-title(id='myModalLabel') Create a new Playlist
-          .modal-body
-            .form-group
-              label.col-sm-2.control-label(for='newBlankPlaylistName') Name
-              .col-sm-10
-                input#newBlankPlaylistName.form-control(name='blank_playlist_name', type='text')
-            .modal-footer
-              .col-md-6
-              .col-md-6
-                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
-                button.btn.btn-success(type='submit') Submit
   .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
       .modal-content
@@ -52,20 +34,20 @@ block content
                 button.btn.btn-success(type='submit') Sign in
   .container-fluid
     .row
-      .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist
+      .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist(style='height: 1000px; overflow-y: auto;')
         .row
           .col-xs-12.col-sm-12
             #player
-        .row.playlist-playlist-menu.hide(style='padding: 10px; background-color: tomato; color: #EEE')
+        .row.playlist-playlist-menu.hide(style='padding: 10px; background-color: #222; color: royalblue')
           .col-xs-10.col-sm-10.col-md-10.col-lg-10 My Playlists
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
-            i.icon-plus.add-blank-playlist(data-toggle='modal' data-target='#addBlankPlaylistModal' style='cursor: pointer; line-height: 23px; font-size: 18px;')
+            i.icon-plus.add-blank-playlist-button(style='cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-music(style='cursor: pointer; line-height: 23px; font-size: 18px;')
-        .row.main-playlist(style='padding: 10px; background-color: tomato; color: #EEE')
+        .row.main-playlist(style='padding: 10px; background-color: #222; color: royalblue')
           .col-xs-10.col-sm-10.col-md-10.col-lg-10 New Playlist
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
-            i.icon-plus.add-playlist(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+            i.icon-plus.add-playlist-button(style='cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-block-menu(style='cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.playlist-slide.hide
@@ -73,16 +55,48 @@ block content
           .col-xs-10.col-sm-10.col-md-10.col-lg-10(style='font-weight:100; font-size: 12px; cursor: pointer;') dd
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-minus(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
+        .row.add-blank-playlist.hide
+          .col-md-12
+            .row(style='padding: 10px; margin-bottom: 10px;')
+              .col-md-12 Name
+              .col-md-12
+                form(action='/playlist/add/blank', method='post')
+                  input.form-control(name='blank_playlist_name', type='text')
+            .row(style='padding: 10px')
+              .col-md-10
+              .col-md-1
+                i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
+              .col-md-1
+                i.icon-check(type='submit' style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
+        .row.add-playlist.hide
+          .col-md-12
+            .row(style='padding: 10px; margin-bottom: 10px;')
+              .col-md-12 Name
+                form(action='/playlist/add/new', method='post')
+                  input.form-control(name='blank_playlist_name', type='text')
+            .row(style='padding: 10px')
+              .col-md-10
+              .col-md-1
+                i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
+              .col-md-1
+                i.icon-check(type='submit' style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
+            .row(style='padding: 25px;') Videos to be added
+            .row.pending-videos.hide(style='padding-left: 25px; padding-right: 25px;')
+              .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
+              .col-xs-9.col-sm-9.col-md-9.col-lg-9(style='font-weight:100; font-size: 12px') dd
+              .col-xs-1.col-sm-1.col-md-1.col-lg-1
+              .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 20px; cursor: pointer;')
+                i.icon-minus(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.play-template.hide
           .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
           .col-xs-9.col-sm-9.col-md-9.col-lg-9(style='font-weight:100; font-size: 12px') dd
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
-            i.icon-play(style='color: tomato; cursor: pointer; line-height: 23px; font-size: 18px;')
+            i.icon-play(style='color: royalblue; cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-cross(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
-      .col-md-9.col-lg-9
+      .col-md-9.col-lg-9(style='border-left: 1px solid royalblue;')
         .row
-          .col-md-12.col-lg-12(style='border-bottom: 1px solid #D3D3D3; background-color: tomato; opacity: 0.7;')
+          .col-md-12.col-lg-12(style='background-color: #222; color: royalblue')
             nav.navbar.navbar-default
               a.navbar-brand(href='/main'): i.icon-mark-github
               form.navbar-form.video-search-form.pull-left(role='search')
@@ -90,27 +104,27 @@ block content
                   input(type='text' class='form-control' placeholder='Search')
                 button.btn.btn-default(type='submit' style='margin-left: 10px;'): i.glyphicon.glyphicon-search
               if !locals.session.user
-                button.btn.btn-default.pull-right(type='button' data-toggle='modal' data-target='#signinModal') Sign in
+                button.btn.btn-default.pull-right(type='button' data-toggle='modal' data-target='#signinModal' style='margin: 8px 8px 8px 0px;') Sign in
               else
                 .self-p.pull-right(style='line-height: 53px;')
                   img.img-self.img-circle(src='http://wynway.com/wp-content/uploads/2014/11/blank_person_81.png')
                   | #{locals.session.user.user_id}
-                  a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button(style='color: #AAA') Log out
+                  a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button(style='color: royalblue; background-color: #222; border-color: royalblue') Log out
         .row              
-          .col-md-12.col-lg-12(style='border-left: 1px solid tomato;')
+          .col-md-12.col-lg-12(style='border-left: 1px solid royalblue;')
             .when-no-result
-              p.text-muted(style='font-size: 40px; margin-left: 50px; margin-top: 100px;') Search Results will appear here
+              .text-muted(style='font-size: 40px; margin-left: 50px; margin-top: 100px;') Search Results will appear here
               .nothing(style='height: 700px;')
             .video-search-title.hide(style='font-size: 40px; padding: 10px;') Results
-            .video-search-results(style='border-bottom: 1px solid #D3D3D3; margin-bottom: 50px;')
+            .video-search-results(style='margin-bottom: 50px;')
               .video-search-result-template.hide
-                .row(style='border-bottom: 1px solid #D3D3D3;')
+                .row
                   .col-md-1.text-center(style='line-height: 120px; font-size: 30px; font-style: italic;')
                   .col-md-2(style='line-height: 120px;')
                     img(src='http://bin.zari.me/120x120' style='line-height: 120px;')
                   .col-md-7(style='padding: 10px; line-height: 20px')
-                  .col-md-1.play-video.text-center(style='line-height: 120px; cursor: pointer')
-                    i.icon-play(style='font-size: 30px; color: tomato;')
+                  .col-md-1.play-video.text-center(style='line-height: 120px; cursor: pointer; background-color: #000; border-color: royalblue;')
+                    i.icon-play(style='font-size: 30px; color: royalblue;')
                   .col-md-1.add-video.text-center(style='line-height: 120px; cursor: pointer;')
                     i.icon-plus(style='font-size: 30px; color: #CCC')
               

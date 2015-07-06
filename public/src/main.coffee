@@ -474,10 +474,10 @@ jQuery ->
               .addClass 'playlist-item'
             $ '#playlist'
               .append $template
-          $ '#playlist .item'
-            .addClass 'animated fadeOutDown'
-          $ '#playlist .item'
-            .addClass 'hide'
+          if not $('.add-playlist').hasClass('hide')
+            $('.add-playlist').addClass('hide')
+          if not $('.item').hasClass('hide')
+            $('.item').addClass('hide')
           $ '.playlist-item'
             .removeClass 'hide'
             .addClass 'animated fadeInUp'
@@ -493,10 +493,10 @@ jQuery ->
     .on 'click', (e) ->
       window.Playlist.set JSON.parse(localStorage.videos or '[]')
       window.Playlist.render()
-      $ '.playlist-item'
-        .addClass 'animated fadeOutDown'
-      $ '.playlist-item'
-        .addClass 'hide'
+      if not $('.add-blank-playlist').hasClass('hide')
+        $('.add-blank-playlist').addClass('hide')
+      if not $('.playlist-item').hasClass('hide')
+        $('.playlist-item').addClass('hide')
       $ '#playlist .item'
         .removeClass 'hide'
         .addClass 'animated fadeInUp'
@@ -505,29 +505,16 @@ jQuery ->
       $ '.main-playlist'
         .removeClass 'hide'
 
-  $('a[data-target=#createPlaylistModal]')
+  $ '.add-blank-playlist-button'
     .on 'click', (e) ->
-      list = window.Playlist.get()
-      console.log '>>>>', list
-      $ '.createPlaylist-item'
-        .remove()
-      for item in list
-        $template = $('.createPlaylist-template').clone()
-        $template
-          .find 'img'
-          .attr 'src', item.imgUrl
-        $template
-          .find 'p'
-          .html item.video_title
-        $template
-          .removeClass 'hide'
-        $template
-          .removeClass 'createPlaylist-template'
-        $template
-          .addClass 'createPlaylist-item'
-        $('.createPlaylist-body')
-          .append $template
-  $('#addBlankPlaylistModal form')
+      $ '.playlist-item'
+        .addClass 'hide'
+      $ '.add-blank-playlist'
+        .removeClass 'hide'
+        .addClass 'animated fadeInUp'
+
+
+  $('.add-blank-playlist form')
     .on 'submit', (e) ->
       e.preventDefault()
       e.stopPropagation()
@@ -535,11 +522,12 @@ jQuery ->
         return alert 'Please make a name for the Playlist.'
         
       $.ajax
-        url: '/playlist/add'
+        url: '/playlist/add/blank'
         method: 'post'
+        data:
+          blank_playlist_name: $('#newBlankPlaylistName').val()
         headers:
-          Accept:
-            'application/json'
+          Accept: 'application/json'
         success: (d, s, x) ->
           console.log d
           if x.status isnt 200
@@ -557,14 +545,71 @@ jQuery ->
               .find '.col-md-10'
               .html each.playlist_name
             $template
-              .removeClass 'playlist-slide'
+              .removeClass 'playlist-slide hide'
               .addClass 'playlist-item'
             $ '#playlist'
               .append $template
+          $('#addBlankPlaylistModal').modal('hide')
 
           true
         error: (x, s, d) ->
           console.log s, d
+
+  $ '.add-playlist-button'
+    .on 'click', (e) ->
+      list = window.Playlist.get()
+      $ '.add-videos-item'
+        .remove()
+      for each, i in list
+        $template = $('.add-playlist .pending-videos').clone()
+        $template
+          .find '.col-md-1:first'
+          .html i+1
+        $template
+          .find '.col-md-10'
+          .html each.video_title
+        $template
+          .attr 'id', i
+        $template
+          .removeClass 'pending-videos hide'
+          .addClass 'add-videos-item'
+        $ '.add-playlist'
+          .append $template
+      $ '.item'
+        .addClass 'hide'
+      $ '.add-playlist'
+        .removeClass 'hide'
+        .addClass 'animated fadeInUp'
+  
+  $ '#addNewPlaylistModal .icon-minus'
+    .on 'click', (e) ->
+      console.log '>>>'
+      $this = $ this
+      $item = $this.closest '.add-videos-item'
+      list = window.Playlist.get().slice(0)
+      index = $item.attr('id')
+      console.log index
+      delete list[index]
+      list = _.compact list
+      $ '.add-videos-item'
+        .remove()
+      for each, i in list
+        $template = $('#addNewPlaylistModal .pending-videos').clone()
+        $template
+          .find '.col-md-1:first'
+          .html i+1
+        $template
+          .find '.col-md-10'
+          .html each.video_title
+        $template
+          .attr 'id', i
+        $template
+          .removeClass 'pending-videos hide'
+          .addClass 'add-videos-item'
+        $ '#addNewPlaylistModal .modal-body'
+          .append $template
+        $ '#addNewPlaylistModal'
+          .modal 'show'
 
       # $.ajax
       #   url: '/playlist/add'

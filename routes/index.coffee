@@ -147,10 +147,13 @@ router.post '/playlist/add', (req, res) ->
       ", [req.session.user.user_id], (error, results) ->
         conn.release()
         console.log error if error
-        if req.accepts 'application/json' and not req.accepts 'html'
+        console.log results
+        if req.accepts('application/json') and not req.accepts('html')
           res
             .status 200
             .json results
+        else
+          res.redirect '/main/service'
 
     # conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
     #   console.log err if err

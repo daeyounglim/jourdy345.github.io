@@ -4,10 +4,11 @@
 @main-intro-font: 'Merriweather';
 @body-background-color: #FEFEFE;
 @main-color: #C10010;
-@background-color: #F4F7F8;
+// @background-color: #F4F7F8;
+@background-color: rgba(135, 206, 250, 0.2);
 @border-color: #E3E3E3;
 // @test-color: #FD8500;
-@test-color: tomato;
+@test-color: royalblue;
 
 
 @navbar-default-color:             #B3A99C;
@@ -36,6 +37,9 @@
 @navbar-default-toggle-border-color:       #FFF;
 
 
+@btn-default-color:              @test-color;
+@btn-default-bg:                 rgba(0, 0, 0, 0.8);
+@btn-default-border:             @test-color;
 
 @btn-warning-color:              #fff;
 @btn-warning-bg:                 @test-color;
@@ -185,13 +189,8 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
   }
 }
 
-#playlist {
-  border-top: 1px solid #CCC;
-  border-bottom: 1px solid #CCC;
-}
 
 .item {
-  border-bottom: 1px solid #CCC;
   line-height: 23px;
   padding: 10px;
   &:last-child {
@@ -199,12 +198,11 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
   }
 
   &:nth-child(even) {
-    background-color: #F3F3F3;
+    background-color: @background-color;
   }
 }
 
 .playlist-item {
-  border-bottom: 1px solid #CCC;
   line-height: 23px;
   padding: 10px;
   &:last-child {
@@ -212,18 +210,29 @@ i.icon-list-unordered, i.icon-gear, i.icon-repo-forked {
   }
 
   &:nth-child(even) {
-    background-color: #F3F3F3;
+    background-color: @background-color;
+  }
+}
+
+.add-videos-item {
+  line-height: 23px;
+  padding: 10px;
+  &:nth-child(even) {
+    background-color: @background-color;
   }
 }
 
 
 .video-search-result {
   &:nth-child(even) .row {
-    background-color: #F3F3F3;
+    background-color: @background-color;
   }
 }
 
-
+.modal-header {
+  background-color: #222;
+  color: royalblue;
+}
 
 
 .mainlogo {

@@ -165,8 +165,11 @@ router.post('/playlist/add', function(req, res) {
         if (error) {
           console.log(error);
         }
-        if (req.accepts('application/json' && !req.accepts('html'))) {
+        console.log(results);
+        if (req.accepts('application/json') && !req.accepts('html')) {
           return res.status(200).json(results);
+        } else {
+          return res.redirect('/main/service');
         }
       });
     });
