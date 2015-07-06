@@ -327,6 +327,7 @@ jQuery ->
               .attr 'data-title', item.snippet.title
             $template
               .removeClass 'hide'
+              .addClass 'animated fadeInUp'
             $template
               .removeClass 'video-search-result-template'
             $template
@@ -346,7 +347,7 @@ jQuery ->
             .on 'click', (e) ->
               $this = $ this
               $item = $this.closest '.video-search-result'
-              window.Player.loadVideoById $item.data 'video-id', 'large'
+              window.Player.loadVideoById($item.data('video-id'), 'large')
         error: (x, s, d) ->
           console.log s, d
       return false
