@@ -145,7 +145,38 @@ router.post('/signup', function(req, res) {
   });
 });
 
-router.post('/playlist/add', function(req, res) {
+router.post('/playlist/add/blank', function(req, res) {
+  return pool.getConnection(function(err, conn) {
+    var playlist;
+    if (err) {
+      console.log('error connection: ' + err.stack);
+    }
+    playlist = {
+      user_id: req.session.user.user_id,
+      playlist_name: req.body.blank_playlist_name
+    };
+    return conn.query("INSERT INTO Playlists SET ?", playlist, function(err, results) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(results);
+      return conn.query("SELECT * FROM Playlists WHERE user_id = ?", [req.session.user.user_id], function(error, results) {
+        conn.release();
+        if (error) {
+          console.log(error);
+        }
+        console.log(results);
+        if (req.accepts('application/json') && !req.accepts('html')) {
+          return res.status(200).json(results);
+        } else {
+          return res.redirect('/main/service');
+        }
+      });
+    });
+  });
+});
+
+router.post('/playlist/add/blank', function(req, res) {
   return pool.getConnection(function(err, conn) {
     var playlist;
     if (err) {

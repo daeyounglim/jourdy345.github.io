@@ -52,26 +52,6 @@ jQuery ->
 
   window.Player = undefined
   done = false
-  $(document)
-    .on 'keydown', (e) ->
-      $active = $ '#playlist .item.active'
-      $this = $active.first()
-      if e.shiftKey
-        if e.keyCode is 8
-          if $this.attr('data-video-id') is window.Player.getVideoData().video_id
-            alert "Cannot delete currently running video."
-          else
-            window.Playlist.remove($this.attr('id'))
-            i = _.findIndex window.Playlist.get(), (chr) ->
-              return chr.id is window.Player.getVideoData().video_id
-            offset = $('#' + i).find('td:first').offset()
-            height = $('#' + i).height()
-            $ '.bar-container'
-              .css
-                'top': offset.top + 37 + height * 0.5
-                'left': offset.left - 10
-        return true
-      return true
   $ ->
     $('#sortable').sortable
       stop: (event, ui) ->
@@ -80,14 +60,14 @@ jQuery ->
     $('#sortable').disableSelection()
     return
 
-  $ '.playlist-button button'
+  $ '.behav-buttons i'
       .on 'click', (e) ->
         $this = $ this
         if $this.hasClass 'button-active'
           $this.removeClass 'button-active'
         else
           $this.addClass 'button-active'
-          $this.siblings().removeClass 'button-active'
+          $this.closest('.col-sm-1').siblings().find('i').removeClass('button-active')
 
 
   onPlayerReady = (event) ->
@@ -96,18 +76,18 @@ jQuery ->
 
   onPlayerStateChange = (event) ->
     if event.data is YT.PlayerState.ENDED
-      if $('.playlist-button .repeat-all').hasClass 'button-active'
+      if $('.repeat-all').hasClass 'button-active'
         if window.Player.getVideoData().video_id is window.Playlist.get()[window.Playlist.get().length - 1].youtube_video_id
           window.Playlist.play 0
         else
           currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
             return chr.youtube_video_id is window.Player.getVideoData().video_id
           window.Playlist.play currentVideoIndex + 1
-      else if $('.playlist-button .repeat-one').hasClass 'button-active'
+      else if $('.repeat-one').hasClass 'button-active'
         currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
             return chr.youtube_video_id is window.Player.getVideoData().video_id
         window.Playlist.play currentVideoIndex
-      else if $('.playlist-button .shuffle').hasClass 'button-active'
+      else if $('.shuffle').hasClass 'button-active'
         currentVideoIndex =  _.findIndex window.ShuffledPlaylist, (chr) ->
           return chr.youtube_video_id is window.Player.getVideoData().video_id
         delete window.ShuffledPlaylist[currentVideoIndex]
@@ -189,10 +169,10 @@ jQuery ->
         $playtemplate
           .find '.col-sm-1:first'
           .html index+1
-        if item.video_title.length > 40
+        if item.video_title.length > 35
           $playtemplate
             .find '.col-md-9'
-            .html item.video_title[0..39] + '...'
+            .html item.video_title[0..35] + '...'
         else
           $playtemplate
             .find '.col-md-9'
@@ -211,18 +191,43 @@ jQuery ->
         $playtemplate.addClass 'item'
         $ '#playlist'
           .append $playtemplate
+
+
       $ '#playlist .item .icon-play'
         .on 'click', (e) ->
+          console.log '>>'
           $this = $ this
           $item = $this.closest '.item'
-          window.Playlist.play $item.attr 'id'
-      $ '#playlist .item .icon-cross'
+          window.Playlist.play $item.attr('id')
+      $ '#playlist .item .icon-minus'
         .on 'click', (e) ->
+          console.log '>>>'
           $this = $ this
-          $item = $this.closest '.item'
-          window.Playlist.remove $item.attr 'id'
-      
-      
+          $item = $this.closest('.item')
+          i = +$item.attr('id')
+          if window.Player.getPlayerState() == 1 or window.Player.getPlayerState() == 2
+            j = _.findIndex(window.Playlist.get(), (chr) -> return chr.youtube_video_id == window.Player.getVideoData().video_id)
+            if i == j
+              return alert 'Cannot delete currently running video.'
+            if i > j
+              window.Playlist.remove(i)
+              $('#' + j).closest('.item').find('.col-md-1:first').css('visibility', 'hidden')
+              $('#' + j).closest('.item').siblings().find('.col-md-1:first').css('visibility', 'visible')
+              return
+            if i < j
+              window.Playlist.remove(i)
+              k = j-1
+              offset = $('#' + k).closest('.item').find('.col-md-1:first').offset()
+              height = $('#' + k).closest('.item').height()
+              $('#' + k).closest('.item').find('.col-md-1:first').css('visibility', 'hidden')
+              $('#' + k).closest('.item').siblings().find('.col-md-1:first').css('visibility', 'visible')
+              $ '.bar-container'
+                .css
+                  'top': offset.top + 37 + height * 0.5
+                  'left': offset.left - 10
+              return
+            return
+          window.Playlist.remove(i)
       window.ShuffledPlaylist = _.shuffle @get()
       # $.ajax
       #   url: '/video/add'
@@ -237,16 +242,8 @@ jQuery ->
       # return true
 
     play: (i) ->
-      # for item in @list
-      #   item.playing = 0
-      # @list[i].playing = 1
-      # offset = $("#" + i).find('td:first').offset()
-      # height = $("#" + i).height()
-      # $ '.bar-container'
-      #   .css
-      #     'top': offset.top + 37 + height * 0.5
-      #     'left': offset.left - 10
       window.Player.loadVideoById @list[i].youtube_video_id, 0, 'large'
+      window.Playlist.getEqualizer(i)
 
 
     remove: (i) ->
@@ -255,6 +252,23 @@ jQuery ->
       @render()
       localStorage.videos = JSON.stringify @list
   
+    getEqualizer: (i) ->
+      $this = $('#' + i)
+      $item = $this.closest('.item')
+      # i = $item.attr('id')
+      # if window.Player.getVideoData().video_id
+      #   if $item.attr('data-video-id') is window.Player.getVideoData().video_id
+      #     return alert 'Cannot delete currently running video.'
+      offset = $item.find('.col-md-1:first').offset()
+      height = $item.height()
+      $item.find('.col-md-1:first').css('visibility', 'hidden')
+      $item.siblings().find('.col-md-1:first').css('visibility', 'visible')
+      $ '.bar-container'
+        .css
+          'top': offset.top + 37 + height * 0.5
+          'left': offset.left - 10
+
+
     clear: ->
       @list = []
       @render()
@@ -281,7 +295,6 @@ jQuery ->
 
 
   window.Playlist = new Playlist()
-
 
 
   $ '.video-search-form'
@@ -417,14 +430,6 @@ jQuery ->
         alert 'No running video.'
 
 
-  
-
-
-
-
-
-
-
   $ '#signinModal'
     .on 'shown.bs.modal', (e) ->
       $ '#signinModal #UserID'
@@ -462,7 +467,6 @@ jQuery ->
           $ '.playlist-item'
             .remove()
           for each, i in d
-            console.log each
             $template = $('.playlist-slide').clone()
             $template
               .find '.col-md-1:first'
@@ -490,7 +494,7 @@ jQuery ->
         error: (x, s, d) ->
           alert 'Error: ' + s
 
-  $ '.icon-music'
+  $ '.playlist-playlist-menu .icon-music'
     .on 'click', (e) ->
       window.Playlist.set JSON.parse(localStorage.videos or '[]')
       window.Playlist.render()
@@ -505,14 +509,55 @@ jQuery ->
         .addClass 'hide'
       $ '.main-playlist'
         .removeClass 'hide'
+      if window.Player.getPlayerState() == 1 or window.Player.getPlayerState() == 2
+        i = _.findIndex window.Playlist.get(), (chr) ->
+          return chr.youtube.video_id == window.Player.getVideoData().video_id
+        return window.Playlist.getEqualizer(i)
+
 
   $ '.add-blank-playlist-button'
     .on 'click', (e) ->
+      $ '.bar-container'
+        .css
+          top: -9999
+          left: -9999
+      $ '.playlist-playlist-menu'
+        .addClass 'hide'
+      $ '.playlist-playlist-menu-2'
+        .removeClass 'hide'
       $ '.playlist-item'
         .addClass 'hide'
       $ '.add-blank-playlist'
         .removeClass 'hide'
+      $ '.add-blank-playlist .row'  
         .addClass 'animated fadeInUp'
+  $ '.playlist-playlist-menu-2 .icon-block-menu'
+    .on 'click', (e) ->
+      $ '.playlist-playlist-menu-2'
+        .addClass 'hide'
+      $ '.playlist-playlist-menu'
+        .removeClass 'hide'
+      $ '.add-blank-playlist'
+        .addClass 'hide'
+      $ '.playlist-item'
+        .removeClass 'hide'
+        .addClass 'animated fadeInUp'
+
+  $ '.playlist-playlist-menu-2 .icon-music'
+    .on 'click', (e) ->
+      $ '.playlist-playlist-menu-2'
+        .addClass 'hide'
+      $ '.main-playlist'
+        .removeClass 'hide'
+      $ '.add-blank-playlist'
+        .addClass 'hide'
+      $ '.item'
+        .removeClass 'hide'
+        .addClass 'animated fadeInUp'
+      if window.Player.getPlayerState() == 1 or window.Player.getPlayerState() == 2
+        i = _.findIndex window.Playlist.get(), (chr) ->
+          return chr.youtube.video_id == window.Player.getVideoData().video_id
+        return window.Playlist.getEqualizer(i)
 
 
   $('.add-blank-playlist form')
@@ -556,61 +601,115 @@ jQuery ->
         error: (x, s, d) ->
           console.log s, d
 
+  $(window).on 'render.playlist', (e, collection, callback) ->
+    # render items from collection
+    $ '.add-videos-item'
+      .remove()
+    for each, i in collection
+      $template = $('.add-playlist .pending-videos').clone()
+      $template
+        .find '.col-md-1:first'
+        .html i+1
+      if each.video_title.length > 40
+        $template
+          .find '.col-md-9'
+          .html each.video_title[0..39] + '...'
+      else
+        $template
+          .find '.col-md-9'
+          .html each.video_title
+      $template
+        .attr 'id', i
+      $template
+        .removeClass 'pending-videos hide'
+        .addClass 'add-videos-item'
+      $ '.add-playlist'
+        .append $template
+
+    $ '.add-videos-item .icon-minus'
+      .on 'click', (e) ->
+        $this = $ this
+        $item = $this.closest '.add-videos-item'
+        list = window.Playlist.get().slice(0)
+        index = +$item.attr('id')
+        delete list[index]
+        list = _.compact list
+        callback = ->
+        $(window).trigger 'render.playlist', [list, callback]
+    return callback()
+    
   $ '.add-playlist-button'
     .on 'click', (e) ->
-      list = window.Playlist.get()
-      $ '.add-videos-item'
-        .remove()
-      for each, i in list
-        $template = $('.add-playlist .pending-videos').clone()
-        $template
-          .find '.col-md-1:first'
-          .html i+1
-        $template
-          .find '.col-md-10'
-          .html each.video_title
-        $template
-          .attr 'id', i
-        $template
-          .removeClass 'pending-videos hide'
-          .addClass 'add-videos-item'
+      unless window.Session.user
+        return alert 'Please sign in to save Playlists'
+      $('.bar-container')
+        .css
+          top: -9999
+          left: -9999
+      list = window.Playlist.get().slice(0)
+      after_render = ->
+        $ '.main-playlist'
+          .addClass 'hide'
+        $ '.main-playlist-2'
+          .removeClass 'hide'
+        $ '.item'
+          .addClass 'hide'
         $ '.add-playlist'
-          .append $template
-      $ '.item'
+          .removeClass 'hide'
+        $ '.add-playlist .row'  
+          .addClass 'animated fadeInUp'
+      
+      $(window).trigger 'render.playlist', [list, after_render]
+
+  $ '.main-playlist-2 .icon-music'
+    .on 'click', (e) ->
+      $ '.main-playlist-2'
         .addClass 'hide'
+      $ '.main-playlist'
+        .removeClass 'hide'
       $ '.add-playlist'
+        .addClass 'hide'
+      $ '.item'
         .removeClass 'hide'
         .addClass 'animated fadeInUp'
-  
-  $ '#addNewPlaylistModal .icon-minus'
+  $ '.main-playlist-2 .icon-block-menu'
     .on 'click', (e) ->
-      console.log '>>>'
-      $this = $ this
-      $item = $this.closest '.add-videos-item'
-      list = window.Playlist.get().slice(0)
-      index = $item.attr('id')
-      console.log index
-      delete list[index]
-      list = _.compact list
-      $ '.add-videos-item'
-        .remove()
-      for each, i in list
-        $template = $('#addNewPlaylistModal .pending-videos').clone()
-        $template
-          .find '.col-md-1:first'
-          .html i+1
-        $template
-          .find '.col-md-10'
-          .html each.video_title
-        $template
-          .attr 'id', i
-        $template
-          .removeClass 'pending-videos hide'
-          .addClass 'add-videos-item'
-        $ '#addNewPlaylistModal .modal-body'
-          .append $template
-        $ '#addNewPlaylistModal'
-          .modal 'show'
+      $.ajax
+        url: '/playlist'
+        method: 'get'
+        success: (d, s, x) ->
+          # clean
+          $ '.playlist-item'
+            .remove()
+          for each, i in d
+            $template = $('.playlist-slide').clone()
+            $template
+              .find '.col-md-1:first'
+              .html i+1
+            $template
+              .find '.col-md-10'
+              .html each.playlist_name
+            $template
+              .removeClass 'playlist-slide'
+              .addClass 'playlist-item'
+            $ '#playlist'
+              .append $template
+          if not $('.add-playlist').hasClass('hide')
+            $('.add-playlist').addClass('hide')
+          if not $('.item').hasClass('hide')
+            $('.item').addClass('hide')
+          $ '.playlist-item'
+            .removeClass 'hide'
+            .addClass 'animated fadeInUp'
+          $ '.main-playlist-2'
+            .addClass 'hide'
+          $ '.playlist-playlist-menu'
+            .removeClass 'hide'
+          $ '.add-playlist'
+            .addClass 'hide'
+          true
+        error: (x, s, d) ->
+          alert 'Error: ' + s
 
       # $.ajax
       #   url: '/playlist/add'

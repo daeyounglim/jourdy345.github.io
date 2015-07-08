@@ -9,6 +9,10 @@ block content
 
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
+  .bar-container
+    div
+    div
+    div
   .modal.fade#signinModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
     .modal-dialog
       .modal-content
@@ -32,20 +36,40 @@ block content
                 a.signup-link(href='/signup'): p(style='font-size: 12px;').text-warning Don't have an account? Sign up now!
                 button.btn.btn-default(type='button', data-dismiss='modal') Cancel
                 button.btn.btn-success(type='submit') Sign in
-  .container-fluid
+  .container-fluid(style='height: 1000px')
     .row
       .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist(style='height: 1000px; overflow-y: auto;')
         .row
           .col-xs-12.col-sm-12
             #player
+        .row.behav-buttons(style='padding: 10px; background-color: #222; border-bottom: 1px solid royalblue')
+          .col-xs-9.col-sm-9
+          .col-xs-1.col-sm-1.text-center(style='cursor: pointer;')
+            i.icon-retweet-1.repeat-all(style='font-size: 18px;')
+          .col-xs-1.col-sm-1.text-center(style='cursor: pointer;')
+            i.icon-number-one.repeat-one(style='font-size: 18px;')
+          .col-xs-1.col-sm-1.text-center(style='cursor: pointer;')
+            i.icon-random.shuffle(style='font-size: 18px;')
+        .row.playlist-playlist-menu-2.hide(style='padding: 10px; background-color: #222; color: royalblue')
+          .col-xs-10.col-sm-10.col-md-10.col-lg-10 My Playlists
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-music(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-block-menu(style='cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.playlist-playlist-menu.hide(style='padding: 10px; background-color: #222; color: royalblue')
           .col-xs-10.col-sm-10.col-md-10.col-lg-10 My Playlists
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-plus.add-blank-playlist-button(style='cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-music(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+        .row.main-playlist-2.hide(style='padding: 10px; background-color: #222; color: royalblue')
+          .col-xs-10.col-sm-10.col-md-10.col-lg-10 New Videos
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-music(style='cursor: pointer; line-height: 23px; font-size: 18px;')
+          .col-xs-1.col-sm-1.col-md-1.col-lg-1
+            i.icon-block-menu(style='cursor: pointer; line-height: 23px; font-size: 18px;')
         .row.main-playlist(style='padding: 10px; background-color: #222; color: royalblue')
-          .col-xs-10.col-sm-10.col-md-10.col-lg-10 New Playlist
+          .col-xs-10.col-sm-10.col-md-10.col-lg-10 New Videos
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-plus.add-playlist-button(style='cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
@@ -80,7 +104,7 @@ block content
                 i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
               .col-md-1
                 i.icon-check(type='submit' style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
-            .row(style='padding: 25px;') Videos to be added
+            .row(style='padding: 25px; border-top: 1px solid #CCC; background-color: #222; color: royalblue;') Videos to be added
             .row.pending-videos.hide(style='padding-left: 25px; padding-right: 25px;')
               .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
               .col-xs-9.col-sm-9.col-md-9.col-lg-9(style='font-weight:100; font-size: 12px') dd
@@ -93,15 +117,15 @@ block content
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
             i.icon-play(style='color: royalblue; cursor: pointer; line-height: 23px; font-size: 18px;')
           .col-xs-1.col-sm-1.col-md-1.col-lg-1
-            i.icon-cross(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
-      .col-md-9.col-lg-9(style='border-left: 1px solid royalblue;')
+            i.icon-minus(style='color: #AAA; cursor: pointer; line-height: 23px; font-size: 18px;')
+      .col-md-9.col-lg-9(style='background-color: #F0F0F0')
         .row
           .col-md-12.col-lg-12(style='background-color: #222; color: royalblue')
             nav.navbar.navbar-default
               a.navbar-brand(href='/main'): i.icon-mark-github
               form.navbar-form.video-search-form.pull-left(role='search')
                 .form-group
-                  input(type='text' class='form-control' placeholder='Search')
+                  input(type='text' class='form-control' placeholder='Search' style='border: 2px solid royalblue;')
                 button.btn.btn-default(type='submit' style='margin-left: 10px;'): i.glyphicon.glyphicon-search
               if !locals.session.user
                 button.btn.btn-default.pull-right(type='button' data-toggle='modal' data-target='#signinModal' style='margin: 8px 8px 8px 0px;') Sign in
@@ -109,9 +133,9 @@ block content
                 .self-p.pull-right(style='line-height: 53px;')
                   img.img-self.img-circle(src='http://wynway.com/wp-content/uploads/2014/11/blank_person_81.png')
                   | #{locals.session.user.user_id}
-                  a(href='/logout'): button.btn.btn-default.btn-xs.log-out-button(style='color: royalblue; background-color: #222; border-color: royalblue') Log out
+                  a(href='/logout'): i.icon-off.log-out-button(style='color: royalblue; border-color: royalblue') Log out
         .row              
-          .col-md-12.col-lg-12(style='border-left: 1px solid royalblue;')
+          .col-md-12.col-lg-12
             .when-no-result
               .text-muted(style='font-size: 40px; margin-left: 50px; margin-top: 100px;') Search Results will appear here
               .nothing(style='height: 700px;')
