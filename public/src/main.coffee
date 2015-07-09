@@ -466,6 +466,7 @@ jQuery ->
         url: '/playlist'
         method: 'get'
         success: (d, s, x) ->
+          console.log d
           # clean
           $ '.playlist-item'
             .remove()
@@ -477,6 +478,9 @@ jQuery ->
             $template
               .find '.col-md-10'
               .html each.playlist_name
+            $template
+              .data 'playlist-id', each.id
+              .attr 'data-playlist-id', each.id
             $template
               .removeClass 'playlist-slide'
               .addClass 'playlist-item'
@@ -493,6 +497,22 @@ jQuery ->
             .addClass 'hide'
           $ '.playlist-playlist-menu'
             .removeClass 'hide'
+          $ '.playlist-item .col-md-10'
+            .on 'click', (e) ->
+              $this = $ this
+              $item = $this.closest '.playlist-item'
+              $id = $item.data('playlist-id')
+              console.log $id
+              $.ajax
+                url: '/playlist/#{$id}/videos'
+                method: 'get'
+                headers:
+                  Accept: 'application/json'
+                success: (d, s, x) ->
+                  console.log x.status
+                  console.log d
+                error: (x, s, d) ->
+                  console.log s, d
           true
         error: (x, s, d) ->
           alert 'Error: ' + s
@@ -684,6 +704,9 @@ jQuery ->
               .find '.col-md-10'
               .html each.playlist_name
             $template
+              .data 'playlist-id', each.id
+              .attr 'data-playlist-id', each.id
+            $template
               .removeClass 'playlist-slide'
               .addClass 'playlist-item'
             $ '#playlist'
@@ -701,6 +724,23 @@ jQuery ->
             .removeClass 'hide'
           $ '.add-playlist'
             .addClass 'hide'
+
+
+
+          $ '.playlist-item .col-md-10'
+            .on 'click', (e) ->
+              $this = $ this
+              $item = $this.closest '.playlist-item'
+              $id = $item.data('playlist-id')
+              console.log $id
+              $.ajax
+                url: '/playlist/#{$id}/videos'
+                method: 'get'
+                success: (d, s, x) ->
+                  console.log x.status
+                  console.log d
+                error: (x, s, d) ->
+                  console.log s, d
           true
         error: (x, s, d) ->
           alert 'Error: ' + s
@@ -723,9 +763,14 @@ jQuery ->
         $.ajax
           url: '/video/add'
           method: 'post'
-          data:
+          contentType: 'application/json'
+          data: JSON.stringify {
             playlist_id: d.insertId
-            video_list: JSON.stringify(collection)
+            video_list: collection
+          }
+          dataType: 'application/json'
+          headers:
+            Accept: 'application/json'
           success: (d, s, x) ->
             if x.status isnt 200
               return 'Error'
@@ -735,7 +780,6 @@ jQuery ->
         true
       error: (x, s, d) ->
         console.log s, d
-
     return callback() if callback
   $ '.add-playlist form'
     .on 'submit', (e) ->
@@ -743,7 +787,7 @@ jQuery ->
       e.stopPropagation()
       if $('.add-playlist input').val().trim().length == 0
         return alert 'Please make a name for the Playlist.'
-      after_adding_playlist: ->
+      after_adding_playlist = ->
         $ '.add-playlist-success'
           .removeClass 'hide'
           .addClass 'animated fadeInRight'

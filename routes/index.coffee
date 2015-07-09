@@ -170,21 +170,39 @@ router.post '/playlist/add/new', (req, res) ->
           .status 200
           .json results
 router.post '/video/add', (req, res) ->
-  items = JSON.parse(req.body.video_list)
+  video_list = req.body.video_list or []
+  pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
-    # item = [{"title":"윤하 (Younha) - 없어 (Not There) (feat. Eluphant)","id":"LRGJcX27qTA","imgUrl":"https://i.ytimg.com/vi/LRGJcX27qTA/default.jpg","date":"2013-12-06","playing":0}]
-  for item in items
-    post =
-      playlist_id: req.body.playlist_id
-      youtube_video_id: item.youtube_video_id
-      user_id: req.session.user.user_id
-      video_title: item.video_title
-    pool.getConnection (err, conn) ->
-      console.log('error connection: ' + err.stack) if err
-      conn.query "INSERT INTO Videos SET ?", [post], (err, results) ->
-        conn.release()
-        console.log err if err
-        console.log 'success! ' + results
+    for video in video_list
+      item =
+        youtube_video_id: video.youtube_video_id
+        video_title: video.video_title
+        playlist_id: +req.body.playlist_id
+        user_id: req.session.user.user_id
+      conn.query "INSERT INTO Videos SET ?", item, (err, results) ->
+        if err
+          console.log err
+          res
+            .status 200
+            .json
+              status: 500
+              message: 'server error'
+          return
+    res
+      .status 200
+      .json
+        status: 200
+        message: 'success'
+    conn.release()
+
+    # for item in items
+    #   post =
+    #     playlist_id: req.body.playlist_id
+    #     youtube_video_id: item.youtube_video_id
+    #     user_id: req.session.user.user_id
+    #     video_title: item.video_title
+    #   conn.query "INSERT INTO Videos SET ?", [post], (err, results) ->
+    #     console.log err if err
 
 
 

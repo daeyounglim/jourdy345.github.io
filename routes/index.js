@@ -187,44 +187,49 @@ router.post('/playlist/add/new', function(req, res) {
       playlist_name: req.body.playlist_name
     };
     return conn.query("INSERT INTO Playlists SET ?", [playlist], function(err, results) {
+      conn.release();
       if (err) {
         console.log(err);
       }
       console.log(results);
       if (req.accepts('application/json') && !req.accepts('html')) {
         return res.status(200).json(results);
-      } else {
-        return res.redirect('/main/service');
       }
     });
   });
 });
 
 router.post('/video/add', function(req, res) {
-  var items;
-  items = JSON.parse(req.body.video_list);
+  var video_list;
+  video_list = req.body.video_list || [];
   return pool.getConnection(function(err, conn) {
-    var i, item, len, post, results1;
+    var i, item, len, video;
     if (err) {
       console.log('error connection: ' + err.stack);
     }
-    results1 = [];
-    for (i = 0, len = items.length; i < len; i++) {
-      item = items[i];
-      post = {
-        playlist_id: req.body.playlist_id,
-        youtube_video_id: item.youtube_video_id,
-        video_title: item.video_title,
+    for (i = 0, len = video_list.length; i < len; i++) {
+      video = video_list[i];
+      item = {
+        youtube_video_id: video.youtube_video_id,
+        video_title: video.video_title,
+        playlist_id: +req.body.playlist_id,
         user_id: req.session.user.user_id
       };
-      results1.push(conn.query("INSERT INTO Videos SET ?", [post], function(err, results) {
+      conn.query("INSERT INTO Videos SET ?", item, function(err, results) {
         if (err) {
           console.log(err);
+          res.status(200).json({
+            status: 500,
+            message: 'server error'
+          });
         }
-        return console.log('success! ' + results);
-      }));
+      });
     }
-    return results1;
+    res.status(200).json({
+      status: 200,
+      message: 'success'
+    });
+    return conn.release();
   });
 });
 
