@@ -176,7 +176,7 @@ router.post('/playlist/add/blank', function(req, res) {
   });
 });
 
-router.post('/playlist/add/blank', function(req, res) {
+router.post('/playlist/add/new', function(req, res) {
   return pool.getConnection(function(err, conn) {
     var playlist;
     if (err) {
@@ -184,26 +184,47 @@ router.post('/playlist/add/blank', function(req, res) {
     }
     playlist = {
       user_id: req.session.user.user_id,
-      playlist_name: req.body.blank_playlist_name
+      playlist_name: req.body.playlist_name
     };
-    return conn.query("INSERT INTO Playlists SET ?", playlist, function(err, results) {
+    return conn.query("INSERT INTO Playlists SET ?", [playlist], function(err, results) {
       if (err) {
         console.log(err);
       }
       console.log(results);
-      return conn.query("SELECT * FROM Playlists WHERE user_id = ?", [req.session.user.user_id], function(error, results) {
-        conn.release();
-        if (error) {
-          console.log(error);
-        }
-        console.log(results);
-        if (req.accepts('application/json') && !req.accepts('html')) {
-          return res.status(200).json(results);
-        } else {
-          return res.redirect('/main/service');
-        }
-      });
+      if (req.accepts('application/json') && !req.accepts('html')) {
+        return res.status(200).json(results);
+      } else {
+        return res.redirect('/main/service');
+      }
     });
+  });
+});
+
+router.post('/video/add', function(req, res) {
+  var items;
+  items = JSON.parse(req.body.video_list);
+  return pool.getConnection(function(err, conn) {
+    var i, item, len, post, results1;
+    if (err) {
+      console.log('error connection: ' + err.stack);
+    }
+    results1 = [];
+    for (i = 0, len = items.length; i < len; i++) {
+      item = items[i];
+      post = {
+        playlist_id: req.body.playlist_id,
+        youtube_video_id: item.youtube_video_id,
+        video_title: item.video_title,
+        user_id: req.session.user.user_id
+      };
+      results1.push(conn.query("INSERT INTO Videos SET ?", [post], function(err, results) {
+        if (err) {
+          console.log(err);
+        }
+        return console.log('success! ' + results);
+      }));
+    }
+    return results1;
   });
 });
 

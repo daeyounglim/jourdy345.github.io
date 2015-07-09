@@ -38,7 +38,7 @@ block content
                 button.btn.btn-success(type='submit') Sign in
   .container-fluid(style='height: 1000px')
     .row
-      .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist(style='height: 1000px; overflow-y: auto;')
+      .col-xs-12.col-sm-12.col-md-3.col-lg-3#playlist(style='height: 400px;')
         .row
           .col-xs-12.col-sm-12
             #player
@@ -89,9 +89,11 @@ block content
             .row(style='padding: 10px')
               .col-md-10
               .col-md-1
-                i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
+                button(type='submit' style='border: 0; background-color: transparent'): i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
               .col-md-1
-                i.icon-check(type='submit' style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
+                button(type='submit' style='border: 0; background-color: transparent'): i.icon-check(style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
+            .row(style='padding: 10px')  
+              .add-blank-playlist-success.hide.text-center(style='color: #C10010; font-size: 15px;') Success!
         .row.add-playlist.hide
           .col-md-12
             .row(style='padding: 10px; margin-bottom: 10px;')
@@ -101,10 +103,12 @@ block content
             .row(style='padding: 10px')
               .col-md-10
               .col-md-1
-                i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
+                button(type='submit' style='border: 0; background-color: transparent'): i.icon-cross(style='cursor: pointer; color: #AAA; line-height: 23px; font-size: 18px;')
               .col-md-1
-                i.icon-check(type='submit' style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
-            .row(style='padding: 25px; border-top: 1px solid #CCC; background-color: #222; color: royalblue;') Videos to be added
+                button(type='submit' style='border: 0; background-color: transparent'): i.icon-check(style='cursor: pointer; line-height: 23px; font-size: 18px; color: royalblue;')
+            .row(style='padding: 25px; border-top: 1px solid #CCC; background-color: #222;')
+              .col-xs-9.col-sm-9(style='color: royalblue;') Shopping Cart
+              .col-xs-3.col-sm-3.text-center.add-playlist-success.hide(style='color: #C10010;') Success
             .row.pending-videos.hide(style='padding-left: 25px; padding-right: 25px;')
               .col-xs-1.col-sm-1.col-md-1.col-lg-1.text-center(style='line-height: 23px; font-size: 18px; font-style: italic;')
               .col-xs-9.col-sm-9.col-md-9.col-lg-9(style='font-weight:100; font-size: 12px') dd
@@ -152,10 +156,3 @@ block content
                   .col-md-1.add-video.text-center(style='line-height: 120px; cursor: pointer;')
                     i.icon-plus(style='font-size: 30px; color: #CCC')
               
-
-
-
-
-
-
-

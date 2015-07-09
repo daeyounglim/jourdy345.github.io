@@ -71,7 +71,7 @@ router.post '/feedback', (req, res) ->
       user: "jourdy345@me.com"
       pass: "iamDY123!"
 
-  mailOptions = 
+  mailOptions =
     from: "jourdy345@me.com"
     to: "jourdy345@gmail.com"
     subject: "Feedback from Youtube Playlist"
@@ -92,7 +92,7 @@ router.post '/signin', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
     conn.query "
-    SELECT * 
+    SELECT *
     FROM Users
     WHERE user_id = ?
       AND user_password = ?
@@ -155,72 +155,39 @@ router.post '/playlist/add/blank', (req, res) ->
         else
           res.redirect '/main/service'
 
-router.post '/playlist/add/blank', (req, res) ->
+router.post '/playlist/add/new', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
     playlist =
       user_id: req.session.user.user_id
-      playlist_name: req.body.blank_playlist_name
-
-    conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
+      playlist_name: req.body.playlist_name
+    conn.query "INSERT INTO Playlists SET ?", [playlist], (err, results) ->
+      conn.release()
       console.log err if err
       console.log results
-      conn.query "
-      SELECT *
-      FROM Playlists
-      WHERE user_id = ?
-      ", [req.session.user.user_id], (error, results) ->
+      if req.accepts('application/json') and not req.accepts('html')
+        return res
+          .status 200
+          .json results
+router.post '/video/add', (req, res) ->
+  items = JSON.parse(req.body.video_list)
+    console.log('error connection: ' + err.stack) if err
+    # item = [{"title":"윤하 (Younha) - 없어 (Not There) (feat. Eluphant)","id":"LRGJcX27qTA","imgUrl":"https://i.ytimg.com/vi/LRGJcX27qTA/default.jpg","date":"2013-12-06","playing":0}]
+  for item in items
+    post =
+      playlist_id: req.body.playlist_id
+      youtube_video_id: item.youtube_video_id
+      user_id: req.session.user.user_id
+      video_title: item.video_title
+    pool.getConnection (err, conn) ->
+      console.log('error connection: ' + err.stack) if err
+      conn.query "INSERT INTO Videos SET ?", [post], (err, results) ->
         conn.release()
-        console.log error if error
-        console.log results
-        if req.accepts('application/json') and not req.accepts('html')
-          res
-            .status 200
-            .json results
-        else
-          res.redirect '/main/service'
+        console.log err if err
+        console.log 'success! ' + results
 
-    # conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
-    #   console.log err if err
-    #   console.log results
-    #   for item in items
-    #     post = 
-    #       playlist_id: results.insertId
-    #       youtube_video_id: item.id
-    #       user_id: req.session.user.user_id
-    #       video_title: item.title
-    #     conn.query "INSERT INTO Videos SET ?", post, (err, results) ->
-    #       console.log err if err
-    #       console.log results
-    #   conn.release()
-    #   if req.accepts('application/json') and not req.accepts('html')
-    #     res.json(results)
-    #   else
-    #     res.redirect('/')
 
-# router.post '/video/add', (req, res) ->
-#   items = JSON.parse(req.body.video_list)
-#   videos =
-#     playlist_id: 
-#     youtube_video_id:
-#     comment_count:
-#     user_id:
-#   pool.getConnection (err, conn) ->
-#     console.log('error connection: ' + err.stack) if err
-#     # item = [{"title":"윤하 (Younha) - 없어 (Not There) (feat. Eluphant)","id":"LRGJcX27qTA","imgUrl":"https://i.ytimg.com/vi/LRGJcX27qTA/default.jpg","date":"2013-12-06","playing":0}]
-#     for item in items
-#       post = 
-#         playlist_id: 
-#         youtube_video_id: item.id
-#         video_title: item.title
-#         user_id: req.session.user.user_id
-#       conn.query "
-#       INSERT INTO Videos
-#       SET ?
-#       "
 
 
 
 module.exports = router
-
-

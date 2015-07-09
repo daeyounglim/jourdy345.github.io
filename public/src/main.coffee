@@ -3,19 +3,19 @@ jQuery ->
   #   theme: 'air'
   #   extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right'
   # }
-  # BrowserDetect = 
+  # BrowserDetect =
   #   init: ->
   #       @browser = @searchString(@dataBrowser) or "Other";
   #       @version = @searchVersion(navigator.userAgent) or @searchVersion(navigator.appVersion) or "Unknown";
 
-  #   searchString: (data) -> 
+  #   searchString: (data) ->
   #       for datum in data
   #           dataString = datum.string
   #           @versionSearchString = datum.subString
 
   #           if dataString.indexOf(datum.subString) isnt -1
   #               return datum.identity
-    
+
   #   searchVersion: (dataString) ->
   #       index = dataString.indexOf @versionSearchString
   #       if index is -1
@@ -26,7 +26,7 @@ jQuery ->
   #           return parseFloat dataString.substring rv + 3
   #       else
   #         return parseFloat dataString.substring(index + @versionSearchString.length + 1)
-  
+
 
   #   dataBrowser: [
   #       {string: navigator.userAgent, subString: "Chrome", identity: "Chrome"},
@@ -36,7 +36,7 @@ jQuery ->
   #       {string: navigator.userAgent, subString: "Safari", identity: "Safari"},
   #       {string: navigator.userAgent, subString: "Opera", identity: "Opera"}
   #   ]
-    
+
   # BrowserDetect.init()
   # if BrowserDetect.browser is 'Explorer'
   #   Messenger().post
@@ -134,10 +134,10 @@ jQuery ->
 
   ## Create a class to wrap all the functions needed when controlling the playlist
   class Playlist
-    constructor: (@list) ->
+    constructor: (@list, @bucket_list) ->
       # unless @list
       #   @list = []
-      
+      @bucket_list = []
       @list = JSON.parse(localStorage.videos or '[]')
       @render() if @list.length
       # for video in videos
@@ -146,18 +146,17 @@ jQuery ->
       @list = list
     get: ->
       @list
-
     add: (item) ->
       # {
       #   id: 'movie id'
       #   title: '...'
       # }
       @list.push item
-      
+
       localStorage.videos = JSON.stringify @list
     add_to_next: (item) ->
       @list.unshift item
-      
+
     render: ->
       $ '#playlist .item'
         .remove()
@@ -185,7 +184,7 @@ jQuery ->
           .attr 'data-video-id', item.youtube_video_id
         $playtemplate
           .attr 'data-thumbnail', item.imgUrl
-        
+
         $playtemplate.removeClass 'play-template'
         $playtemplate.removeClass 'hide'
         $playtemplate.addClass 'item'
@@ -251,7 +250,7 @@ jQuery ->
       @list = _.compact @list
       @render()
       localStorage.videos = JSON.stringify @list
-  
+
     getEqualizer: (i) ->
       $this = $('#' + i)
       $item = $this.closest('.item')
@@ -292,8 +291,12 @@ jQuery ->
       #   .css
       #     'top': offset.top + 37 + height * 0.5
       #     'left': offset.left - 10
-
-
+    add_to_bucket_list: (item) ->
+      @bucket_list.push(item)
+    remove_from_bucket_list: (i) ->
+      @bucket_list.splice(i,1)
+    show_bucket_list: ->
+      return @bucket_list
   window.Playlist = new Playlist()
 
 
@@ -349,7 +352,7 @@ jQuery ->
               .append $template
           $ '.video-search-result .add-video'
             .on 'click', (e) ->
-              $this = $ this 
+              $this = $ this
               $item = $this.closest '.video-search-result'
               window.Playlist.add
                 youtube_video_id: $item.data 'video-id'
@@ -418,7 +421,7 @@ jQuery ->
                   youtube_video_id: $this.data 'video-id'
                   video_title: $this.data 'video-title'
                 window.Playlist.render()
-            true  
+            true
           error: (x, s, d) ->
             alert x.status
             e.preventDefault()
@@ -529,7 +532,7 @@ jQuery ->
         .addClass 'hide'
       $ '.add-blank-playlist'
         .removeClass 'hide'
-      $ '.add-blank-playlist .row'  
+      $ '.add-blank-playlist .row'
         .addClass 'animated fadeInUp'
   $ '.playlist-playlist-menu-2 .icon-block-menu'
     .on 'click', (e) ->
@@ -560,46 +563,42 @@ jQuery ->
         return window.Playlist.getEqualizer(i)
 
 
+
+  $(window).on 'add.blank.playlist', (e, callback) ->
+    if $('.add-blank-playlist input').val().trim().length is 0
+      return alert 'Please make a name for the Playlist.'
+    $.ajax
+      url: '/playlist/add/blank'
+      method: 'post'
+      data:
+        blank_playlist_name: $('.add-blank-playlist input').val()
+      headers:
+        Accept: 'application/json'
+      success: (d, s, x) ->
+        console.log d
+        if x.status isnt 200
+          return 'Error'
+        true
+      error: (x, s, d) ->
+        console.log s, d
+    return callback() if callback
   $('.add-blank-playlist form')
     .on 'submit', (e) ->
       e.preventDefault()
       e.stopPropagation()
-      if $('#newBlankPlaylistName').val().trim().length is 0
-        return alert 'Please make a name for the Playlist.'
-        
-      $.ajax
-        url: '/playlist/add/blank'
-        method: 'post'
-        data:
-          blank_playlist_name: $('#newBlankPlaylistName').val()
-        headers:
-          Accept: 'application/json'
-        success: (d, s, x) ->
-          console.log d
-          if x.status isnt 200
-            return 'Error'
-          # clean
-          $ '.playlist-item'
-            .remove()
-          for each, i in d
-            console.log each
-            $template = $('.playlist-slide').clone()
-            $template
-              .find '.col-md-1:first'
-              .html i+1
-            $template
-              .find '.col-md-10'
-              .html each.playlist_name
-            $template
-              .removeClass 'playlist-slide hide'
-              .addClass 'playlist-item'
-            $ '#playlist'
-              .append $template
-          $('#addBlankPlaylistModal').modal('hide')
+      after_adding_blank_playlist = ->
+        $ '.add-blank-playlist-success'
+          .removeClass 'hide'
+          .addClass 'animated fadeInUp'
+        setTimeout ->
+          $('.add-blank-playlist-success').addClass('animated fadeOutDown')
+        , 2000
+        setTimeout ->
+          $('.add-blank-playlist-success').addClass('hide').removeClass('animated fadeOutDown fadeInUp')
+        , 3500
+      $(window).trigger 'add.blank.playlist', [after_adding_blank_playlist]
 
-          true
-        error: (x, s, d) ->
-          console.log s, d
+
 
   $(window).on 'render.playlist', (e, collection, callback) ->
     # render items from collection
@@ -623,30 +622,25 @@ jQuery ->
       $template
         .removeClass 'pending-videos hide'
         .addClass 'add-videos-item'
-      $ '.add-playlist'
+      $ '.add-playlist .col-md-12:first'
         .append $template
 
     $ '.add-videos-item .icon-minus'
       .on 'click', (e) ->
         $this = $ this
         $item = $this.closest '.add-videos-item'
-        list = window.Playlist.get().slice(0)
         index = +$item.attr('id')
-        delete list[index]
-        list = _.compact list
-        callback = ->
-        $(window).trigger 'render.playlist', [list, callback]
-    return callback()
-    
+        window.Playlist.remove_from_bucket_list(index)
+        $(window).trigger 'render.playlist', [window.Playlist.show_bucket_list()]
+    return callback() if callback
+
   $ '.add-playlist-button'
     .on 'click', (e) ->
       unless window.Session.user
         return alert 'Please sign in to save Playlists'
-      $('.bar-container')
-        .css
-          top: -9999
-          left: -9999
-      list = window.Playlist.get().slice(0)
+      window.Playlist.show_bucket_list().splice(0,window.Playlist.show_bucket_list().length)
+      for each in window.Playlist.get()
+        window.Playlist.add_to_bucket_list(each)
       after_render = ->
         $ '.main-playlist'
           .addClass 'hide'
@@ -656,10 +650,10 @@ jQuery ->
           .addClass 'hide'
         $ '.add-playlist'
           .removeClass 'hide'
-        $ '.add-playlist .row'  
+        $ '.add-playlist .row'
           .addClass 'animated fadeInUp'
-      
-      $(window).trigger 'render.playlist', [list, after_render]
+
+      $(window).trigger 'render.playlist', [window.Playlist.show_bucket_list(), after_render]
 
   $ '.main-playlist-2 .icon-music'
     .on 'click', (e) ->
@@ -711,22 +705,52 @@ jQuery ->
         error: (x, s, d) ->
           alert 'Error: ' + s
 
-      # $.ajax
-      #   url: '/playlist/add'
-      #   method: 'post'
-      #   data: 
-      #     playlist_name: $('#createPlaylist-input').val()
-      #     video_list: JSON.stringify(window.Playlist.get())
-      #   headers: 
-      #     Accept: 'application/json'
-      #   success: (d, s, x) ->
-      #     console.log d
-      #     if x.status isnt 200
-      #       return 'Error'
+    $ '.add-playlist form'
+      .on 'submit', (e) ->
 
-      #     true
-      #   error: (x, s, d) ->
-      #     console.log s, d
+  $(window).on 'add.playlist', (e, collection, callback) ->
+    $.ajax
+      url: '/playlist/add/new'
+      method: 'post'
+      headers:
+        Accept: 'application/json'
+      data:
+        playlist_name: $('.add-playlist input').val()
+      success: (d, s, x) ->
+        console.log d
+        if x.status isnt 200
+          return 'Error'
+        $.ajax
+          url: '/video/add'
+          method: 'post'
+          data:
+            playlist_id: d.insertId
+            video_list: JSON.stringify(collection)
+          success: (d, s, x) ->
+            if x.status isnt 200
+              return 'Error'
+            true
+          error: (x, s, d) ->
+            console.log s, d
+        true
+      error: (x, s, d) ->
+        console.log s, d
 
-
-
+    return callback() if callback
+  $ '.add-playlist form'
+    .on 'submit', (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      if $('.add-playlist input').val().trim().length == 0
+        return alert 'Please make a name for the Playlist.'
+      after_adding_playlist: ->
+        $ '.add-playlist-success'
+          .removeClass 'hide'
+          .addClass 'animated fadeInRight'
+        setTimeout ->
+          $('.add-playlist-success').addClass('animated fadeOutRight')
+        , 2000
+        setTimeout ->
+          $('.add-playlist-success').addClass('hide').removeClass('animated fadeInRight fadeOutRight')
+        , 3500
+      $(window).trigger 'add.playlist', [window.Playlist.show_bucket_list(), after_adding_playlist]
