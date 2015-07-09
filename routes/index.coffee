@@ -46,6 +46,13 @@ router.get '/playlist', (req, res) ->
 
 ## GET Videos
 router.get '/playlist/:id/videos', (req, res) ->
+  unless isFinite +req.params.id
+    res
+      .status 200
+      .json
+        status: 400
+        message: 'id(Number) invalid'
+    return
   pool.getConnection (err, conn) ->
     console.log err if err
     conn.query "

@@ -368,6 +368,23 @@ jQuery ->
           console.log s, d
       return false
 
+  $(window).on 'get.videos.from.playlist', (e, id, callback) ->
+    $.ajax
+      url: "/playlist/#{id}/videos"
+      method: 'get'
+      success: (d, s, x) ->
+        console.log x.status
+        console.log d
+        $('.main-playlist')
+          .data 'playlist-id', id
+          .attr 'data-playlist-id', id
+        window.Playlist.set(d)
+        window.Playlist.render()
+      error: (x, s, d) ->
+        console.log s, d
+    return callback() if callback
+
+
   $ '.delete-all'
     .on 'click', (e) ->
       if window.Playlist.get().length
@@ -502,18 +519,19 @@ jQuery ->
               $this = $ this
               $item = $this.closest '.playlist-item'
               $id = $item.data('playlist-id')
-              console.log $id
-              $.ajax
-                url: '/playlist/#{$id}/videos'
-                method: 'get'
-                headers:
-                  Accept: 'application/json'
-                success: (d, s, x) ->
-                  console.log x.status
-                  console.log d
-                error: (x, s, d) ->
-                  console.log s, d
-          true
+              after_getting_videos_from_playlist = ->
+                $ '.main-playlist'
+                  .find '.col-md-10'
+                  .html $item.find('.col-md-10').html()
+                $('.main-playlist').find('.icon-plus').addClass('hide')
+                $('.playlist-playlist-menu').addClass('hide')
+                $ '.main-playlist'
+                  .removeClass 'hide'
+                $ '.playlist-item'
+                  .addClass 'hide'
+                $ '.item'
+                  .addClass 'animated fadeInUp'
+              $(window).trigger 'get.videos.from.playlist', [$id, after_getting_videos_from_playlist]
         error: (x, s, d) ->
           alert 'Error: ' + s
 
@@ -732,15 +750,19 @@ jQuery ->
               $this = $ this
               $item = $this.closest '.playlist-item'
               $id = $item.data('playlist-id')
-              console.log $id
-              $.ajax
-                url: '/playlist/#{$id}/videos'
-                method: 'get'
-                success: (d, s, x) ->
-                  console.log x.status
-                  console.log d
-                error: (x, s, d) ->
-                  console.log s, d
+              after_getting_videos_from_playlist = ->
+                $ '.main-playlist'
+                  .find '.col-md-10'
+                  .html $item.find('.col-md-10').html()
+                $('.main-playlist').find('.icon-plus').addClass('hide')
+                $('.playlist-playlist-menu').addClass('hide')
+                $ '.main-playlist'
+                  .removeClass 'hide'
+                $ '.playlist-item'
+                  .addClass 'hide'
+                $ '.item'
+                  .addClass 'animated fadeInUp'
+              $(window).trigger 'get.videos.from.playlist', [$id, after_getting_videos_from_playlist]
           true
         error: (x, s, d) ->
           alert 'Error: ' + s

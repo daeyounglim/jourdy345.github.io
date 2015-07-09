@@ -53,6 +53,13 @@ router.get('/playlist', function(req, res) {
 });
 
 router.get('/playlist/:id/videos', function(req, res) {
+  if (!isFinite(+req.params.id)) {
+    res.status(200).json({
+      status: 400,
+      message: 'id(Number) invalid'
+    });
+    return;
+  }
   return pool.getConnection(function(err, conn) {
     if (err) {
       console.log(err);
