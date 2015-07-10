@@ -208,7 +208,8 @@ router.post('/playlist/add/new', function(req, res) {
 
 router.post('/video/add', function(req, res) {
   var video_list;
-  video_list = req.body.video_list || [];
+  video_list = JSON.parse(req.body.video_list) || [];
+  console.log(video_list);
   return pool.getConnection(function(err, conn) {
     var i, item, len, video;
     if (err) {

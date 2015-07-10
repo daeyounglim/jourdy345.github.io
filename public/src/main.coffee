@@ -152,8 +152,25 @@ jQuery ->
       #   title: '...'
       # }
       @list.push item
-
+      console.log 'item: ' + item
+      video = JSON.stringify([item])
       localStorage.videos = JSON.stringify @list
+      if $('.main-playlist').attr('data-playlist-id')
+        id = $('.main-playlist').attr('data-playlist-id')
+        $.ajax
+          url: '/video/add'
+          method: 'post'
+          data:
+            playlist_id: id
+            video_list: video
+          success: (d, s, x) ->
+            console.log x.status
+            console.log d
+          error: (x, s, d) ->
+            console.log d, s
+        return true
+
+
     add_to_next: (item) ->
       @list.unshift item
 

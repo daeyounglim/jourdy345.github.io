@@ -179,7 +179,8 @@ router.post '/playlist/add/new', (req, res) ->
 
 ## POST adds videos to 'Videos' table (works along with POST '/playlist/add/new') / responds to AJAX request
 router.post '/video/add', (req, res) ->
-  video_list = req.body.video_list or []
+  video_list = JSON.parse(req.body.video_list) or []
+  console.log video_list
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
     for video in video_list
