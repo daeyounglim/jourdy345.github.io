@@ -267,7 +267,7 @@ jQuery ->
       if $('.main-playlist').attr('data-playlist-id')
         id = $('.main-playlist').attr('data-playlist-id')
         $.ajax
-          url: "/delete/video/#{id}"
+          url: "/video/delete/#{id}"
           method: 'post'
           data:
             video: JSON.stringify(@list[i])
@@ -485,66 +485,89 @@ jQuery ->
         alert 'Passwords do not match.'
         $('#signup-ConfirmPassword').focus()
 
+  $(window).on 'get.playlists', (e, callback) ->
+    $.ajax
+      url: '/playlist'
+      method: 'get'
+      async: false
+      success: (d, s, x) ->
+        console.log d
+        # clean
+        $ '.playlist-item'
+          .remove()
+        for each, i in d
+          $template = $('.playlist-slide').clone()
+          $template
+            .find '.col-md-1:first'
+            .html i+1
+          $template
+            .find '.col-md-10'
+            .html each.playlist_name
+          $template
+            .data 'playlist-id', each.id
+            .attr 'data-playlist-id', each.id
+          $template
+            .removeClass 'playlist-slide hide'
+            .addClass 'playlist-item'
+          $ '#playlist'
+            .append $template
+        $ '.playlist-item .col-md-10'
+          .on 'click', (e) ->
+            $this = $ this
+            $item = $this.closest '.playlist-item'
+            $id = $item.data('playlist-id')
+            after_getting_videos_from_playlist = ->
+              $ '.main-playlist'
+                .find '.col-md-10'
+                .html $item.find('.col-md-10').html()
+              $('.main-playlist').find('.icon-plus').addClass('hide')
+              $('.playlist-playlist-menu').addClass('hide')
+              $ '.main-playlist'
+                .removeClass 'hide'
+              $ '.playlist-item'
+                .addClass 'hide'
+              $ '.item'
+                .addClass 'animated fadeInUp'
+            $(window).trigger 'get.videos.from.playlist', [$id, after_getting_videos_from_playlist]
+        $ '.playlist-item .icon-minus'
+          .on 'click', (e) ->
+            $this = $ this
+            $item = $this.closest('.playlist-item')
+            id = $item.attr('data-playlist-id')
+            $.ajax
+              url: "/playlist/delete/#{id}"
+              method: 'post'
+              success: (d, s, x) ->
+                console.log x.status
+                console.log d
+                $(window).trigger 'get.playlists'
+              error: (x, s, d) ->
+                console.log s, x
+            return true
+      error: (x, s, d) ->
+        console.log s, d
+    return callback() if callback
+
+
+
   # get Playlists
   $ '.main-playlist .icon-block-menu'
     .on 'click', (e) ->
       unless window.Session.user
         return alert 'Please sign in for more features!'
-      $.ajax
-        url: '/playlist'
-        method: 'get'
-        success: (d, s, x) ->
-          console.log d
-          # clean
-          $ '.playlist-item'
-            .remove()
-          for each, i in d
-            $template = $('.playlist-slide').clone()
-            $template
-              .find '.col-md-1:first'
-              .html i+1
-            $template
-              .find '.col-md-10'
-              .html each.playlist_name
-            $template
-              .data 'playlist-id', each.id
-              .attr 'data-playlist-id', each.id
-            $template
-              .removeClass 'playlist-slide'
-              .addClass 'playlist-item'
-            $ '#playlist'
-              .append $template
-          if not $('.add-playlist').hasClass('hide')
-            $('.add-playlist').addClass('hide')
-          if not $('.item').hasClass('hide')
-            $('.item').addClass('hide')
-          $ '.playlist-item'
-            .removeClass 'hide'
-            .addClass 'animated fadeInUp'
-          $ '.main-playlist'
-            .addClass 'hide'
-          $ '.playlist-playlist-menu'
-            .removeClass 'hide'
-          $ '.playlist-item .col-md-10'
-            .on 'click', (e) ->
-              $this = $ this
-              $item = $this.closest '.playlist-item'
-              $id = $item.data('playlist-id')
-              after_getting_videos_from_playlist = ->
-                $ '.main-playlist'
-                  .find '.col-md-10'
-                  .html $item.find('.col-md-10').html()
-                $('.main-playlist').find('.icon-plus').addClass('hide')
-                $('.playlist-playlist-menu').addClass('hide')
-                $ '.main-playlist'
-                  .removeClass 'hide'
-                $ '.playlist-item'
-                  .addClass 'hide'
-                $ '.item'
-                  .addClass 'animated fadeInUp'
-              $(window).trigger 'get.videos.from.playlist', [$id, after_getting_videos_from_playlist]
-        error: (x, s, d) ->
-          alert 'Error: ' + s
+      after_getting_playlists = ->
+        console.log '>>??'
+        if not $('.add-playlist').hasClass('hide')
+          $('.add-playlist').addClass('hide')
+        if not $('.item').hasClass('hide')
+          $('.item').addClass('hide')
+        $ '.playlist-item'
+          .addClass 'animated fadeInUp'
+        $ '.main-playlist'
+          .addClass 'hide'
+        $ '.playlist-playlist-menu'
+          .removeClass 'hide'
+      $(window).trigger 'get.playlists', [after_getting_playlists]
 
   $ '.playlist-playlist-menu .icon-music'
     .on 'click', (e) ->

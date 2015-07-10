@@ -70,7 +70,7 @@ router.get '/playlist/:id/videos', (req, res) ->
 
 
 #POST methods
-## POST feedback (nodemailer)
+## POST gets feedback (nodemailer)
 router.post '/feedback', (req, res) ->
   transporter = nodemailer.createTransport
     service: 'iCloud'
@@ -115,7 +115,7 @@ router.post '/signin', (req, res) ->
         return res.redirect '/main/service'
 
 
-## POST signup / STORE User ID/PW
+## POST signup / stores User ID/PW
 router.post '/signup', (req, res) ->
   post = {user_id: req.body.UserAccount, user_password: req.body.UserPassword}
   pool.getConnection (err, conn) ->
@@ -136,7 +136,7 @@ router.post '/signup', (req, res) ->
         req.session.error = 'Account name already exists! Please pick another one.'
         return res.redirect '/signup'
 
-## POST add, store Playlist / respond to AJAX request
+## POST adds a blank Playlist / responds to AJAX request
 router.post '/playlist/add/blank', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
@@ -161,7 +161,7 @@ router.post '/playlist/add/blank', (req, res) ->
             .json results
         else
           res.redirect '/main/service'
-
+## POST adds a playlist with videos / responds to AJAX request
 router.post '/playlist/add/new', (req, res) ->
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
@@ -176,6 +176,8 @@ router.post '/playlist/add/new', (req, res) ->
         return res
           .status 200
           .json results
+
+## POST adds videos to 'Videos' table (works along with POST '/playlist/add/new') / responds to AJAX request
 router.post '/video/add', (req, res) ->
   video_list = req.body.video_list or []
   pool.getConnection (err, conn) ->
@@ -203,7 +205,7 @@ router.post '/video/add', (req, res) ->
         message: 'success'
     conn.release()
 
-
+## POST updates play_count in Videos / responds to AJAX request (sends status & results but no rendering in the front)
 router.post '/update/playcount/:id', (req, res) ->
   unless isFinite +req.params.id
     res
@@ -238,7 +240,8 @@ router.post '/update/playcount/:id', (req, res) ->
           message: 'update success'
           content: results
 
-router.post '/delete/video/:id', (req, res) ->
+## POST deletes video from Videos / responds to AJAX request
+router.post '/video/delete/:id', (req, res) ->
   unless isFinite +req.params.id
     res
       .status 200
@@ -267,9 +270,42 @@ router.post '/delete/video/:id', (req, res) ->
         .status 200
         .json
           status: 200
-          message: 'delete success'
+          message: 'video delete success'
           content: results
 
+## POST deletes Playlist from Playlists / responds to AJAX request
+router.post '/playlist/delete/:id', (req, res) ->
+  unless isFinite req.params.id
+    return res
+      .status 200
+      .json
+        status: 400
+        message: 'id(Number) invalid'
+  pool.getConnection (err, conn) ->
+    console.log err if err
+    conn.query "
+    DELETE FROM Playlists
+          WHERE user_id = ?
+            AND id = ?
+    "
+    , [req.session.user.user_id, +req.params.id], (err, results) ->
+      conn.query "
+      DELETE FROM Videos
+            WHERE user_id = ?
+              AND playlist_id = ?
+      "
+      , [req.session.user.user_id, +req.params.id], (err, results) ->
+        conn.release()
+        if err
+          return res
+            .status 200
+            .json
+              status: 500
+              message: 'server error'
 
-
+        res
+          .status 200
+          .json
+            status: 200
+            message: 'playlist delete success'
 module.exports = router

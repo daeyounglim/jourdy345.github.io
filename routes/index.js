@@ -273,7 +273,7 @@ router.post('/update/playcount/:id', function(req, res) {
   });
 });
 
-router.post('/delete/video/:id', function(req, res) {
+router.post('/video/delete/:id', function(req, res) {
   if (!isFinite(+req.params.id)) {
     res.status(200).json({
       status: 400,
@@ -297,8 +297,37 @@ router.post('/delete/video/:id', function(req, res) {
       }
       return res.status(200).json({
         status: 200,
-        message: 'delete success',
+        message: 'video delete success',
         content: results
+      });
+    });
+  });
+});
+
+router.post('/playlist/delete/:id', function(req, res) {
+  if (!isFinite(req.params.id)) {
+    return res.status(200).json({
+      status: 400,
+      message: 'id(Number) invalid'
+    });
+  }
+  return pool.getConnection(function(err, conn) {
+    if (err) {
+      console.log(err);
+    }
+    return conn.query("DELETE FROM Playlists WHERE user_id = ? AND id = ?", [req.session.user.user_id, +req.params.id], function(err, results) {
+      return conn.query("DELETE FROM Videos WHERE user_id = ? AND playlist_id = ?", [req.session.user.user_id, +req.params.id], function(err, results) {
+        conn.release();
+        if (err) {
+          return res.status(200).json({
+            status: 500,
+            message: 'server error'
+          });
+        }
+        return res.status(200).json({
+          status: 200,
+          message: 'playlist delete success'
+        });
       });
     });
   });
