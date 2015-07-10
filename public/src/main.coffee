@@ -138,7 +138,7 @@ jQuery ->
       # unless @list
       #   @list = []
       @bucket_list = []
-      @list = JSON.parse(localStorage.videos or '[]')
+      @list = if localStorage.videos then JSON.parse(localStorage.videos) else []
       @render() if @list.length
       # for video in videos
       #   @add video
@@ -178,14 +178,12 @@ jQuery ->
       $ '#playlist .item'
         .remove()
 
-      for item in @list
-        index = _.findIndex @list, (chr) ->
-          return chr.youtube_video_id is item.youtube_video_id
+      for item, i in @list
         $playtemplate = $('#playlist .play-template').clone()
         $playtemplate
           .find '.col-sm-1:first'
-          .html index+1
-        if item.video_title.length > 35
+          .html i+1
+        if item.video_title?.length > 35
           $playtemplate
             .find '.col-md-9'
             .html item.video_title[0..35] + '...'
@@ -200,7 +198,7 @@ jQuery ->
         $playtemplate
           .data 'video-id', item.youtube_video_id
         $playtemplate
-          .attr 'id', index
+          .attr 'id', i
         $playtemplate
           .attr 'data-video-id', item.youtube_video_id
         $playtemplate
@@ -225,28 +223,6 @@ jQuery ->
           $this = $ this
           $item = $this.closest('.item')
           i = +$item.attr('id')
-          if window.Player.getPlayerState() == 1 or window.Player.getPlayerState() == 2
-            j = _.findIndex(window.Playlist.get(), (chr) -> return chr.youtube_video_id == window.Player.getVideoData().video_id)
-            if i == j
-              return alert 'Cannot delete currently running video.'
-            if i > j
-              window.Playlist.remove(i)
-              $('#' + j).closest('.item').find('.col-md-1:first').css('visibility', 'hidden')
-              $('#' + j).closest('.item').siblings().find('.col-md-1:first').css('visibility', 'visible')
-              return
-            if i < j
-              window.Playlist.remove(i)
-              k = j-1
-              offset = $('#' + k).closest('.item').find('.col-md-1:first').offset()
-              height = $('#' + k).closest('.item').height()
-              $('#' + k).closest('.item').find('.col-md-1:first').css('visibility', 'hidden')
-              $('#' + k).closest('.item').siblings().find('.col-md-1:first').css('visibility', 'visible')
-              $ '.bar-container'
-                .css
-                  'top': offset.top + 37 + height * 0.5
-                  'left': offset.left - 10
-              return
-            return
           window.Playlist.remove(i)
       window.ShuffledPlaylist = _.shuffle @get()
       # $.ajax
@@ -278,9 +254,6 @@ jQuery ->
         return false
 
     remove: (i) ->
-      @list.splice(i, 1)
-      @render()
-      localStorage.videos = JSON.stringify @list
       if $('.main-playlist').attr('data-playlist-id')
         id = $('.main-playlist').attr('data-playlist-id')
         $.ajax
@@ -293,7 +266,9 @@ jQuery ->
             console.log d
           error: (x, s, d) ->
             console.log d, s
-        return true
+      @list.splice(i, 1)
+      @render()
+      localStorage.videos = JSON.stringify @list
 
     clear: ->
       @list = []
