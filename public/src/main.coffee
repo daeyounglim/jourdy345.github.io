@@ -256,7 +256,6 @@ jQuery ->
             video: JSON.stringify(@list[i])
           success: (d, s, x) ->
             console.log x.status
-            console.log d
           error: (x, s, d) ->
             console.log s, d
         return false
@@ -265,6 +264,19 @@ jQuery ->
       @list.splice(i, 1)
       @render()
       localStorage.videos = JSON.stringify @list
+      if $('.main-playlist').attr('data-playlist-id')
+        id = $('.main-playlist').attr('data-playlist-id')
+        $.ajax
+          url: "/delete/video/#{id}"
+          method: 'post'
+          data:
+            video: JSON.stringify(@list[i])
+          success: (d, s, x) ->
+            console.log x.status
+            console.log d
+          error: (x, s, d) ->
+            console.log d, s
+        return true
 
     clear: ->
       @list = []
