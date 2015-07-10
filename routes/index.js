@@ -220,7 +220,8 @@ router.post('/video/add', function(req, res) {
         youtube_video_id: video.youtube_video_id,
         video_title: video.video_title,
         playlist_id: +req.body.playlist_id,
-        user_id: req.session.user.user_id
+        user_id: req.session.user.user_id,
+        play_count: video.play_count
       };
       conn.query("INSERT INTO Videos SET ?", item, function(err, results) {
         if (err) {
@@ -237,6 +238,38 @@ router.post('/video/add', function(req, res) {
       message: 'success'
     });
     return conn.release();
+  });
+});
+
+router.post('/update/playcount/:id', function(req, res) {
+  if (!isFinite(+req.params.id)) {
+    res.status(200).json({
+      status: 400,
+      message: 'id(Number) invalid'
+    });
+    return;
+  }
+  return pool.getConnection(function(err, conn) {
+    var video;
+    video = JSON.parse(req.body.video);
+    if (err) {
+      console.log('error connection: ' + err.stack);
+    }
+    return conn.query("UPDATE Videos SET play_count = play_count + 1 WHERE user_id = ? AND playlist_id = ? AND id = ?", [req.session.user.user_id, +req.params.id, video.id], function(err, results) {
+      conn.release();
+      if (err) {
+        console.log(err);
+        return res.status(200).json({
+          status: 500,
+          message: 'server error'
+        });
+      }
+      return res.status(200).json({
+        status: 200,
+        message: 'update success',
+        content: results
+      });
+    });
   });
 });
 

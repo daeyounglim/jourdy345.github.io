@@ -176,6 +176,10 @@ jQuery ->
           $playtemplate
             .find '.col-md-9'
             .html item.video_title
+        if _.has(@list[0], 'id')
+          $playtemplate
+            .data 'video-index', item.id
+            .attr 'data-video-index', item.id
         $playtemplate
           .data 'video-id', item.youtube_video_id
         $playtemplate
@@ -241,32 +245,26 @@ jQuery ->
       # return true
 
     play: (i) ->
+      ++@list[i].play_count
       window.Player.loadVideoById @list[i].youtube_video_id, 0, 'large'
-      window.Playlist.getEqualizer(i)
-
+      if $('.main-playlist').attr('data-playlist-id')
+        id = $('.main-playlist').attr('data-playlist-id')
+        $.ajax
+          url: "/update/playcount/#{id}"
+          method: 'post'
+          data:
+            video: JSON.stringify(@list[i])
+          success: (d, s, x) ->
+            console.log x.status
+            console.log d
+          error: (x, s, d) ->
+            console.log s, d
+        return false
 
     remove: (i) ->
-      delete @list[i]
-      @list = _.compact @list
+      @list.splice(i, 1)
       @render()
       localStorage.videos = JSON.stringify @list
-
-    getEqualizer: (i) ->
-      $this = $('#' + i)
-      $item = $this.closest('.item')
-      # i = $item.attr('id')
-      # if window.Player.getVideoData().video_id
-      #   if $item.attr('data-video-id') is window.Player.getVideoData().video_id
-      #     return alert 'Cannot delete currently running video.'
-      offset = $item.find('.col-md-1:first').offset()
-      height = $item.height()
-      $item.find('.col-md-1:first').css('visibility', 'hidden')
-      $item.siblings().find('.col-md-1:first').css('visibility', 'visible')
-      $ '.bar-container'
-        .css
-          'top': offset.top + 37 + height * 0.5
-          'left': offset.left - 10
-
 
     clear: ->
       @list = []
@@ -358,6 +356,7 @@ jQuery ->
                 youtube_video_id: $item.data 'video-id'
                 video_title: $item.find('.col-md-7').html()
                 imgUrl: $item.find('img').attr('src')
+                play_count: 0
               window.Playlist.render()
           $ '.video-search-result .play-video'
             .on 'click', (e) ->

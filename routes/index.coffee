@@ -186,6 +186,7 @@ router.post '/video/add', (req, res) ->
         video_title: video.video_title
         playlist_id: +req.body.playlist_id
         user_id: req.session.user.user_id
+        play_count: video.play_count
       conn.query "INSERT INTO Videos SET ?", item, (err, results) ->
         if err
           console.log err
@@ -202,15 +203,40 @@ router.post '/video/add', (req, res) ->
         message: 'success'
     conn.release()
 
-    # for item in items
-    #   post =
-    #     playlist_id: req.body.playlist_id
-    #     youtube_video_id: item.youtube_video_id
-    #     user_id: req.session.user.user_id
-    #     video_title: item.video_title
-    #   conn.query "INSERT INTO Videos SET ?", [post], (err, results) ->
-    #     console.log err if err
 
+router.post '/update/playcount/:id', (req, res) ->
+  unless isFinite +req.params.id
+    res
+      .status 200
+      .json
+        status: 400
+        message: 'id(Number) invalid'
+    return
+  pool.getConnection (err, conn) ->
+    video = JSON.parse(req.body.video)
+    console.log('error connection: ' + err.stack) if err
+    conn.query "
+    UPDATE Videos
+       SET play_count = play_count + 1
+     WHERE user_id = ?
+       AND playlist_id = ?
+       AND id = ?
+    "
+    , [req.session.user.user_id, +req.params.id, video.id], (err, results) ->
+      conn.release()
+      if err
+        console.log err
+        return res
+          .status 200
+          .json
+            status: 500
+            message: 'server error'
+      res
+        .status 200
+        .json
+          status: 200
+          message: 'update success'
+          content: results
 
 
 
