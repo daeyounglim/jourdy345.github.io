@@ -4,7 +4,7 @@ module.exports = (grunt) ->
     less:
       dev:
         files:
-          'public/stylesheets/style.min.css': 'public/stylesheets/style.less'
+          'public/stylesheets/style.css': 'public/stylesheets/style.less'
     cssmin:
       target:
         files: [
@@ -25,8 +25,8 @@ module.exports = (grunt) ->
     uglify:
       my_target:
         files:
-          # 'public/javascripts/output.min.js': ['src/main.js']
-          'public/javascripts/output2.min.js': ['public/bower_components/messenger/build/js/messenger-theme-flat.js']
+          'public/javascripts/output.min.js': ['public/src/main.js']
+          # 'public/javascripts/output2.min.js': ['public/bower_components/messenger/build/js/messenger-theme-flat.js']
     shell:
       deploy:
         command: """
@@ -113,7 +113,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-concurrent'
 
 
-  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'concurrent:dev']
+  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'cssmin:target', 'uglify:my_target', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """
