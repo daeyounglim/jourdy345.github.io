@@ -1,7 +1,7 @@
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
-    less: 
+    less:
       dev:
         files:
           'public/stylesheets/style.min.css': 'public/stylesheets/style.less'
@@ -44,6 +44,7 @@ module.exports = (grunt) ->
           'routes/*.coffee'
           'public/**/*.coffee'
           'db/*.coffee'
+          'models/*.coffee'
         ]
         dest: '.'
         ext: '.js'
@@ -63,8 +64,9 @@ module.exports = (grunt) ->
           '*.coffee'
           'src/*.coffee'
           'db/*.coffee'
+          'models/*.coffee'
           'routes/*.coffee'
-          'public/**/*.coffee' 
+          'public/**/*.coffee'
         ]
         tasks: [
           'coffee:dev'

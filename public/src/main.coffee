@@ -49,7 +49,6 @@ jQuery ->
   #     type: 'info'
   #     showCloseButton: true
 
-
   window.Player = undefined
   done = false
   $ ->

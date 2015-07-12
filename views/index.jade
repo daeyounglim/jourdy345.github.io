@@ -10,37 +10,6 @@ block content
   //-   ga('create', 'UA-64280553-1', 'auto');
   //-   ga('send', 'pageview');
       // Button trigger modal
-  #createPlaylistModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header
-          button.close(type='button', data-dismiss='modal', aria-label='Close')
-            span(aria-hidden='true') ×
-          h4#myModalLabel.modal-title Create a Playlist
-        .modal-body.createPlaylist-body
-          form.createPlaylist-form
-            .form-group
-              label(for='createPlaylist-input') Title
-              input#createPlaylist-input.form-control(name='createPlaylist-name' type='text' autofocus)
-          .createPlaylist-template.hide
-            h2.createPlaylist-videos(style='border-bottom: 1px solid #EFEFEF; padding-bottom: 5px; font-weight: 500') Videos
-            img.createPlaylist-img.pull-left(src='')
-            p.createPlaylist-title
-  #myrelatedModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header
-          button.close(type='button', data-dismiss='modal', aria-label='Close')
-            span(aria-hidden='true') ×
-          h4#myModalLabel.modal-title Related Videos
-        .modal-body.related-body
-          .related-template.hide
-            .col-sm-4.col-md-4
-              img.related-img.pull-left(src='')
-            .col-sm-8.col-md-8
-              p.related-title
-            p.related-description
-        .modal-footer
   .bar-container
     div
     div
