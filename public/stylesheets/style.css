@@ -1,5 +1,3 @@
-@import url("http://fonts.googleapis.com/css?family=Merriweather:400,400italic,300italic,300,700,700italic,900,900italic&.css");
-@import url("http://fonts.googleapis.com/earlyaccess/nanummyeongjo&.css");
 /*!
  * Bootstrap v3.3.5 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -7317,50 +7315,6 @@ i.icon-repo-forked {
   white-space: pre;
   word-wrap: break-word;
 }
-#scrollable-dropdown-menu {
-  clear: both;
-  margin-left: 5px;
-  padding: 14px;
-}
-.tt-dropdown-menu {
-  max-height: 490px;
-  background-color: #fff;
-  overflow-y: auto;
-}
-.forBackspace {
-  position: absolute;
-  top: -9999px;
-}
-.subcontent-nav {
-  background-color: rgba(135, 206, 250, 0.2);
-}
-.subcontent {
-  margin-top: 70px;
-  margin-bottom: 100px;
-}
-.subcontent-left {
-  width: 600px;
-  display: block;
-}
-.subcontent-left ul li {
-  font-size: 17px;
-  margin-top: 10px;
-  margin-left: -38px;
-  list-style: none;
-}
-.subcontent-left ul li:first-child {
-  margin-top: 20px;
-}
-.subcontent-left-h3 {
-  margin-top: 30px;
-}
-.subcontent-left-h1,
-.subcontent-right-h1 {
-  font-weight: 600;
-}
-.subcontent-right-h1 {
-  text-align: center;
-}
 button.fixed-button {
   margin-top: 50px;
 }
@@ -7443,16 +7397,6 @@ button.square {
   animation-iteration-count: infinite;
   left: 38px;
   bottom: 32px;
-}
-.feedback-container span.glyphicon {
-  font-size: 100px;
-  margin-top: 200px;
-}
-.feedback-container p {
-  font-size: 50px;
-}
-.feedback-container button {
-  margin-bottom: 100px;
 }
 .btn-success {
   color: royalblue;

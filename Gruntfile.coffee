@@ -11,11 +11,11 @@ module.exports = (grunt) ->
           expand: true
           cwd: ''
           src: [
-            'public/bower_components/typeahead.js-bootstrap3.less/*.css'
+            # 'public/bower_components/typeahead.js-bootstrap3.less/*.css'
             'public/bower_components/offline/themes/offline-language-english.css'
             'public/bower_components/offline/themes/offline-theme-dark.css'
-            'public/bower_components/messenger/build/css/messenger-theme-air.css'
-            'public/bower_components/messenger/build/css/messenger.css'
+            # 'public/bower_components/messenger/build/css/messenger-theme-air.css'
+            # 'public/bower_components/messenger/build/css/messenger.css'
             'public/stylesheets/*.css'
             '!*.min.css'
           ]
