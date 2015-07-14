@@ -19,7 +19,7 @@ module.exports.findByNameAndPassword = (username, password, callback) ->
     "
     , [username, password], (err, results) ->
       conn.release()
-      return callback(err, results)
+      return callback(err, results[0])
 
 module.exports.findById = (id, callback) ->
   pool.getConnection (err, conn) ->
@@ -31,7 +31,7 @@ module.exports.findById = (id, callback) ->
     "
     , [+id], (err, results) ->
       conn.release()
-      return callback(err, results)
+      return callback(err, results[0])
 
 module.exports.findByName = (username, callback) ->
   pool.getConnection (err, conn) ->
@@ -43,7 +43,7 @@ module.exports.findByName = (username, callback) ->
     "
     , [username], (err, results) ->
       conn.release()
-      return callback(err, results)
+      return callback(err, results[0])
 
 
 module.exports.countByName = (username, callback) ->
