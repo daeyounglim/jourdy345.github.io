@@ -19,7 +19,7 @@ module.exports.findByNameAndPassword = (username, password, callback) ->
     "
     , [username, password], (err, results) ->
       conn.release()
-      return callback(err, results[0])
+      return callback(err, results)
 
 module.exports.findById = (id, callback) ->
   pool.getConnection (err, conn) ->
@@ -31,7 +31,7 @@ module.exports.findById = (id, callback) ->
     "
     , [+id], (err, results) ->
       conn.release()
-      return callback(err, results[0])
+      return callback(err, results)
 
 module.exports.findByName = (username, callback) ->
   pool.getConnection (err, conn) ->
@@ -43,7 +43,19 @@ module.exports.findByName = (username, callback) ->
     "
     , [username], (err, results) ->
       conn.release()
-      return callback(err, results[0])
+      return callback(err, results)
+
+
+module.exports.countByName = (username, callback) ->
+  pool.getConnection (err, conn) ->
+    console.log err if err
+    conn.query "
+    SELECT COUNT(id) as 'count'
+    FROM Users
+    WHERE user_id = ?
+    ", [username], (err, results) ->
+      conn.release()
+      return callback(err, results[0].count)
 
 module.exports.createSession = (req, user) ->
   delete user.user_password

@@ -51,13 +51,13 @@ jQuery ->
 
   window.Player = undefined
   done = false
-  $ ->
-    $('#sortable').sortable
-      stop: (event, ui) ->
-        window.Playlist.remap()
-        return
-    $('#sortable').disableSelection()
-    return
+  # $ ->
+  #   $('#sortable').sortable
+  #     stop: (event, ui) ->
+  #       window.Playlist.remap()
+  #       return
+  #   $('#sortable').disableSelection()
+  #   return
 
   $ '.behav-buttons i'
       .on 'click', (e) ->

@@ -8,7 +8,6 @@ routes = require './routes/index'
 users = require './routes/users'
 sessions = require 'client-sessions'
 
-
 app = express()
 
 # view engine setup
@@ -27,11 +26,11 @@ app.use express.static path.join __dirname, 'public'
 app.use sessions
   cookieName: 'ListifySession'
   requestKey: 'session'
-  secret: 'a'
+  secret: 'dkwodDSsodnie2012lsda'
   duration: 24 * 60 * 60 * 1000
   activeDuration: 1000 * 60 * 5
   cookie:
-    domain: '.listify.tk'
+    domain: '.lvh.me'
     # cannot be used with maxAge
     ephemeral: true
     httpOnly: true
@@ -44,12 +43,6 @@ app.use (req, res, next) ->
   delete req.session.success
   delete req.session.error
   next()
-
-
-
-
-
-
 
 app.use '/', routes
 app.use '/users', users

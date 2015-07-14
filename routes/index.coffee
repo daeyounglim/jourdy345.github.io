@@ -99,7 +99,7 @@ router.get '/login/facebook', (req, res) ->
   client_id = FACEBOOK_APP_ID
   redirect_uri = 'http://listify.tk/login/facebook/step2'
   response_type = 'code'
-  scope = 'email'
+  scope = 'public_profile,email'
   __QUERY__ = "client_id=#{client_id}&redirect_uri=#{redirect_uri}&response_type=#{response_type}&scope=#{scope}"
   url = 'https://www.facebook.com/dialog/oauth?' + __QUERY__
   console.log url
@@ -120,6 +120,7 @@ router.get '/login/facebook/step2', (req, res) ->
     url = 'https://graph.facebook.com/me?' + __QUERY__
     request.get url, (error, response, body) ->
       data = JSON.parse body
+      console.log data
       models.user.findByName data.name, (err, user) ->
         console.log err if err
         console.log 'user: ' + user
@@ -127,13 +128,13 @@ router.get '/login/facebook/step2', (req, res) ->
           models.user.create data.name, '', (err, result) ->
             console.log 'result: ' + result
             console.log err if err
-            models.user.createSession req, user
+            models.user.findByName data.name, (err, user) ->
+              console.log err if err
+              models.user.createSession req, user
             res.redirect '/main/service'
         else
           models.user.createSession req, user
           res.redirect '/main/service'
-
-
 
 
 
