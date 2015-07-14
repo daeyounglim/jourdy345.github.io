@@ -97,7 +97,7 @@ router.get '/login/google/step2', (req, res) ->
 ## Sends user authorization request to Facebook
 router.get '/login/facebook', (req, res) ->
   client_id = FACEBOOK_APP_ID
-  redirect_uri = 'http://lvh.me:3000/login/facebook/step2'
+  redirect_uri = 'http://listify.tk/login/facebook/step2'
   response_type = 'code'
   scope = 'public_profile,email'
   __QUERY__ = "client_id=#{client_id}&redirect_uri=#{redirect_uri}&response_type=#{response_type}&scope=#{scope}"
@@ -108,7 +108,7 @@ router.get '/login/facebook', (req, res) ->
 router.get '/login/facebook/step2', (req, res) ->
   code = req.query.code
   client_id = FACEBOOK_APP_ID
-  redirect_uri = 'http://lvh.me:3000/login/facebook/step2'
+  redirect_uri = 'http://listify.tk/login/facebook/step2'
   client_secret = FACEBOOK_APP_SECRET
   __QUERY__ = "code=#{code}&client_id=#{client_id}&client_secret=#{client_secret}&redirect_uri=#{redirect_uri}"
   url = 'https://graph.facebook.com/v2.3/oauth/access_token?' + __QUERY__
