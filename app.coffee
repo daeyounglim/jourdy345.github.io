@@ -30,7 +30,7 @@ app.use sessions
   duration: 24 * 60 * 60 * 1000
   activeDuration: 1000 * 60 * 5
   cookie:
-    domain: '.lvh.me'
+    domain: if process.env.NODE_ENV is 'production' then '.listify.tk' else '.lvh.me'
     # cannot be used with maxAge
     ephemeral: true
     httpOnly: true
