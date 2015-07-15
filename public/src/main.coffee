@@ -143,6 +143,7 @@ jQuery ->
       #   @add video
     set: (list) ->
       @list = list
+      localStorage.videos = JSON.stringify list
     get: ->
       @list
     add: (item) ->
@@ -272,10 +273,6 @@ jQuery ->
     clear: ->
       @list = []
       @render()
-      $ '.bar-container'
-        .css
-          'top': -9999
-          'left': -9999
       localStorage.videos = JSON.stringify @list
 
     remap: ->
@@ -353,6 +350,8 @@ jQuery ->
               .append $template
           $ '.video-search-result .add-video'
             .on 'click', (e) ->
+              if $('.main-playlist').hasClass('hide')
+                return alert 'Please choose a Playlist to add'
               $this = $ this
               $item = $this.closest '.video-search-result'
               window.Playlist.add
@@ -457,6 +456,15 @@ jQuery ->
       $ '#signinModal #UserID'
         .focus()
 
+  $ '#signinModal form'
+    .on 'submit', (e) ->
+      if $('#signinModal #UserPassword').val().trim().length == 0
+        e.preventDefault()
+        e.stopPropagation()
+        alert 'Are you kidding? No password?'
+        return false
+      
+
 
   $ '#signup-ConfirmPassword'
     .on 'keyup', (e) ->
@@ -525,16 +533,34 @@ jQuery ->
             $this = $ this
             $item = $this.closest('.playlist-item')
             id = $item.attr('data-playlist-id')
-            $.ajax
-              url: "/playlist/delete/#{id}"
-              method: 'post'
-              success: (d, s, x) ->
-                console.log x.status
-                console.log d
-                $(window).trigger 'get.playlists'
-              error: (x, s, d) ->
-                console.log s, x
-            return true
+            if $('.main-playlist').attr('data-playlist-id') == id
+              if confirm 'This is the current Playlist. Are you sure you want to delete it?'
+                $ '.item'
+                  .remove()
+                $('.main-playlist').find('.col-sm-10').html('New Videos')
+                $('.main-playlist').removeAttr('data-playlist-id')
+                localStorage.videos = ''
+                $.ajax
+                  url: "/playlist/delete/#{id}"
+                  method: 'post'
+                  success: (d, s, x) ->
+                    console.log x.status
+                    console.log d
+                    $(window).trigger 'get.playlists'
+                  error: (x, s, d) ->
+                    console.log s, x
+                return true
+            else
+              $.ajax
+                url: "/playlist/delete/#{id}"
+                method: 'post'
+                success: (d, s, x) ->
+                  console.log x.status
+                  console.log d
+                  $(window).trigger 'get.playlists'
+                error: (x, s, d) ->
+                  console.log s, x
+              return true
       error: (x, s, d) ->
         console.log s, d
     return callback() if callback
@@ -547,7 +573,6 @@ jQuery ->
       unless window.Session.user
         return alert 'Please sign in for more features!'
       after_getting_playlists = ->
-        console.log '>>??'
         if not $('.add-playlist').hasClass('hide')
           $('.add-playlist').addClass('hide')
         if not $('.item').hasClass('hide')
@@ -564,6 +589,8 @@ jQuery ->
     .on 'click', (e) ->
       window.Playlist.set JSON.parse(localStorage.videos or '[]')
       window.Playlist.render()
+      if not $('.main-playlist').attr('data-playlist-id')
+        $('.main-playlist').find('.icon-plus').removeClass('hide')
       if not $('.add-blank-playlist').hasClass('hide')
         $('.add-blank-playlist').addClass('hide')
       if not $('.playlist-item').hasClass('hide')
@@ -583,10 +610,6 @@ jQuery ->
 
   $ '.add-blank-playlist-button'
     .on 'click', (e) ->
-      $ '.bar-container'
-        .css
-          top: -9999
-          left: -9999
       $ '.playlist-playlist-menu'
         .addClass 'hide'
       $ '.playlist-playlist-menu-2'
@@ -796,31 +819,36 @@ jQuery ->
       .on 'submit', (e) ->
 
   $(window).on 'add.playlist', (e, collection, callback) ->
+    if window.Playlist.show_bucket_list()[0].id
+      alert 'You have already made a Playlist with these videos.'
+      return false
     $.ajax
       url: '/playlist/add/new'
       method: 'post'
+      async: false
       headers:
         Accept: 'application/json'
       data:
         playlist_name: $('.add-playlist input').val()
       success: (d, s, x) ->
-        console.log d
+        console.log 'playlist add result: ', d
         if x.status isnt 200
           return 'Error'
         $.ajax
           url: '/video/add'
           method: 'post'
-          contentType: 'application/json'
-          data: JSON.stringify {
-            playlist_id: d.insertId
-            video_list: collection
-          }
-          dataType: 'application/json'
+          async: false
+          data: 
+            data: JSON.stringify {
+              playlist_id: d.insertId
+              video_list: collection
+            }
           headers:
             Accept: 'application/json'
           success: (d, s, x) ->
             if x.status isnt 200
               return 'Error'
+            console.log 'video add result: ', d
             true
           error: (x, s, d) ->
             console.log s, d
@@ -830,10 +858,11 @@ jQuery ->
     return callback() if callback
   $ '.add-playlist form'
     .on 'submit', (e) ->
-      e.preventDefault()
-      e.stopPropagation()
       if $('.add-playlist input').val().trim().length == 0
-        return alert 'Please make a name for the Playlist.'
+        e.preventDefault()
+        e.stopPropagation()
+        alert 'Please make a name.'
+        return false
       after_adding_playlist = ->
         $ '.add-playlist-success'
           .removeClass 'hide'

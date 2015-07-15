@@ -113,7 +113,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-concurrent'
 
 
-  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'cssmin:target', 'uglify:my_target', 'concurrent:dev']
+  grunt.registerTask 'serve', ['coffee:dev', 'less:dev', 'cssmin:target', 'concurrent:dev']
   grunt.registerTask 'deploy', ['shell:deploy']
   grunt.registerTask 'default', ->
     grunt.log.writeln """

@@ -5,6 +5,7 @@ connection = require('../db/db').connection
 pool = require('../db/db').pool
 google = require 'googleapis'
 request = require 'request'
+moment = require 'moment'
 GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID
@@ -292,32 +293,27 @@ router.post '/playlist/add/new', (req, res) ->
 
 ## POST adds videos to 'Videos' table (works along with POST '/playlist/add/new') / responds to AJAX request
 router.post '/video/add', (req, res) ->
-  video_list = JSON.parse(req.body.video_list) or []
-  console.log video_list
+  data = JSON.parse req.body.data
+  video_list = data.video_list
+  console.log 'video_list: ', video_list
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
     for video in video_list
       item =
         youtube_video_id: video.youtube_video_id
         video_title: video.video_title
-        playlist_id: +req.body.playlist_id
+        playlist_id: +data.playlist_id
         user_id: req.session.user.user_id
         play_count: video.play_count
+        add_time: moment().valueOf()
+      console.log 'item: ', item
       conn.query "INSERT INTO Videos SET ?", item, (err, results) ->
         if err
           console.log err
-          res
-            .status 200
-            .json
-              status: 500
-              message: 'server error'
+          res.status 200
           return
-    res
-      .status 200
-      .json
-        status: 200
-        message: 'success'
     conn.release()
+    res.status 200
 
 ## POST updates play_count in Videos / responds to AJAX request (sends status & results but no rendering in the front)
 router.post '/update/playcount/:id', (req, res) ->
