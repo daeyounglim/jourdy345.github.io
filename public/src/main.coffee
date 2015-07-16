@@ -84,8 +84,12 @@ jQuery ->
           window.Playlist.play currentVideoIndex + 1
       else if $('.repeat-one').hasClass 'button-active'
         currentVideoIndex =  _.findIndex window.Playlist.get(), (chr) ->
-            return chr.youtube_video_id is window.Player.getVideoData().video_id
-        window.Playlist.play currentVideoIndex
+          return chr.youtube_video_id is window.Player.getVideoData().video_id
+        if currentVideoIndex > -1
+          window.Playlist.play currentVideoIndex
+        else
+          currentVideoId = window.Player.getVideoData().video_id
+          window.Player.loadVideoById(currentVideoId, 'large')
       else if $('.shuffle').hasClass 'button-active'
         currentVideoIndex =  _.findIndex window.ShuffledPlaylist, (chr) ->
           return chr.youtube_video_id is window.Player.getVideoData().video_id
@@ -153,7 +157,6 @@ jQuery ->
       # }
       @list.push item
       console.log 'item: ' + item
-      video = JSON.stringify([item])
       localStorage.videos = JSON.stringify @list
       if $('.main-playlist').attr('data-playlist-id')
         id = $('.main-playlist').attr('data-playlist-id')
@@ -162,7 +165,7 @@ jQuery ->
           method: 'post'
           data:
             playlist_id: id
-            video_list: video
+            video_list: item
           success: (d, s, x) ->
             console.log x.status
             console.log d
@@ -830,29 +833,27 @@ jQuery ->
         Accept: 'application/json'
       data:
         playlist_name: $('.add-playlist input').val()
+        data: JSON.stringify collection
       success: (d, s, x) ->
         console.log 'playlist add result: ', d
         if x.status isnt 200
           return 'Error'
-        $.ajax
-          url: '/video/add'
-          method: 'post'
-          async: false
-          data: 
-            data: JSON.stringify {
-              playlist_id: d.insertId
-              video_list: collection
-            }
-          headers:
-            Accept: 'application/json'
-          success: (d, s, x) ->
-            if x.status isnt 200
-              return 'Error'
-            console.log 'video add result: ', d
-            true
-          error: (x, s, d) ->
-            console.log s, d
-        true
+        # $.ajax
+        #   url: '/video/add'
+        #   method: 'post'
+        #   data: 
+        #     data: JSON.stringify {
+        #       video_list: collection
+        #     }
+        #   headers:
+        #     Accept: 'application/json'
+        #   success: (d, s, x) ->
+        #     if x.status isnt 200
+        #       return 'Error'
+        #     console.log 'video add result: ', d
+        #     false
+        #   error: (x, s, d) ->
+        #     console.log s, d
       error: (x, s, d) ->
         console.log s, d
     return callback() if callback

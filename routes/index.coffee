@@ -282,38 +282,47 @@ router.post '/playlist/add/new', (req, res) ->
     playlist =
       user_id: req.session.user.user_id
       playlist_name: req.body.playlist_name
-    conn.query "INSERT INTO Playlists SET ?", [playlist], (err, results) ->
-      conn.release()
+    conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
       console.log err if err
       console.log results
-      if req.accepts('application/json') and not req.accepts('html')
-        return res
-          .status 200
-          .json results
+      video_list = JSON.parse req.body.data
+      console.log video_list
+      video_list.forEach (e) ->
+        item = 
+          youtube_video_id: e.youtube_video_id
+          video_title: e.video_title
+          playlist_id: +results.insertId
+          user_id: req.session.user.user_id
+          play_count: e.play_count
+          add_time: moment().valueOf()
+        console.log item
+        conn.query "INSERT INTO Videos Set ?", item, (err, results) ->
+          # if req.accepts('application/json') and not req.accepts('html')
+          # res.json {results: results}
+          console.log err if err
+          console.log results
+          res.json 
+            data: results
 
 ## POST adds videos to 'Videos' table (works along with POST '/playlist/add/new') / responds to AJAX request
 router.post '/video/add', (req, res) ->
-  data = JSON.parse req.body.data
-  video_list = data.video_list
   console.log 'video_list: ', video_list
   pool.getConnection (err, conn) ->
     console.log('error connection: ' + err.stack) if err
-    for video in video_list
-      item =
-        youtube_video_id: video.youtube_video_id
-        video_title: video.video_title
-        playlist_id: +data.playlist_id
-        user_id: req.session.user.user_id
-        play_count: video.play_count
-        add_time: moment().valueOf()
-      console.log 'item: ', item
-      conn.query "INSERT INTO Videos SET ?", item, (err, results) ->
-        if err
-          console.log err
-          res.status 200
-          return
-    conn.release()
-    res.status 200
+    item =
+      youtube_video_id: video.youtube_video_id
+      video_title: req.body.video_list.video_title
+      playlist_id: +data.playlist_id
+      user_id: req.session.user.user_id
+      play_count: req.body.video_list.play_count
+      add_time: moment().valueOf()
+    console.log 'item: ', item
+    conn.query "INSERT INTO Videos SET ?", item, (err, results) ->
+      conn.release()
+      console.log err if err
+      res.json
+        status: 200
+        message: 'success!'
 
 ## POST updates play_count in Videos / responds to AJAX request (sends status & results but no rendering in the front)
 router.post '/update/playcount/:id', (req, res) ->

@@ -163,4 +163,26 @@ block content
                     i.icon-play(style='font-size: 30px; color: royalblue;')
                   .col-md-1.add-video.text-center(style='line-height: 120px; cursor: pointer;')
                     i.icon-plus(style='font-size: 30px; color: #CCC')
+  
+  .modal.fade#myModal(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        form.form-horizontal(action='/feedback', method='post')
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;
+            h4.modal-title(id='myModalLabel') Let us hear what you have to say!
+          .modal-body
+            .form-group
+              label.col-sm-2.control-label(for='inputBody') Content
+              .col-sm-10
+                textarea#inputBody.form-control(name='content', type='text', rows= '10', placeholder='Please write your opinion here')
+            .modal-footer
+              button.btn.btn-default.square(type='button', data-dismiss='modal') Cancel
+              button.btn.btn-success.square(type='submit') Send
+  .container(style='position: absolute; width: 100%; background-color: #333; color: #EEE; padding: 60px')
+    h1.multiline.text-center.
+      Your feedback is
+      what makes us better
+    button.center-block.fixed-button.btn.btn-success(type='button', data-toggle='modal', data-target="#myModal") Feedback  
               
