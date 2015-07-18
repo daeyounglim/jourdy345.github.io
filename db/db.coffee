@@ -1,16 +1,13 @@
 mysql = require 'mysql'
 
-connection = mysql.createConnection
+module.exports.connection = connection = mysql.createConnection
   host: process.env.DB_HOST
   user: process.env.DB_ID
   password: process.env.DB_PASSWORD
   database: 'Listify'
 
 
-module.exports.connection = connection
-
-
-pool = mysql.createPool
+module.exports.pool = pool = mysql.createPool
   connectionLimit: 20
   host: process.env.DB_HOST
   user: process.env.DB_ID
@@ -18,4 +15,6 @@ pool = mysql.createPool
   database: 'Listify'
 
 
-module.exports.pool = pool
+module.exports.getConnection = getConnection = ->
+  pool.getConnectionAsync().disposer (db, promise) ->
+    db.release()

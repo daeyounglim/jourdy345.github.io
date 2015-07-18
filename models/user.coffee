@@ -1,61 +1,55 @@
 pool = require('../db/db').pool
+db = require('../db/db')
+Promise = require 'bluebird'
 
-module.exports.create = (id, password, callback) ->
-  post = {user_id: id, user_password: password}
-  pool.getConnection (err, conn) ->
-    console.log err if err
-    conn.query "INSERT INTO Users SET ?", post, (err, result) ->
-      conn.release()
-      return callback(err, result.insertId)
+module.exports.create = (conn, options, callback) ->
+  new Promise (resolve, reject) ->
+    post = {user_id: options.id, user_password: options.password}
+    conn.queryAsync "INSERT INTO Users SET ?", post
+    .spread (row) ->
+      resolve row.insertId
 
-module.exports.findByNameAndPassword = (username, password, callback) ->
-  pool.getConnection (err, conn) ->
-    console.log err if err
+module.exports.findByNameAndPassword = (conn, username, password, callback) ->
+  new Promise (resolve, reject) ->
     conn.query "
     SELECT *
     FROM Users
     WHERE user_id = ?
     AND user_password = ?
-    "
-    , [username, password], (err, results) ->
-      conn.release()
-      return callback(err, results[0])
+    ", [username, password]
+    .spread (row) ->
+      resolve row
 
-module.exports.findById = (id, callback) ->
-  pool.getConnection (err, conn) ->
-    console.log err if err
+module.exports.findById = (conn, id, callback) ->
+  new Promise (resolve, reject) ->  
     conn.query "
     SELECT *
     FROM Users
     WHERE id = ?
-    "
-    , [+id], (err, results) ->
-      conn.release()
-      return callback(err, results[0])
+    ", [+id]
+    .spread (row) ->
+      resolve row
 
-module.exports.findByName = (username, callback) ->
-  pool.getConnection (err, conn) ->
-    console.log err if err
+module.exports.findByName = (conn, username, callback) ->
+  new Promise (resolve, reject) ->  
     conn.query "
     SELECT *
     FROM Users
     WHERE user_id = ?
-    "
-    , [username], (err, results) ->
-      conn.release()
-      return callback(err, results[0])
+    ", [username]
+    .spread (row) ->
+      resolve row
 
 
-module.exports.countByName = (username, callback) ->
-  pool.getConnection (err, conn) ->
-    console.log err if err
+module.exports.countByName = (conn, username, callback) -> 
+  new Promise (resolve, reject) ->
     conn.query "
     SELECT COUNT(id) as 'count'
     FROM Users
     WHERE user_id = ?
-    ", [username], (err, results) ->
-      conn.release()
-      return callback(err, results[0].count)
+    ", [username]
+    .spread (row) ->
+      resolve row.c
 
 module.exports.createSession = (req, user) ->
   delete user.user_password

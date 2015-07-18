@@ -4,11 +4,15 @@ favicon = require 'serve-favicon'
 logger = require 'morgan'
 cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
-routes = require './routes/index'
-users = require './routes/users'
+routes = 
+  index: require './routes/index'
+  users: require './routes/users'
 sessions = require 'client-sessions'
+Promise = require 'bluebird'
+moment = require 'moment'
 
 app = express()
+app.locals.moment = moment
 
 # view engine setup
 app.set 'views', path.join __dirname, 'views'
@@ -44,8 +48,13 @@ app.use (req, res, next) ->
   delete req.session.error
   next()
 
-app.use '/', routes
-app.use '/users', users
+Promise.promisifyAll require('mysql/lib/Connection').prototype
+Promise.promisifyAll require('mysql/lib/Pool').prototype
+Promise.promisifyAll require('request')
+
+
+app.use '/', routes.index
+app.use '/users', routes.users
 
 
 

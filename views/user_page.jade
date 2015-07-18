@@ -1,0 +1,47 @@
+extends layout
+
+block content
+  .container
+    .row
+      .col-xs-12.col-sm-12.col-md-12.col-lg-12
+        h2= locals.session.user.user_id
+  .container
+    .row
+      .col-xs-12.col-sm-12.col-md-12.col-lg-12 Playlists
+  each playlist in playlists
+    if playlist[0].playlist_name
+      .container(style='margin-top: 20px; border-top: 1px solid #EEE')
+        .row
+          .col-xs-12.col-sm-12.col-md-12.col-lg-12
+            h4= playlist[0].playlist_name
+        if playlist[1].length
+          .row
+            .col-xs-12.col-sm-12.col-md-12.col-lg-12
+              table.table-striped.table-hover(style='width: 100%; margin-top: 10px; margin-bottom: 20px; padding: 10px')
+                thead
+                  tr
+                    th(style='padding: 10px;') Video Title
+                    th(style='padding: 10px;') Play Count
+                    th(style='padding: 10px;') Added at
+                tbody
+                  each video in playlist[1]
+                    tr
+                      td(style='padding: 10px; font-weight: 100')
+                        if video.video_title
+                          = video.video_title
+                        else
+                          | null
+
+                      td(style='padding: 10px; font-weight: 100')
+                        if video.play_count !== 0
+                          = video.play_count
+                        else if video.play_count == 0
+                          | 0
+                        else
+                          | null
+
+                      td(style='padding: 10px; font-weight: 100')
+                        if video.add_time
+                          = moment(video.add_time).format('llll')
+                        else
+                          | ?

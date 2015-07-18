@@ -1,6 +1,8 @@
 express = require 'express'
 router = express.Router()
 nodemailer = require 'nodemailer'
+db = require '../db/db'
+Promise = require 'bluebird'
 connection = require('../db/db').connection
 pool = require('../db/db').pool
 google = require 'googleapis'
@@ -19,9 +21,46 @@ models =
 router.get '/', (req, res, next) ->
   res.render 'main.jade', title: 'Express'
 
-
 router.get '/main/service', (req, res) ->
   res.render 'main_service.jade'
+
+router.get '/user/:user_id', (req, res) ->
+  user_id = req.params.user_id
+  Promise.using db.getConnection(), (conn) ->
+    conn.queryAsync "
+    SELECT *
+    FROM Playlists
+    WHERE user_id = ?
+    ", user_id
+    .spread (rows) ->
+      req.playlists = rows
+    
+      conn.queryAsync "
+      SELECT *
+      FROM Videos
+      WHERE user_id = ?
+      ", user_id
+    .spread (rows) ->
+      req.videos = rows
+    .then ->
+      playlists = req.playlists
+      videos = req.videos
+      rearrangedArray = []
+      for playlist in playlists
+        temp = []
+        temp.push playlist
+        temp2 = []
+        for video, j in videos
+          if +video.playlist_id == playlist.id
+            temp2.push video
+        temp.push temp2
+        rearrangedArray.push temp
+      req.rearrangedArray = rearrangedArray
+    .then ->
+      res.render 'user_page.jade',
+        playlists: req.rearrangedArray
+  .catch (err) ->
+    console.log err
 
 ## Redirect success / failure
 router.get '/feedback/success', (req, res) ->
@@ -276,53 +315,85 @@ router.post '/playlist/add/blank', (req, res) ->
         else
           res.redirect '/main/service'
 ## POST adds a playlist with videos / responds to AJAX request
+
+
+
+
 router.post '/playlist/add/new', (req, res) ->
-  pool.getConnection (err, conn) ->
-    console.log('error connection: ' + err.stack) if err
+  Promise.using db.getConnection(), (conn) ->
     playlist =
       user_id: req.session.user.user_id
       playlist_name: req.body.playlist_name
-    conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
-      console.log err if err
-      console.log results
+    conn.queryAsync "INSERT INTO Playlists SET ?", playlist
+    .spread (results) ->
+      console.log 'results', results
       video_list = JSON.parse req.body.data
-      console.log video_list
+      console.log 'video_list: ', video_list
       video_list.forEach (e) ->
-        item = 
+        item = {
           youtube_video_id: e.youtube_video_id
           video_title: e.video_title
           playlist_id: +results.insertId
           user_id: req.session.user.user_id
           play_count: e.play_count
           add_time: moment().valueOf()
-        console.log item
-        conn.query "INSERT INTO Videos Set ?", item, (err, results) ->
-          # if req.accepts('application/json') and not req.accepts('html')
-          # res.json {results: results}
-          console.log err if err
-          console.log results
-          res.json 
-            data: results
+        }
+        console.log 'item: ', item
+        conn.queryAsync "INSERT INTO Videos SET ?", item
+        .then (results) ->
+          console.log 'Videos insert: ', results
+    .then ->
+      res.json
+        status: 200
+        message: 'success'
+  .catch (err) ->
+    console.log err
+  # pool.getConnection (err, conn) ->
+  #   console.log('error connection: ' + err.stack) if err
+  #   playlist =
+  #     user_id: req.session.user.user_id
+  #     playlist_name: req.body.playlist_name
+  #   conn.query "INSERT INTO Playlists SET ?", playlist, (err, results) ->
+  #     console.log err if err
+  #     console.log results
+  #     video_list = JSON.parse req.body.data
+  #     console.log video_list
+  #     video_list.forEach (e) ->
+  #         youtube_video_id: e.youtube_video_id
+  #         video_title: e.video_title
+  #         playlist_id: +results.insertId
+  #         user_id: req.session.user.user_id
+  #         play_count: e.play_count
+  #         add_time: moment().valueOf()
+  #       console.log item
+  #       conn.query "INSERT INTO Videos Set ?", item, (err, results) ->
+  #         # if req.accepts('application/json') and not req.accepts('html')
+  #         # res.json {results: results}
+  #         console.log err if err
+  #         console.log results
+  #     res.json 
+  #       data: results
 
 ## POST adds videos to 'Videos' table (works along with POST '/playlist/add/new') / responds to AJAX request
 router.post '/video/add', (req, res) ->
-  console.log 'video_list: ', video_list
-  pool.getConnection (err, conn) ->
-    console.log('error connection: ' + err.stack) if err
+  video_list = JSON.parse req.body.video_list
+  Promise.using db.getConnection(), (conn) ->
     item =
-      youtube_video_id: video.youtube_video_id
-      video_title: req.body.video_list.video_title
-      playlist_id: +data.playlist_id
+      youtube_video_id: video_list.youtube_video_id
+      video_title: video_list.video_title
+      playlist_id: +req.body.playlist_id
       user_id: req.session.user.user_id
-      play_count: req.body.video_list.play_count
+      play_count: video_list.play_count
       add_time: moment().valueOf()
     console.log 'item: ', item
-    conn.query "INSERT INTO Videos SET ?", item, (err, results) ->
-      conn.release()
-      console.log err if err
+    conn.queryAsync "INSERT INTO Videos SET ?", item
+    .spread (result) ->
+      console.log result.insertId
       res.json
         status: 200
         message: 'success!'
+  .catch (err) ->
+    console.log err
 
 ## POST updates play_count in Videos / responds to AJAX request (sends status & results but no rendering in the front)
 router.post '/update/playcount/:id', (req, res) ->

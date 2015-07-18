@@ -165,7 +165,7 @@ jQuery ->
           method: 'post'
           data:
             playlist_id: id
-            video_list: item
+            video_list: JSON.stringify item
           success: (d, s, x) ->
             console.log x.status
             console.log d
@@ -818,52 +818,32 @@ jQuery ->
         error: (x, s, d) ->
           alert 'Error: ' + s
 
-    $ '.add-playlist form'
-      .on 'submit', (e) ->
-
   $(window).on 'add.playlist', (e, collection, callback) ->
+    # return alert 'HEY'
     if window.Playlist.show_bucket_list()[0].id
       alert 'You have already made a Playlist with these videos.'
+      return false
+    if not $('.add-playlist input[name=new_playlist_name]').val().trim().length
+      alert 'Please make a name.'
       return false
     $.ajax
       url: '/playlist/add/new'
       method: 'post'
-      async: false
       headers:
         Accept: 'application/json'
       data:
-        playlist_name: $('.add-playlist input').val()
+        playlist_name: $('.add-playlist input[name=new_playlist_name]').val()
         data: JSON.stringify collection
       success: (d, s, x) ->
         console.log 'playlist add result: ', d
         if x.status isnt 200
           return 'Error'
-        # $.ajax
-        #   url: '/video/add'
-        #   method: 'post'
-        #   data: 
-        #     data: JSON.stringify {
-        #       video_list: collection
-        #     }
-        #   headers:
-        #     Accept: 'application/json'
-        #   success: (d, s, x) ->
-        #     if x.status isnt 200
-        #       return 'Error'
-        #     console.log 'video add result: ', d
-        #     false
-        #   error: (x, s, d) ->
-        #     console.log s, d
       error: (x, s, d) ->
         console.log s, d
     return callback() if callback
   $ '.add-playlist form'
     .on 'submit', (e) ->
-      if $('.add-playlist input').val().trim().length == 0
-        e.preventDefault()
-        e.stopPropagation()
-        alert 'Please make a name.'
-        return false
+      console.log '???>><>??'
       after_adding_playlist = ->
         $ '.add-playlist-success'
           .removeClass 'hide'
@@ -874,4 +854,7 @@ jQuery ->
         setTimeout ->
           $('.add-playlist-success').addClass('hide').removeClass('animated fadeInRight fadeOutRight')
         , 3500
-      $(window).trigger 'add.playlist', [window.Playlist.show_bucket_list(), after_adding_playlist]
+      $(window).trigger 'add.playlist'#, [window.Playlist.show_bucket_list(), after_adding_playlist]
+      e.preventDefault()
+      e.stopPropagation()
+      false
